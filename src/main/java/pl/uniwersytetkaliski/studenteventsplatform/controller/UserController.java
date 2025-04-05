@@ -29,7 +29,7 @@ public class UserController {
         return userService.getUserById(id)
                         .map(ResponseEntity::ok)
                         .orElse(ResponseEntity
-                            .notFound()
+                                .notFound()
                             .build()
                         );
     }
