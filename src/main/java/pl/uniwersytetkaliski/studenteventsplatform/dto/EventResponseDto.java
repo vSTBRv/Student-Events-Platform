@@ -3,6 +3,8 @@ package pl.uniwersytetkaliski.studenteventsplatform.dto;
 //import lombok.Getter;
 //import lombok.Setter;
 
+import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
+
 import java.time.LocalDateTime;
 
 //@Setter
@@ -18,6 +20,7 @@ public class EventResponseDto {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private String comments;
+    private EventStatus status;
 
     public Long getId() {
         return id;
@@ -97,5 +100,13 @@ public class EventResponseDto {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public EventStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EventStatus status) {
+        this.status = status;
     }
 }
