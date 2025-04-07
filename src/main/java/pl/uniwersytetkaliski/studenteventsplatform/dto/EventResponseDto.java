@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class EventResponseDto {
     private Long id;
     private String name;
-    private String description;
+//    private String description;
     private String locationCity;
     private String locationStreet;
     private String locationHouseNumber;
@@ -38,13 +38,13 @@ public class EventResponseDto {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+//    public String getDescription() {
+//        return description;
+//    }
+//
+//    public void setDescription(String description) {
+//        this.description = description;
+//    }
 
     public String getLocationCity() {
         return locationCity;
