@@ -36,4 +36,12 @@ public class EventController {
         Event created = eventService.createEvent(eventCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Event> updateEvent(
+            @PathVariable Long id,
+            @RequestBody EventCreateDto eventCreateDto) {
+        Event updated = eventService.updateEvent(id, eventCreateDto);
+        return ResponseEntity.ok(updated);
+    }
 }
