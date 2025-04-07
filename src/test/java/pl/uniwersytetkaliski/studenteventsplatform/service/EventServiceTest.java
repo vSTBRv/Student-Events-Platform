@@ -1,5 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,8 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -81,6 +81,20 @@ public class EventServiceTest {
 
     }
 
+    @Test
+    void shouldThrowWhenEventNotFound() {
+        when(eventRepository.findById(99L)).thenReturn(Optional.empty());
+
+        EventCreateDto dto = new EventCreateDto();
+        dto.setLocationId(1L);
+        dto.setStatus("PLANNED");
+
+        Exception exception = assertThrows(EntityNotFoundException.class, () ->
+                eventService.updateEvent(99L, dto));
+
+        assertEquals("Event with id 99 not found", exception.getMessage());
+    }
+
 //    @BeforeEach
 //    void setUp() {
 //        MockitoAnnotations.openMocks(this);
@@ -118,5 +132,53 @@ public class EventServiceTest {
         assertEquals(savedEvent.getId(), result.getId());
         verify(eventRepository).save(any(Event.class));
         verify(locationRepository).findById(1L);
+    }
+
+    @Test
+    void shouldUpdateEventSuccessfully() {
+        // DTO z danymi do aktualizacji
+        EventCreateDto dto = new EventCreateDto();
+        dto.setName("Zaktualizowane wydarzenie");
+        dto.setLocationId(1L);
+        dto.setStatus("PLANNED");
+        dto.setMaxCapacity(150);
+        dto.setStartDate(LocalDateTime.of(2025, 4, 20, 10, 0));
+        dto.setEndDate(LocalDateTime.of(2025, 4, 20, 14, 0));
+        dto.setComments("Po aktualizacji");
+
+        // istniejący event w bazie
+        Event existingEvent = new Event();
+        existingEvent.setId(1L);
+        existingEvent.setName("Stara nazwa");
+
+        // lokalizacja
+        Location location = new Location();
+        location.setId(1L);
+        location.setCity("Kalisz");
+        location.setStreet("Wyszyńskiego");
+        location.setHouseNumber("32A");
+        location.setPostalCode("62-800");
+
+        // co repozytorium ma zwrócić przy findById
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(existingEvent));
+        when(locationRepository.findById(1L)).thenReturn(Optional.of(location));
+        when(eventRepository.save(any(Event.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // act
+        Event updated = eventService.updateEvent(1L, dto);
+
+        // assert
+        assertNotNull(updated);
+        assertEquals(dto.getName(), updated.getName());
+        assertEquals(location, updated.getLocation());
+        assertEquals(EventStatus.PLANNED, updated.getStatus());
+        assertEquals(dto.getComments(), updated.getComments());
+        assertEquals(dto.getStartDate(), updated.getStartDate());
+        assertEquals(dto.getEndDate(), updated.getEndDate());
+        assertEquals(dto.getMaxCapacity(), updated.getMaxCapacity());
+
+        verify(eventRepository).findById(1L);
+        verify(locationRepository).findById(1L);
+        verify(eventRepository).save(any(Event.class));
     }
 }
