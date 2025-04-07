@@ -2,6 +2,7 @@ package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.exception.UserNotFoundException;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
@@ -49,7 +50,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable long id) {
         userService.deleteUser(id);

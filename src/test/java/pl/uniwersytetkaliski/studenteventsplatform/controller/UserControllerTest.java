@@ -2,7 +2,6 @@ package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,7 +13,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import pl.uniwersytetkaliski.studenteventsplatform.config.SecurityConfig;
+import pl.uniwersytetkaliski.studenteventsplatform.security.CustomUserDetailsService;
+import pl.uniwersytetkaliski.studenteventsplatform.security.SecurityConfig;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 import pl.uniwersytetkaliski.studenteventsplatform.model.UserRole;
 import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
@@ -22,10 +22,10 @@ import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 //import static org.awaitility.Awaitility.given;
 
 @WebMvcTest(controllers = UserController.class) // tutaj pokazuje co testujemy
@@ -39,7 +39,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     // tworzymy fałszywą instancję która zwraca to co mu każe
-    @MockitoBean
+    @MockBean
     private UserService userService;
 
     @Autowired

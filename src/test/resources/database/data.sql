@@ -1,0 +1,3 @@
+insert into users (username, email, password, full_name, user_role, enabled, created_at) values ('student','student@mail.to', '$2a$10$LuZc1rx/MaiUz3jyg8Swr.WXq7ii.GKrW2opHXyiyV1AHaHRDyey2', 'testStudent','STUDENT',1,CURRENT_TIMESTAMP );
+insert into users (username, email, password, full_name, user_role, enabled, created_at) values ('admin','admin@mail.to', '$2a$10$/UkOuFk7hC5G6gGnsZ6OkOwJCriQn6RR4J2cZgujWC2j4BhQANA86', 'testAdmin','ADMIN',1,CURRENT_TIMESTAMP );
+insert into users (username, email, password, full_name, user_role, enabled, created_at) values ('org','org@mail.to' ,'$2a$10$mOqJBpHZuFbff.M2utwUpOpgBrbYLdTI2.y4pPpkCinpiwq0e22U6', 'testOrg','ORGANIZATION',1,CURRENT_TIMESTAMP );

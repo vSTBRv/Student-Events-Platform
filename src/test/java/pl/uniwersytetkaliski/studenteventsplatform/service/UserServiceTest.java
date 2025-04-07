@@ -26,7 +26,6 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
         preparedUser = userService.createUser(
                 User.builder()
                         .username("anka_chuliganka")
@@ -40,14 +39,12 @@ public class UserServiceTest {
 
     @Test
     void shouldGetUserById() {
-        Optional<User> user = userService.getUserById(preparedUser.getId());
+        Optional<User> user = userService.getUserById(1L);
 
         assertTrue(user.isPresent()); // sprawdza, czy dany user istnieje
-        assertEquals("anka_chuliganka", preparedUser.getUsername());
-        assertEquals("Anna Kowalska", preparedUser.getFullName());
-        assertEquals("ania@kowalska.com", preparedUser.getEmail());
-        assertEquals("admin123", preparedUser.getPassword());
-        assertEquals(UserRole.STUDENT, preparedUser.getUserRole());
+        assertEquals("student", user.get().getUsername());
+        assertEquals("testStudent", user.get().getFullName());
+        assertEquals(UserRole.STUDENT, user.get().getUserRole());
     }
 
     @Test
