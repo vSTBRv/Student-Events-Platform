@@ -50,6 +50,12 @@ function Login() {
                         Zaloguj
                     </button>
                 </form>
+                <p className="mt-4 text-sm">
+                    Nie masz konta?{" "}
+                    <a href="/register" className="text-amber-600 hover:underline">
+                        Zarejestruj się
+                    </a>
+                </p>
 
                 {error && <p className="text-red-600 mt-4 text-center">{error}</p>}
                 {success && <p className="text-green-600 mt-4 text-center">Zalogowano pomyślnie!</p>}
