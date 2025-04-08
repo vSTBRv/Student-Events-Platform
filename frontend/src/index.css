@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ogólny wygląd aplikacji */
+body {
+  @apply bg-gray-50 text-gray-800 min-h-screen flex items-center justify-center;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  min-width: 320px;
+}
+
+/* Linki */
+a {
+  @apply font-medium text-amber-600 no-underline;
+}
+
+a:hover {
+  @apply text-amber-700;
+}
+
+/* Nagłówki */
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+/* Przycisk ogólny – można nadpisać Tailwindem inline */
+button {
+  @apply rounded-lg border border-transparent px-4 py-2 text-base font-medium cursor-pointer transition-colors bg-amber-500 text-white;
+}
+
+button:hover {
+  @apply bg-amber-600;
+}
+
+button:focus,
+button:focus-visible
