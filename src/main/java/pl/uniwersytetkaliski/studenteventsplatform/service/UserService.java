@@ -24,6 +24,9 @@ public class UserService {
     public Optional<User> getUserById(long id) {
         return userRepository.findById(id);
     }
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findPasswordByUsername(username);
+    }
 
     public User createUser(User user) {
         return userRepository.save(user);

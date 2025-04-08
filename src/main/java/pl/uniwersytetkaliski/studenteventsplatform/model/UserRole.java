@@ -1,9 +1,9 @@
 package pl.uniwersytetkaliski.studenteventsplatform.model;
 
 public enum UserRole {
-    ADMIN("Administrator"),
-    ORGANIZATION("Organizacja"),
-    STUDENT("Student");
+    ADMIN("ADMIN"),
+    ORGANIZATION("ORGANIZATION"),
+    STUDENT("STUDENT");
 
     private final String displayName;
 

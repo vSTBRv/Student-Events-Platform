@@ -32,10 +32,12 @@ public class User {
     private String email;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_role")
     UserRole userRole;                // opis roli użytkownika
 
     private boolean enabled; // czy dany użytkownik jest aktywny
 
+    @Column(name = "createdAt")
     private LocalDateTime createdAt;    // data utworzenia wpisu
 
     public long getId() {
