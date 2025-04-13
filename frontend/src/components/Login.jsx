@@ -9,16 +9,33 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch("http://localhost:8080/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          username: login,
+          password: password,
+        }),
+        credentials: "include", // ważne, jeśli backend korzysta z sesji/cookies
+      });
 
-    if (login === "admin" && password === "1234") {
-      setSuccess(true);
-      setError("");
-    } else {
-      setError("Nieprawidłowy login lub hasło");
+      if (response.ok) {
+        setSuccess(true);
+        setError("");
+      } else {
+        setError("Nieprawidłowy login lub hasło");
+        setSuccess(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Błąd połączenia z serwerem");
       setSuccess(false);
     }
   };
+
 
   return (
     <div className="bg-gray-50 min-h-screen flex items-center justify-center px-4">

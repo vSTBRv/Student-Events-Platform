@@ -6,7 +6,6 @@ export default function RegisterStudent() {
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [studentId, setStudentId] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,10 +14,10 @@ export default function RegisterStudent() {
 
     const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!firstName || !lastName || !studentId || !email || !password || !confirmPassword) {
+        if (!firstName || !lastName || !email || !password || !confirmPassword) {
             setError("Uzupełnij wszystkie pola.");
             return;
         }
@@ -38,15 +37,43 @@ export default function RegisterStudent() {
             return;
         }
 
-        console.log({ firstName, lastName, studentId, email, password });
+        try {
+            const response = await fetch("http://localhost:8080/api/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    fullName: `${firstName} ${lastName}`,
+                    email,
+                    password,
+                    userRole: 'STUDENT',
+                    username: email
+                }),
+            });
 
-        setError("");
-        setSuccess(true);
+            if (!response.ok) {
+                const errorText = await response.text();
+                setError(errorText || "Wystąpił błąd podczas rejestracji.");
+                return;
+            }
 
-        setTimeout(() => {
-            navigate("/");
-        }, 2000);
+            console.log("Użytkownik zarejestrowany.");
+            setSuccess(true);
+            setError("");
+
+            setTimeout(() => {
+                navigate("/");
+            }, 2000);
+
+
+        } catch (err) {
+            setError("Wystąpił błąd podczas rejestracji2.");
+        }
+
+
     };
+
 
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
@@ -69,14 +96,6 @@ export default function RegisterStudent() {
                         placeholder="Nazwisko"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500"
-                    />
-
-                    <input
-                        type="text"
-                        placeholder="Numer indeksu"
-                        value={studentId}
-                        onChange={(e) => setStudentId(e.target.value)}
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500"
                     />
 
