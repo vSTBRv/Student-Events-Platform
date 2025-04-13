@@ -21,6 +21,9 @@ public class EventResponseDto {
     private LocalDateTime endDateTime;
     private String comments;
     private EventStatus status;
+    private int capacity;
+    private String statusLabel;
+    private String category;
 
     public Long getId() {
         return id;
@@ -45,6 +48,21 @@ public class EventResponseDto {
 //    public void setDescription(String description) {
 //        this.description = description;
 //    }
+
+
+    public String getCategory() {
+        return category;
+    }
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
 
     public String getLocationCity() {
         return locationCity;
@@ -109,4 +127,12 @@ public class EventResponseDto {
     public void setStatus(EventStatus status) {
         this.status = status;
     }
+
+    public String getStatusLabel() {
+        return status.getStatus(); // zwróci "Zaplanowane", "W trakcie" itd.
+    }
+    public void setStatusLabel(String statusLabel) {
+        this.statusLabel = statusLabel;
+    }
+
 }

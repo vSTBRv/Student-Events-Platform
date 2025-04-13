@@ -50,6 +50,9 @@ public class EventService {
         dto.setStartDateTime(event.getStartDate());
         dto.setEndDateTime(event.getEndDate());
         dto.setComments(event.getComments());
+        dto.setStatusLabel(event.getStatus().getStatus());
+        dto.setCapacity(event.getMaxCapacity());
+        dto.setCategory(event.getCategory().getName());
         return dto;
     }
 

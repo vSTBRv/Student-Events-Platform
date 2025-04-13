@@ -23,6 +23,10 @@ public class Event {
     @JoinColumn(name="location_id", nullable = false)
     private Location location;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EventStatus status;
@@ -114,5 +118,12 @@ public class Event {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }
