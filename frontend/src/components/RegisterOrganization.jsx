@@ -15,7 +15,7 @@ export default function RegisterOrganization() {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Walidacja
@@ -40,16 +40,39 @@ export default function RegisterOrganization() {
         }
 
         // TODO: wysyłka danych na backend (np. fetch/axios)
+        try {
+            const response = await fetch("http://localhost:8080/api/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    fullName: `${name}`,
+                    email,
+                    password,
+                    userRole: 'ORGANIZATION',
+                    username: `${name}`
+                }),
+            });
 
-        console.log({ name, email, password });
+            if (!response.ok) {
+                const errorText = await response.text();
+                setError(errorText || "Wystąpił błąd podczas rejestracji.");
+                return;
+            }
 
-        setError("");
-        setSuccess(true);
+            console.log("Użytkownik zarejestrowany.");
+            setSuccess(true);
+            setError("");
 
-        // Automatyczne przekierowanie po 2 sekundach
-        setTimeout(() => {
-            navigate("/");
-        }, 2000);
+            setTimeout(() => {
+                navigate("/");
+            }, 2000);
+
+
+        } catch (err) {
+            setError("Wystąpił błąd podczas rejestracji2.");
+        }
     };
 
     return (
