@@ -1,6 +1,8 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.uniwersytetkaliski.studenteventsplatform.exception.UserNotFoundException;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
@@ -12,9 +14,11 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public List<User> getAllUsers() {
@@ -24,9 +28,9 @@ public class UserService {
     public Optional<User> getUserById(long id) {
         return userRepository.findById(id);
     }
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findPasswordByUsername(username);
-    }
+   public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+   }
 
     public User createUser(User user) {
         return userRepository.save(user);
@@ -69,5 +73,9 @@ public class UserService {
         } catch (Exception e) {
             throw new RuntimeException("Błąd podczas usuwania użytkownika o ID " + id, e);
         }
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 }
