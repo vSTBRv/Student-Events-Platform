@@ -8,10 +8,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.RegisterRequestDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.model.User;
+import pl.uniwersytetkaliski.studenteventsplatform.model.UserRole;
 import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.Base64;
 
 @RestController
@@ -23,14 +27,29 @@ public class AuthController {
 
     private final UserService userService;
 
-    public AuthController(UserService userService) {
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // Register endpoint
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDTO requestDTO) {
-        // Registration logic here
+        if (userService.existsByEmail(requestDTO.email)) {
+            return ResponseEntity.badRequest().body("Email już istnieje.");
+        }
+
+        User user = new User();
+
+        user.setEmail(requestDTO.email);
+        user.setUsername(requestDTO.username != null ? requestDTO.username : requestDTO.email);
+        user.setFullName(requestDTO.fullName);
+        user.setUserRole(UserRole.valueOf(requestDTO.userRole.toUpperCase()));
+        user.setPassword(passwordEncoder.encode(requestDTO.password));
+        user.setEnabled(true);
+        user.setCreatedAt(LocalDateTime.now());
+        userService.createUser(user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
