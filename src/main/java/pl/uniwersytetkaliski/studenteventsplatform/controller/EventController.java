@@ -3,6 +3,7 @@ package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventRequestDto;
@@ -31,6 +32,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
 
+    @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody EventCreateDto eventCreateDto) {
         Event created = eventService.createEvent(eventCreateDto);

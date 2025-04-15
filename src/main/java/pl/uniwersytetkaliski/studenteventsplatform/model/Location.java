@@ -10,23 +10,15 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @lombok.Setter
-//    @lombok.Getter
     @Column(nullable = false)
     private String city;
 
-//    @lombok.Setter
-//    @lombok.Getter
     @Column(nullable = false)
     private String street;
 
-//    @lombok.Setter
-//    @lombok.Getter
     @Column(nullable = false)
     private String houseNumber;
 
-//    @lombok.Setter
-//    @lombok.Getter
     @Column(nullable = false)
     private String postalCode;
 
