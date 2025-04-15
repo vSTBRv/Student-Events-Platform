@@ -16,14 +16,17 @@ import pl.uniwersytetkaliski.studenteventsplatform.model.UserRole;
 import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/api")
 public class AuthController {
+
     @Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
     private final UserService userService;
+
     private final PasswordEncoder passwordEncoder;
 
     public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
@@ -47,15 +50,23 @@ public class AuthController {
         user.setEnabled(true);
         user.setCreatedAt(LocalDateTime.now());
         userService.createUser(user);
-
         return ResponseEntity.status(HttpStatus.OK).build();
-
     }
 
+    // Login endpoint for HTTP Basic Authentication
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<?> authenticate(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            // Extract credentials from the Basic Auth header
+            String base64Credentials = authorizationHeader.substring("Basic ".length());
+            String credentials = new String(Base64.getDecoder().decode(base64Credentials));
+            String[] values = credentials.split(":", 2);
+            String username = values[0];
+            String password = values[1];
+
+            // Authenticate using the extracted username and password
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
 
             SecurityContextHolder.getContext().setAuthentication(auth);
 
