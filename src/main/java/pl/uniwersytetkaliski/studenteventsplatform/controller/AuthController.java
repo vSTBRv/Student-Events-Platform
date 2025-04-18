@@ -1,5 +1,8 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,5 +77,17 @@ public class AuthController {
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        request.getSession().invalidate();
+
+        Cookie cookie = new Cookie("JESSIONID", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok("Wylogowano");
     }
 }
