@@ -79,15 +79,35 @@ public class AuthController {
         }
     }
 
+
+    /**
+     * Obsługuje żądanie POST pod adresem /logout (pełna ścieżka /api/logout
+     * @param request żądanie przychodzące od klienta
+     * @param response odpowiedź którą backend wysyła z powrotem
+     * @return
+     */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        // Unieważnia bieżącą sesję użytkownika po stronie serwera
         request.getSession().invalidate();
 
-        Cookie cookie = new Cookie("JESSIONID", null);
+        // Tworzy ciasteczko JSESSIONID z wartością null i czasem życia 0 – przeglądarka usunie je
+        Cookie cookie = new Cookie("JSESSIONID", null);
+
+        // Ciasteczko dostępne na całej ścieżce aplikacji
         cookie.setPath("/");
+
+        // Zabezpiecza ciasteczko przed dostępem z JavaScript (ochrona przed XSS)
         cookie.setHttpOnly(true);
+
+        // Ustawia czas życia ciasteczka na 0 – przeglądarka je natychmiast usuwa
         cookie.setMaxAge(0);
+
+        // Dodaje ciasteczko do odpowiedzi – przeglądarka je odbierze i usunie
         response.addCookie(cookie);
+
+        // Zwraca odpowiedź 200 OK z informacją o wylogowaniu
         return ResponseEntity.ok("Wylogowano");
     }
 }
