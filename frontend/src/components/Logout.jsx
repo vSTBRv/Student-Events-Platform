@@ -13,7 +13,7 @@ function Logout({ onLogout }) {
         localStorage.removeItem("authCredentials");
         localStorage.removeItem("isLoggedIn");
         onLogout?.();
-        navigate("/login");
+        navigate("/");
     };
 
     return (

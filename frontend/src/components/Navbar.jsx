@@ -89,7 +89,7 @@ function Navbar({isLoggedIn, setIsLoggedIn}) {
                     </Link>
                   </li>
                   <li>
-                    <Logout onLogout={() => setLoggedIn(false)} />
+                    <Logout onLogout={() => setIsLoggedIn(false)} />
                   </li>
                 </>
             )}
