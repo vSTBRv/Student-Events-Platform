@@ -1,15 +1,25 @@
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Logout from "./Logout.jsx"
 import {useEffect, useState} from "react";
 
-function Navbar() {
-  const [isLoggedIn, setLoggedIn] = useState(false);
+function Navbar({isLoggedIn, setIsLoggedIn}) {
+  // const [isLoggedIn, setLoggedIn] = useState(false);
 
-  useEffect(() => {
-    // setLoggedIn(document.cookie.includes("JSESSIONID")); // To wykrywa czy jest sesja -- nie działa ta opcja,
-      const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-      setLoggedIn(loggedIn);
-  }, []);
+  // useEffect(() => {
+  //   // setLoggedIn(document.cookie.includes("JSESSIONID")); // To wykrywa czy jest sesja -- nie działa ta opcja,
+  //     const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+  //     setLoggedIn(loggedIn);
+  // }, []);
+
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await fetch("http://localhost:8080/api/logout", {
+            method: "POST",
+            credentials: "include",
+        });
+    }
+
 
   // return (
   //   <nav className="text-white px-4 py-3 shadow-md">

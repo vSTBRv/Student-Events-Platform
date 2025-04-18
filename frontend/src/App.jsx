@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import CreateEvent from "./components/CreateEvent";
 import Login from "./components/Login";
@@ -8,12 +9,19 @@ import EventList from "./components/EventList";
 import Navbar from "./components/Navbar";
 
 function App() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+        setIsLoggedIn(loggedIn);
+    }, []);
+
   return (
     <div>
-      <Navbar></Navbar>
+      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
 
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn}/>} />
         <Route path="/register" element={<RegisterSelect />} />
         <Route path="/register/student" element={<RegisterStudent />} />
         <Route
