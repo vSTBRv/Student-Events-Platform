@@ -58,7 +58,7 @@ public class AuthController {
 
     // Login endpoint for HTTP Basic Authentication
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> authenticate(@RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request) {
         try {
             // Extract credentials from the Basic Auth header
             String base64Credentials = authorizationHeader.substring("Basic ".length());
@@ -72,6 +72,10 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(username, password));
 
             SecurityContextHolder.getContext().setAuthentication(auth);
+
+            // poniższa metoda tworzy sesję i uruchamia mechanizm JSESSIONID
+            // bez tej metody nie działa logowanie i wylogowanie
+            request.getSession(true);
 
             return ResponseEntity.ok(auth);
         } catch (AuthenticationException e) {
