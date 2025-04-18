@@ -22,7 +22,7 @@ function Logout({ onLogout }) {
         // </button>
         //
 
-        <span onClick={handleLogout} className="cursor-pointer hover:text-gray-200" >Logout</span>
+        <span onClick={handleLogout} className="navbar-link" >Logout</span>
 
     );
 }
