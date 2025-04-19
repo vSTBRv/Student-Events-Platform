@@ -1,5 +1,8 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,5 +81,37 @@ public class AuthController {
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+
+    /**
+     * Obsługuje żądanie POST pod adresem /logout (pełna ścieżka /api/logout
+     * @param request żądanie przychodzące od klienta
+     * @param response odpowiedź którą backend wysyła z powrotem
+     * @return
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        // Unieważnia bieżącą sesję użytkownika po stronie serwera
+        request.getSession().invalidate();
+
+        // Tworzy ciasteczko JSESSIONID z wartością null i czasem życia 0 – przeglądarka usunie je
+        Cookie cookie = new Cookie("JSESSIONID", null);
+
+        // Ciasteczko dostępne na całej ścieżce aplikacji
+        cookie.setPath("/");
+
+        // Zabezpiecza ciasteczko przed dostępem z JavaScript (ochrona przed XSS)
+        cookie.setHttpOnly(true);
+
+        // Ustawia czas życia ciasteczka na 0 – przeglądarka je natychmiast usuwa
+        cookie.setMaxAge(0);
+
+        // Dodaje ciasteczko do odpowiedzi – przeglądarka je odbierze i usunie
+        response.addCookie(cookie);
+
+        // Zwraca odpowiedź 200 OK z informacją o wylogowaniu
+        return ResponseEntity.ok("Wylogowano");
     }
 }
