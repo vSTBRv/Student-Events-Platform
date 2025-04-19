@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Login() {
+function Login({ setIsLoggedIn }) {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,13 +22,18 @@ function Login() {
           {
             headers: {
               "Authorization": `Basic ${credentials}`, // Basic Auth Header
-            }
+            },
+            withCredentials: true // potrzeba aby działały ciasteczka - jak nie pasuje - wywalić!!!
           }
       );
 
       if (response.status === 200) {
+        console.log("Zalogowano!", response);
         // Store credentials in localStorage for use in EventList
         localStorage.setItem("authCredentials", credentials);
+
+        localStorage.setItem("isLoggedIn", "true");
+        setIsLoggedIn(true);
         setSuccess(true);
         setError("");
         navigate("/events"); // Redirect after successful login

@@ -20,6 +20,10 @@ a {
   @apply font-medium text-amber-600 no-underline;
 }
 
+.navbar-link {
+  @apply text-amber-600 font-medium no-underline hover:text-amber-700 cursor-pointer;
+}
+
 a:hover {
   @apply text-amber-700;
 }
