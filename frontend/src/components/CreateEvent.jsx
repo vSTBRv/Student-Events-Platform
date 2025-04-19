@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";  // potrzebne do przycisku Anuluj
 
 export default function CreateEvent() {
   const { id } = useParams();
@@ -21,6 +22,10 @@ export default function CreateEvent() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  // inicjalizacja navigate w celu utworzenia przycisku ANULUJ
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     if (isEdit) {
@@ -107,6 +112,10 @@ export default function CreateEvent() {
       });
     */
   };
+
+  const handleCancel = () => {
+    navigate("/events");
+  }
 
   const handleDelete = () => {
     if (!id) return;
@@ -224,29 +233,80 @@ export default function CreateEvent() {
               <option>Rozrywka</option>
             </select>
 
-            <button
-                type="submit"
-                className="w-full bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition"
-            >
-              {isEdit ? "Zapisz zmiany" : "Dodaj wydarzenie"}
-            </button>
+            {/*<button*/}
+            {/*    type="submit"*/}
+            {/*    // className="primary-btn w-full bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition"*/}
+            {/*    className={"primary-btn w-full sm:w-1/2"}*/}
+            {/*>*/}
+            {/*  {isEdit ? "Zapisz zmiany" : "Dodaj wydarzenie"}*/}
+            {/*</button>*/}
           </form>
 
+          {/*{isEdit && (*/}
+          {/*    <div className="mt-6">*/}
+          {/*      <button*/}
+          {/*          onClick={handleDelete}*/}
+          {/*          className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"*/}
+          {/*      >*/}
+          {/*        Usuń wydarzenie*/}
+          {/*      </button>*/}
+          {/*    </div>*/}
+          {/*)}*/}
+
+          {/*{error && <p className="text-red-600 mt-4 text-center">{error}</p>}*/}
+          {/*{success && (*/}
+          {/*    <p className="text-green-600 mt-4 text-center">*/}
+          {/*      {isEdit ? "Wydarzenie zaktualizowane!" : "Wydarzenie zostało dodane!"} (symulacja)*/}
+          {/*    </p>*/}
+          {/*)}*/}
+
+          {/*{isEdit && (*/}
+          {/*    <div className={"mt-6"}>*/}
+          {/*      <button*/}
+          {/*          type={"button"}*/}
+          {/*          onClick={handleCancel}*/}
+          {/*          className={"w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"}*/}
+          {/*      >Anuluj zmiany*/}
+          {/*      </button>*/}
+          {/*    </div>*/}
+          {/*)}*/}
+
           {isEdit && (
-              <div className="mt-6">
+              <div className={"mt-6 flex flex-col gap-3"}>
+                <div className={"flex flex-col sm:flex-row gap-3"}>
+                  <button
+                    type={"button"}
+                    className={"primary-btn flex-1"}
+                    >
+                    {isEdit ? "Zapisz zmiany" : "Dodaj wydarzenie"}
+                  </button>
+
+                  <button
+                      type={"button"}
+                      onClick={handleCancel}
+                      // className={"w-full border border-gray-400 bg-white text-gray-700 py-2 hover:bg-gray-100 transition"} >
+                      className={"cancel-btn flex-1"} >
+                    Anuluj zmiany
+                  </button>
+                </div>
+
                 <button
-                    onClick={handleDelete}
-                    className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
-                >
+                  onClick={handleDelete}
+                  // className={"w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition font-semibold"}>
+                  className={"danger-btn"} >
                   Usuń wydarzenie
                 </button>
               </div>
+
           )}
 
-          {error && <p className="text-red-600 mt-4 text-center">{error}</p>}
+          {error && (
+              <p className={"text-red-600 mt-4 text-center"}>{error}</p>
+          )}
+
           {success && (
-              <p className="text-green-600 mt-4 text-center">
-                {isEdit ? "Wydarzenie zaktualizowane!" : "Wydarzenie zostało dodane!"} (symulacja)
+              <p className={"text-green-600 mt-4 text-center"}>
+                {isEdit?"Wydarzenie zaktualizowane!":"Wydarzenie zostało dodane!"} (symulacja)
               </p>
           )}
         </div>
