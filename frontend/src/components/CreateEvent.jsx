@@ -85,6 +85,8 @@ export default function CreateEvent() {
   }, [id]);
 
   const handleSubmit = (e) => {
+    console.log("Kliknięto Zapisz");
+
     e.preventDefault();
 
     if (!title || !description || !date || !time || !seats || !city || !street || !houseNumber || !postalCode) {
@@ -135,6 +137,7 @@ export default function CreateEvent() {
     fetch(url, {
       method: isEdit ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(eventData),
     })
       .then((res) => {
@@ -277,7 +280,7 @@ export default function CreateEvent() {
             {/*>*/}
             {/*  {isEdit ? "Zapisz zmiany" : "Dodaj wydarzenie"}*/}
             {/*</button>*/}
-          </form>
+          {/*</form>*/}
 
           {/*{isEdit && (*/}
           {/*    <div className="mt-6">*/}
@@ -312,7 +315,7 @@ export default function CreateEvent() {
               <div className={"mt-6 flex flex-col gap-3"}>
                 <div className={"flex flex-col sm:flex-row gap-3"}>
                   <button
-                    type={"button"}
+                    type={"submit"}
                     className={"primary-btn flex-1"}
                     >
                     {isEdit ? "Zapisz zmiany" : "Dodaj wydarzenie"}
@@ -336,7 +339,7 @@ export default function CreateEvent() {
               </div>
 
           )}
-
+          </form>
           {error && (
               <p className={"text-red-600 mt-4 text-center"}>{error}</p>
           )}
@@ -348,5 +351,6 @@ export default function CreateEvent() {
           )}
         </div>
       </div>
+
   );
 }
