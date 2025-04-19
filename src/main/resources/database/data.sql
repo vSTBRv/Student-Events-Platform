@@ -1,5 +1,8 @@
 insert into users (username, email, password, full_name, user_role, enabled, created_at) values ('student','student@mail.to', '$2a$10$LuZc1rx/MaiUz3jyg8Swr.WXq7ii.GKrW2opHXyiyV1AHaHRDyey2', 'testStudent','STUDENT',1,CURRENT_TIMESTAMP );
-insert into users (username, email, password, full_name, user_role, enabled, created_at) values ('admin','admin@mail.to', '$2a$10$/UkOuFk7hC5G6gGnsZ6OkOwJCriQn6RR4J2cZgujWC2j4BhQANA86', 'testAdmin','ADMIN',1,CURRENT_TIMESTAMP );
+-- UWAGA! dla poniższego użytkownika:
+-- login: admin@mail.to
+-- hasło: admin123
+insert into users (username, email, password, full_name, user_role, enabled, created_at) values ('admin','admin@mail.to', '$2a$12$woCGm7dBTeJh8aoK0RFHtO3ePy6hfYCG.nYWGbkS1XQ8Loe0Cg8WO', 'testAdmin','ADMIN',1,CURRENT_TIMESTAMP );
 insert into users (username, email, password, full_name, user_role, enabled, created_at) values ('org','org@mail.to' ,'$2a$10$mOqJBpHZuFbff.M2utwUpOpgBrbYLdTI2.y4pPpkCinpiwq0e22U6', 'testOrg','ORGANIZATION',1,CURRENT_TIMESTAMP );
 
 INSERT INTO category (name) VALUES ('test1'),('test2'),('test3');

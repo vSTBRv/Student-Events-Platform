@@ -3,6 +3,8 @@ package pl.uniwersytetkaliski.studenteventsplatform.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.RegisterRequestDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
@@ -29,8 +32,8 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     private final UserService userService;
-
     private final PasswordEncoder passwordEncoder;
+    
 
     public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
@@ -57,32 +60,57 @@ public class AuthController {
     }
 
     // Login endpoint for HTTP Basic Authentication
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request) {
-        try {
-            // Extract credentials from the Basic Auth header
-            String base64Credentials = authorizationHeader.substring("Basic ".length());
-            String credentials = new String(Base64.getDecoder().decode(base64Credentials));
-            String[] values = credentials.split(":", 2);
-            String username = values[0];
-            String password = values[1];
+//    @PostMapping("/login")
+//    public ResponseEntity<?> authenticate(@RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request) {
+//        try {
+//            // Extract credentials from the Basic Auth header
+//            String base64Credentials = authorizationHeader.substring("Basic ".length());
+//            String credentials = new String(Base64.getDecoder().decode(base64Credentials));
+//            String[] values = credentials.split(":", 2);
+//            String username = values[0];
+//            String password = values[1];
+//
+//            // Authenticate using the extracted username and password
+//            Authentication auth = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(username, password));
+//
+//            SecurityContextHolder.getContext().setAuthentication(auth);
+//
+//            // poniższa metoda tworzy sesję i uruchamia mechanizm JSESSIONID
+//            // bez tej metody nie działa logowanie i wylogowanie
+//            request.getSession(true);
+//
+//            return ResponseEntity.ok(auth);
+//        } catch (AuthenticationException e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//    }
 
-            // Authenticate using the extracted username and password
-            Authentication auth = authenticationManager.authenticate(
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @RequestParam String username,
+            @RequestParam String password,
+            HttpServletRequest request
+    ) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // poniższa metoda tworzy sesję i uruchamia mechanizm JSESSIONID
-            // bez tej metody nie działa logowanie i wylogowanie
+            HttpSession session  = request.getSession(true);
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+
             request.getSession(true);
 
-            return ResponseEntity.ok(auth);
+            System.out.println("ZALOGOWANO: " + authentication.getName());
+            System.out.println("SESSION ID: " + request.getSession().getId());
+
+            return ResponseEntity.ok().build();
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
-
 
     /**
      * Obsługuje żądanie POST pod adresem /logout (pełna ścieżka /api/logout

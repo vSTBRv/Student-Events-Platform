@@ -33,11 +33,24 @@ public class SecurityConfig {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/api/register", "/api/logout").permitAll()
+                        .requestMatchers(
+                                "/api/login",
+                                "/api/register",
+                                "/api/logout",
+                                "/h2-console/**"
+                        ).permitAll()
+//                        .requestMatchers("/api/events").authenticated()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults())
+                // jak trzeba wywalić i zostawić to co było poniżej. To jest próba ustawienia logowania (.formlogin było poprzednio i błędy wysakkiwały)
+//                .formLogin(form -> form
+//                        .loginProcessingUrl("/login")
+//                        .permitAll()
+//                )
+//                .formLogin(Customizer.withDefaults())
+//                .httpBasic(Customizer.withDefaults())
 //                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authenticationProvider(authenticationProvider())
                 .build();
     }

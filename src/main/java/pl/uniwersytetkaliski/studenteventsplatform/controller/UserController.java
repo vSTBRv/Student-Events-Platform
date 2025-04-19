@@ -22,6 +22,7 @@ public class UserController {
 
     @GetMapping
     public List<User> getAllUsers() {
+        System.out.println("Wejście do getAllEvents");
         return userService.getAllUsers();
     }
 

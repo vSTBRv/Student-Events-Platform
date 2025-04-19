@@ -1,8 +1,11 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventRequestDto;
@@ -21,10 +24,19 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<EventResponseDto>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getAllEvents());
+//    @GetMapping
+//    public ResponseEntity<List<EventResponseDto>> getAllEvents() {
+//        return ResponseEntity.ok(eventService.getAllEvents());
+//    }
+
+    @GetMapping("")
+    public List<EventResponseDto> getEvents(HttpServletRequest request) {
+        System.out.println("Sesja: " + request.getSession().getId());
+        System.out.println("Użytkownik: " + SecurityContextHolder.getContext().getAuthentication().getName());
+
+        return eventService.getAllEvents();
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponseDto> getEventById(@PathVariable long id) {
