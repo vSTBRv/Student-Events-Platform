@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import {data, useParams} from "react-router-dom";
 import { useNavigate } from "react-router-dom";  // potrzebne do przycisku Anuluj
 
 export default function CreateEvent() {
@@ -29,36 +29,59 @@ export default function CreateEvent() {
 
   useEffect(() => {
     if (isEdit) {
-      const dummyEvents = [
-        {
-          id: 1,
-          title: "Hackathon Uczelniany",
-          description: "24h kodowania, pizza, nagrody! ",
-          date: "2025-05-10",
-          time: "09:00",
-          city: "Poznań",
-          street: "Polna",
-          houseNumber: "12A",
-          postalCode: "60-100",
-          category: "Nauka",
-          seats: 50,
-        },
-      ];
+      fetch(`http://localhost:8080/api/events/${id}`, {
+        method: "GET",
+        credentials: "include",
+      })
 
-      const eventToEdit = dummyEvents.find((e) => e.id === parseInt(id));
-      if (eventToEdit) {
-        setTitle(eventToEdit.title);
-        setDescription(eventToEdit.description);
-        setDate(eventToEdit.date);
-        setTime(eventToEdit.time);
-        setSeats(eventToEdit.seats);
-        setCategory(eventToEdit.category);
-        setCity(eventToEdit.city);
-        setStreet(eventToEdit.street);
-        setHouseNumber(eventToEdit.houseNumber);
-        setPostalCode(eventToEdit.postalCode);
-      }
+          .then(res => res.json())
+          .then(data => {
+            setTitle(data.name);
+            setDescription(data.comments);
+            setDate(data.startDateTime.split("T")[0]);
+            setTime(data.startDateTime.split("T")[1].slice(0, 5));
+            setSeats(data.capacity);
+            setCategory(data.category || "Inne");
+            setCity(data.locationCity);
+            setStreet(data.locationStreet);
+            setHouseNumber(data.locationHouseNumber);
+            setPostalCode(data.locationPostalCode);
+          })
+          .catch(() => setError("Nie udało się załadować wydarzenia."));
     }
+
+      // const dummyEvents = [
+      //   {
+      //     id: 1,
+      //     title: "Hackathon Uczelniany",
+      //     description: "24h kodowania, pizza, nagrody! ",
+      //     date: "2025-05-10",
+      //     time: "09:00",
+      //     city: "Poznań",
+      //     street: "Polna",
+      //     houseNumber: "12A",
+      //     postalCode: "60-100",
+      //     category: "Nauka",
+      //     seats: 50,
+      //   },
+      // ];
+
+
+
+      // const eventToEdit = dummyEvents.find((e) => e.id === parseInt(id));
+      // if (eventToEdit) {
+      //   setTitle(eventToEdit.title);
+      //   setDescription(eventToEdit.description);
+      //   setDate(eventToEdit.date);
+      //   setTime(eventToEdit.time);
+      //   setSeats(eventToEdit.seats);
+      //   setCategory(eventToEdit.category);
+      //   setCity(eventToEdit.city);
+      //   setStreet(eventToEdit.street);
+      //   setHouseNumber(eventToEdit.houseNumber);
+      //   setPostalCode(eventToEdit.postalCode);
+      // }
+    // }
   }, [id]);
 
   const handleSubmit = (e) => {
@@ -77,40 +100,54 @@ export default function CreateEvent() {
     setError("");
     setSuccess(true);
 
+    // const eventData = {
+    //   title,
+    //   description,
+    //   date,
+    //   time,
+    //   seats,
+    //   category,
+    //   city,
+    //   street,
+    //   houseNumber,
+    //   postalCode,
+    // };
+
     const eventData = {
-      title,
-      description,
-      date,
-      time,
-      seats,
-      category,
-      city,
-      street,
-      houseNumber,
-      postalCode,
+      name: title,
+      comments: description,
+      startDate: `${date}T${time}`,
+      endDate: `${date}T${time}`,
+      maxCapacity: parseInt(seats),
+      status: "PLANNED",
+      locationId: 1
     };
+
 
     console.log(isEdit ? "🛠️ PATCH dane do backendu:" : "🛠️ POST dane do backendu:", eventData);
 
     // 🛠️ Tutaj backend podłącza odpowiedni fetch (POST lub PATCH)
-    /*
+
     const url = isEdit
       ? `http://localhost:8080/api/events/${id}`
       : "http://localhost:8080/api/events";
 
     fetch(url, {
-      method: isEdit ? "PATCH" : "POST",
+      method: isEdit ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(eventData),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if(!res.ok) throw new Error();
+        return res.json();
+      })
       .then((data) => {
         // obsługa sukcesu
+        navigate("/events")
       })
       .catch((err) => {
         setError("Błąd połączenia z serwerem.");
       });
-    */
   };
 
   const handleCancel = () => {
