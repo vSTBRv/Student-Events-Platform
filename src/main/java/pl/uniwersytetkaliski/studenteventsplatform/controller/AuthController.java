@@ -17,6 +17,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -38,6 +39,9 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDTO requestDTO) {
         if (userService.existsByEmail(requestDTO.email)) {
             return ResponseEntity.badRequest().body("Email już istnieje.");
+        }
+        if (Objects.equals(requestDTO.userRole, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized.");
         }
 
         User user = new User();

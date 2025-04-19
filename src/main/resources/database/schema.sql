@@ -31,7 +31,9 @@ CREATE TABLE events (
                         start_date TIMESTAMP,
                         end_date TIMESTAMP,
                         comments VARCHAR(1000),
-                        category_id INT
+                        category_id INT,
+                        deleted bit,
+                        deleted_at TIMESTAMP
 );
 
 CREATE TABLE category (

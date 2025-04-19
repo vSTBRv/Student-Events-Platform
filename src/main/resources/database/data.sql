@@ -8,8 +8,8 @@ INSERT INTO locations (city, street, house_number, postal_code) VALUES
                                                                   ('Warszawa', 'Koszykowa', '86', '00-123'),
                                                                   ('Kraków', 'Wielopole', '15A', '31-072'),
                                                                   ('Gdańsk', 'Długa', '22', '80-827');
-INSERT INTO events (name, location_id, status, max_capacity, creation_date, start_date, end_date, comments, category_id) VALUES
-                                                                                                            ('Hackathon Uczelniany', 1, 'PLANNED', 50, CURRENT_TIMESTAMP, '2025-05-10 09:00:00', '2025-05-10 18:00:00', '24h kodowania, pizza, nagrody!','1'),
-                                                                                                            ('Wieczór planszówek', 2, 'PLANNED', 30, CURRENT_TIMESTAMP, '2025-05-12 17:30:00', '2025-05-12 22:00:00', 'Integracja i gry planszowe dla studentów.','2'),
-                                                                                                            ('Bieg po Kampusie', 3, 'PLANNED', 100, CURRENT_TIMESTAMP, '2025-05-15 12:00:00', '2025-05-15 14:00:00', 'Zawody biegowe dla każdego poziomu.','3');
+INSERT INTO events (name, location_id, status, max_capacity, creation_date, start_date, end_date, comments, category_id, deleted, deleted_at) VALUES
+                                                                                                            ('Hackathon Uczelniany', 1, 'PLANNED', 50, CURRENT_TIMESTAMP, '2025-05-10 09:00:00', '2025-05-10 18:00:00', '24h kodowania, pizza, nagrody!',1,0,NULL),
+                                                                                                            ('Wieczór planszówek', 2, 'PLANNED', 30, CURRENT_TIMESTAMP, '2025-05-12 17:30:00', '2025-05-12 22:00:00', 'Integracja i gry planszowe dla studentów.',2,0,NULL),
+                                                                                                            ('Bieg po Kampusie', 3, 'PLANNED', 100, CURRENT_TIMESTAMP, '2025-05-15 12:00:00', '2025-05-15 14:00:00', 'Zawody biegowe dla każdego poziomu.',3,0,NULL);
 

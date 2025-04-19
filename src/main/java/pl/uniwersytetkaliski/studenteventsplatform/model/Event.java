@@ -1,13 +1,9 @@
 package pl.uniwersytetkaliski.studenteventsplatform.model;
 
 import jakarta.persistence.*;
-//import lombok.Getter;
-//import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
-//@Setter
-//@Getter
 @Entity
 @Table(name="events")
 public class Event {
@@ -47,6 +43,10 @@ public class Event {
 
     @Column(length = 1000)
     private String comments;
+
+    private boolean deleted;
+
+    private LocalDateTime deletedAt;
 
     public long getId() {
         return id;

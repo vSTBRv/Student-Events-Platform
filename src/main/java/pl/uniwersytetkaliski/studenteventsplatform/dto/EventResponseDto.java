@@ -1,14 +1,9 @@
 package pl.uniwersytetkaliski.studenteventsplatform.dto;
 
-//import lombok.Getter;
-//import lombok.Setter;
-
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 
 import java.time.LocalDateTime;
 
-//@Setter
-//@Getter
 public class EventResponseDto {
     private Long id;
     private String name;

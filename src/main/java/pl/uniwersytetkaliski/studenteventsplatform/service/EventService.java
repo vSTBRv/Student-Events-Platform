@@ -4,7 +4,6 @@ import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.EventRequestDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
