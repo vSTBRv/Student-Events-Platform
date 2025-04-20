@@ -22,9 +22,26 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<EventResponseDto>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getAllEvents());
+    /**
+     * Handles HTTP GET requests to retrieve events.
+     * <p>
+     * If a query parameter {@code name} is provided, it returns a list of events
+     * whose name matches the given value. If the {@code name} parameter is absent
+     * or empty, it returns a list of all available events.
+     * </p>
+     *
+     * @param name optional query parameter used to filter events by their name.
+     * @return a {@link ResponseEntity} containing a list of {@link EventResponseDto}
+     *         objects. The response contains either all events or filtered events
+     *         matching the specified name.
+     */
+    @GetMapping()
+    public ResponseEntity<List<EventResponseDto>> getAllEvents(@RequestParam(required = false) String name) {
+        if (name == null || name.isEmpty()) {
+            return ResponseEntity.ok(eventService.getAllEvents());
+        } else {
+            return ResponseEntity.ok(eventService.getEventByName(name));
+        }
     }
 
     @GetMapping("/{id}")
