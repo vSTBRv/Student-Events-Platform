@@ -1,14 +1,11 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
@@ -44,7 +41,7 @@ public class EventServiceTest {
         event.setId(1L);
         event.setName("Wydarzenie testowe");
         event.setStatus(EventStatus.PLANNED);
-        event.setComments("Wydarzenie testowe");
+        event.setdescription("Wydarzenie testowe");
         event.setMaxCapacity(3000);
         event.setStartDate(
                 LocalDateTime

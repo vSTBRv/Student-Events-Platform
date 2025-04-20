@@ -27,13 +27,15 @@ CREATE TABLE events (
                         location_id INT,
                         status VARCHAR(50),
                         max_capacity INT,
+                        current_capacity INT,
                         creation_date TIMESTAMP,
                         start_date TIMESTAMP,
                         end_date TIMESTAMP,
-                        comments VARCHAR(1000),
+                        description VARCHAR(1000),
                         category_id INT,
                         deleted bit,
-                        deleted_at TIMESTAMP
+                        deleted_at TIMESTAMP,
+                        created_by VARCHAR(50)
 );
 
 CREATE TABLE category (

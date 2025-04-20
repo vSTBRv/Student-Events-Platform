@@ -5,9 +5,11 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
+import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Location;
+import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;
 
@@ -19,10 +21,12 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final LocationRepository locationRepository;
+    private final CategoryRepository categoryRepository;
 
-    public EventService(EventRepository eventRepository, LocationRepository locationRepository) {
+    public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public List<EventResponseDto> getAllEvents() {
@@ -48,7 +52,7 @@ public class EventService {
         dto.setStatus(event.getStatus());
         dto.setStartDateTime(event.getStartDate());
         dto.setEndDateTime(event.getEndDate());
-        dto.setComments(event.getComments());
+        dto.setComments(event.getDescription());
         dto.setStatusLabel(event.getStatus().getStatus());
         dto.setCapacity(event.getMaxCapacity());
         dto.setCategory(event.getCategory().getName());
@@ -60,6 +64,9 @@ public class EventService {
         Location location = locationRepository
                 .findById(eventCreateDto.getLocationId())
                 .get();
+        Category category = categoryRepository
+                .findById(eventCreateDto.getCategoryId())
+                .get();
 
         Event event = new Event();
         event.setName(eventCreateDto.getName());
@@ -68,7 +75,8 @@ public class EventService {
         event.setMaxCapacity(eventCreateDto.getMaxCapacity());
         event.setStartDate(eventCreateDto.getStartDate());
         event.setEndDate(eventCreateDto.getEndDate());
-        event.setComments(eventCreateDto.getComments());
+        event.setDescription(eventCreateDto.getComments());
+        event.setCategory(category);
 
         return eventRepository.save(event);
     }
@@ -98,7 +106,7 @@ public class EventService {
         event.setMaxCapacity(eventCreateDto.getMaxCapacity());
         event.setStartDate(eventCreateDto.getStartDate());
         event.setEndDate(eventCreateDto.getEndDate());
-        event.setComments(eventCreateDto.getComments());
+        event.setDescription(eventCreateDto.getComments());
 
 //        System.out.println("Setting status: " + eventCreateDto.getStatus());
 //        System.out.println("Enum: " + EventStatus.valueOf(eventCreateDto.getStatus().toUpperCase()));

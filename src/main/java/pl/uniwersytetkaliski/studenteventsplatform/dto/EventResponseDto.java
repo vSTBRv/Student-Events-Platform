@@ -19,6 +19,7 @@ public class EventResponseDto {
     private int capacity;
     private String statusLabel;
     private String category;
+    private String createdBy;
 
     public Long getId() {
         return id;
@@ -128,6 +129,13 @@ public class EventResponseDto {
     }
     public void setStatusLabel(String statusLabel) {
         this.statusLabel = statusLabel;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
 }

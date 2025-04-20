@@ -1,6 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.dto;
 
-public class RegisterRequestDTO {
+public class RegisterDTO {
         public String email;
         public String password;
         public String fullName;

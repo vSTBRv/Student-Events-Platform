@@ -13,7 +13,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.RegisterRequestDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.RegisterDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 import pl.uniwersytetkaliski.studenteventsplatform.model.UserRole;
 import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
@@ -39,21 +39,21 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDTO requestDTO) {
-        if (userService.existsByEmail(requestDTO.email)) {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
+        if (userService.existsByEmail(registerDTO.email)) {
             return ResponseEntity.badRequest().body("Email już istnieje.");
         }
-        if (Objects.equals(requestDTO.userRole, "ADMIN")) {
+        if (Objects.equals(registerDTO.userRole, "ADMIN")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized.");
         }
 
         User user = new User();
 
-        user.setEmail(requestDTO.email);
-        user.setUsername(requestDTO.username != null ? requestDTO.username : requestDTO.email);
-        user.setFullName(requestDTO.fullName);
-        user.setUserRole(UserRole.valueOf(requestDTO.userRole.toUpperCase()));
-        user.setPassword(passwordEncoder.encode(requestDTO.password));
+        user.setEmail(registerDTO.email);
+        user.setUsername(registerDTO.username != null ? registerDTO.username : registerDTO.email);
+        user.setFullName(registerDTO.fullName);
+        user.setUserRole(UserRole.valueOf(registerDTO.userRole.toUpperCase()));
+        user.setPassword(passwordEncoder.encode(registerDTO.password));
         user.setEnabled(true);
         user.setCreatedAt(LocalDateTime.now());
         userService.createUser(user);
