@@ -9,7 +9,7 @@ INSERT INTO locations (city, street, house_number, postal_code) VALUES
                                                                   ('Kraków', 'Wielopole', '15A', '31-072'),
                                                                   ('Gdańsk', 'Długa', '22', '80-827');
 INSERT INTO events (name, location_id, status, max_capacity,current_capacity, creation_date, start_date, end_date, description, category_id, deleted, deleted_at, created_by) VALUES
-                                                                                                            ('Hackathon Uczelniany', 1, 'PLANNED',0, 50, CURRENT_TIMESTAMP, '2025-05-10 09:00:00', '2025-05-10 18:00:00', '24h kodowania, pizza, nagrody!',1,0,NULL,'org'),
-                                                                                                            ('Wieczór planszówek', 2, 'PLANNED',0, 30, CURRENT_TIMESTAMP, '2025-05-12 17:30:00', '2025-05-12 22:00:00', 'Integracja i gry planszowe dla studentów.',2,0,NULL,'org'),
-                                                                                                            ('Bieg po Kampusie', 3, 'PLANNED', 0,100, CURRENT_TIMESTAMP, '2025-05-15 12:00:00', '2025-05-15 14:00:00', 'Zawody biegowe dla każdego poziomu.',3,0,NULL,'org2');
+                                                                                                            ('Hackathon Uczelniany', 1, 'PLANNED',0, 50, CURRENT_TIMESTAMP, '2025-05-10 09:00:00', '2025-05-10 18:00:00', '24h kodowania, pizza, nagrody!',1,0,NULL,3),
+                                                                                                            ('Wieczór planszówek', 2, 'PLANNED',0, 30, CURRENT_TIMESTAMP, '2025-05-12 17:30:00', '2025-05-12 22:00:00', 'Integracja i gry planszowe dla studentów.',2,0,NULL,3),
+                                                                                                            ('Bieg po Kampusie', 3, 'PLANNED', 0,100, CURRENT_TIMESTAMP, '2025-05-15 12:00:00', '2025-05-15 14:00:00', 'Zawody biegowe dla każdego poziomu.',3,0,NULL,1);
 

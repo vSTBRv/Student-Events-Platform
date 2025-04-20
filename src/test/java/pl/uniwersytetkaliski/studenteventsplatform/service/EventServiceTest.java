@@ -41,7 +41,7 @@ public class EventServiceTest {
         event.setId(1L);
         event.setName("Wydarzenie testowe");
         event.setStatus(EventStatus.PLANNED);
-        event.setdescription("Wydarzenie testowe");
+        event.setDescription("Wydarzenie testowe");
         event.setMaxCapacity(3000);
         event.setStartDate(
                 LocalDateTime
@@ -169,7 +169,7 @@ public class EventServiceTest {
         assertEquals(dto.getName(), updated.getName());
         assertEquals(location, updated.getLocation());
         assertEquals(EventStatus.PLANNED, updated.getStatus());
-        assertEquals(dto.getComments(), updated.getComments());
+        assertEquals(dto.getComments(), updated.getDescription());
         assertEquals(dto.getStartDate(), updated.getStartDate());
         assertEquals(dto.getEndDate(), updated.getEndDate());
         assertEquals(dto.getMaxCapacity(), updated.getMaxCapacity());

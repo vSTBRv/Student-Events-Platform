@@ -49,7 +49,7 @@ public class Event {
 
     private LocalDateTime deletedAt;
 
-    private String createdBy;
+    private int createdBy;
 
     public long getId() {
         return id;
@@ -155,11 +155,11 @@ public class Event {
         this.deletedAt = deletedAt;
     }
 
-    public String getCreatedBy() {
+    public int getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(String createdBy) {
+    public void setCreatedBy(int createdBy) {
         this.createdBy = createdBy;
     }
 }

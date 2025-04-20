@@ -35,7 +35,7 @@ CREATE TABLE events (
                         category_id INT,
                         deleted bit,
                         deleted_at TIMESTAMP,
-                        created_by VARCHAR(50)
+                        created_by INT
 );
 
 CREATE TABLE category (
@@ -50,3 +50,4 @@ ALTER TABLE events
             ON DELETE CASCADE;
 
 ALTER TABLE events ADD CONSTRAINT fk_events_category FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE;
+ALTER TABLE events ADD CONSTRAINT fk_events_users FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE CASCADE;

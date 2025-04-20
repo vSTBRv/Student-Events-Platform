@@ -2,18 +2,19 @@ package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
-import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
-import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
-import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
-import pl.uniwersytetkaliski.studenteventsplatform.model.Location;
+import pl.uniwersytetkaliski.studenteventsplatform.model.*;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,11 +23,13 @@ public class EventService {
     private final EventRepository eventRepository;
     private final LocationRepository locationRepository;
     private final CategoryRepository categoryRepository;
+    private final UserService userService;
 
-    public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository) {
+    public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository, UserService userService) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
         this.categoryRepository = categoryRepository;
+        this.userService = userService;
     }
 
     public List<EventResponseDto> getAllEvents() {
@@ -81,7 +84,9 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event updateEvent(Long id, EventCreateDto eventCreateDto) {
+    public Event updateEvent(Long id, EventCreateDto eventCreateDto) throws AccessDeniedException {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         Event event = eventRepository
                 .findById(id)
@@ -90,6 +95,18 @@ public class EventService {
                                 "Event with id " + id + " not found"
                         )
                 );
+
+        Optional<User> user = userService.getUserByEmail(auth.getName());
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException();
+        }
+        boolean isAdmin = (user.get()).getUserRole() == UserRole.ADMIN;
+        boolean isOrganisation = user.get().getUserRole() == UserRole.ORGANIZATION;
+        boolean isOwner = user.get().getId() == event.getCreatedBy();
+
+        if(!(isAdmin || (isOrganisation && isOwner))) {
+            throw new AccessDeniedException("Acces Denied");
+        }
 
         Location location = locationRepository
                 .findById(eventCreateDto.getLocationId())
