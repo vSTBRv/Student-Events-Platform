@@ -10,6 +10,7 @@ public class EventCreateDto {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String comments;
+    private Long categoryId;
 
     public String getName() {
         return name;
@@ -65,5 +66,13 @@ public class EventCreateDto {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 }

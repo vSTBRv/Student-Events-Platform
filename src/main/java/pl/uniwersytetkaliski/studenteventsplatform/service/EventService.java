@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventRequestDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
+import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Location;
+import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;
 
@@ -20,10 +22,12 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final LocationRepository locationRepository;
+    private final CategoryRepository categoryRepository;
 
-    public EventService(EventRepository eventRepository, LocationRepository locationRepository) {
+    public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public List<EventResponseDto> getAllEvents() {
@@ -62,6 +66,10 @@ public class EventService {
                 .findById(eventCreateDto.getLocationId())
                 .get();
 
+        Category category = categoryRepository
+                .findById(eventCreateDto.getCategoryId())
+                .get();
+
         Event event = new Event();
         event.setName(eventCreateDto.getName());
         event.setLocation(location);
@@ -70,6 +78,7 @@ public class EventService {
         event.setStartDate(eventCreateDto.getStartDate());
         event.setEndDate(eventCreateDto.getEndDate());
         event.setComments(eventCreateDto.getComments());
+        event.setCategory(category);
 
         return eventRepository.save(event);
     }
@@ -92,8 +101,17 @@ public class EventService {
                         )
                 );
 
+        Category category = categoryRepository
+                .findById(eventCreateDto.getCategoryId())
+                        .orElseThrow(
+                                ()->new EntityNotFoundException(
+                                        "Category with id " + eventCreateDto.getCategoryId() + " not found"
+                                )
+                        );
+
         event.setName(eventCreateDto.getName());
         event.setLocation(location);
+        event.setCategory(category);
         System.out.println("DTO status = " + eventCreateDto.getStatus());
         event.setStatus(EventStatus.valueOf(eventCreateDto.getStatus().toUpperCase()));
         event.setMaxCapacity(eventCreateDto.getMaxCapacity());
