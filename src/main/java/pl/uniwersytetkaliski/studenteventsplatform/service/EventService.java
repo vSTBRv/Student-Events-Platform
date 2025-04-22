@@ -44,6 +44,13 @@ public class EventService {
         return mapToDto(event);
     }
 
+    public List<EventResponseDto> getEventByName(String name) {
+        List<Event> events = eventRepository.findByNameContainingIgnoreCase(name);
+        return events.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
     private EventResponseDto mapToDto(Event event) {
         EventResponseDto dto = new EventResponseDto();
         dto.setId(event.getId());
