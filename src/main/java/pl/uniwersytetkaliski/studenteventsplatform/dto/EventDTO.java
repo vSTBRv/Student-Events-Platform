@@ -1,61 +1,32 @@
-package pl.uniwersytetkaliski.studenteventsplatform.model;
+package pl.uniwersytetkaliski.studenteventsplatform.dto;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
+import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
+import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
+import pl.uniwersytetkaliski.studenteventsplatform.model.Location;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name="events")
-public class Event {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column(nullable = false)
+public class EventDTO {
+    private Long id;
     private String name;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "location_id", nullable = false)
     private Location location;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private EventStatus status;
-
-    @Column(nullable = false)
     private int maxCapacity;
-
     private int currentCapacity;
-
-    @CreationTimestamp
-    @Column(nullable = false)
     private LocalDateTime creationDate;
-
-    @Column(nullable = false)
     private LocalDateTime startDate;
-
-    @Column(nullable = false)
     private LocalDateTime endDate;
-
-    @Column(length = 1000)
     private String description;
-
+    private Category category;
     private boolean deleted;
+    private LocalDateTime deleted_at;
+    private String created_by;
 
-    private LocalDateTime deletedAt;
-
-    private int createdBy;
-
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -73,14 +44,6 @@ public class Event {
 
     public void setLocation(Location location) {
         this.location = location;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
     }
 
     public EventStatus getStatus() {
@@ -139,6 +102,14 @@ public class Event {
         this.description = description;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public boolean isDeleted() {
         return deleted;
     }
@@ -147,19 +118,19 @@ public class Event {
         this.deleted = deleted;
     }
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
+    public LocalDateTime getDeleted_at() {
+        return deleted_at;
     }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
+    public void setDeleted_at(LocalDateTime deleted_at) {
+        this.deleted_at = deleted_at;
     }
 
-    public int getCreatedBy() {
-        return createdBy;
+    public String getCreated_by() {
+        return created_by;
     }
 
-    public void setCreatedBy(int createdBy) {
-        this.createdBy = createdBy;
+    public void setCreated_by(String created_by) {
+        this.created_by = created_by;
     }
 }
