@@ -3,10 +3,11 @@ package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.EventRequestDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
@@ -43,7 +44,12 @@ public class EventController {
     public ResponseEntity<Event> updateEvent(
             @PathVariable Long id,
             @RequestBody EventCreateDto eventCreateDto) {
-        Event updated = eventService.updateEvent(id, eventCreateDto);
-        return ResponseEntity.ok(updated);
+        try {
+            Event updated = eventService.updateEvent(id, eventCreateDto);
+            return ResponseEntity.ok(updated);
+        } catch (AccessDeniedException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
     }
 }

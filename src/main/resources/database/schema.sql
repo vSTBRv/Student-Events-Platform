@@ -27,13 +27,15 @@ CREATE TABLE events (
                         location_id INT,
                         status VARCHAR(50),
                         max_capacity INT,
+                        current_capacity INT,
                         creation_date TIMESTAMP,
                         start_date TIMESTAMP,
                         end_date TIMESTAMP,
-                        comments VARCHAR(1000),
+                        description VARCHAR(1000),
                         category_id INT,
                         deleted bit,
-                        deleted_at TIMESTAMP
+                        deleted_at TIMESTAMP,
+                        created_by INT
 );
 
 CREATE TABLE category (
@@ -48,3 +50,4 @@ ALTER TABLE events
             ON DELETE CASCADE;
 
 ALTER TABLE events ADD CONSTRAINT fk_events_category FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE;
+ALTER TABLE events ADD CONSTRAINT fk_events_users FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE CASCADE;
