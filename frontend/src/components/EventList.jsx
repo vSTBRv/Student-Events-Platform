@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import axios from "axios"; // Importujemy axios
 
 export default function EventList() {
@@ -72,6 +74,7 @@ export default function EventList() {
                     {events.map((event) => (
                         <div
                             key={event.id}
+                            onClick={() => navigate(`/events/${event.id}`)}
                             className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
                         >
                             <div>
@@ -94,7 +97,10 @@ export default function EventList() {
                             </div>
 
                             <button
-                                onClick={() => handleEdit(event.id)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEdit(event.id);
+                                }}
                                 className="mt-4 bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition"
                             >
                                 Edytuj

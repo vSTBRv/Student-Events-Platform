@@ -13,9 +13,6 @@ public class EventCreateDto {
     private Long categoryId;
     private String createdBy;
 
-    public Long getCategoryId() {
-        return categoryId;
-    }
     public void setCategory(Long categoryId) {
         this.categoryId = categoryId;
     }
@@ -80,5 +77,13 @@ public class EventCreateDto {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 }

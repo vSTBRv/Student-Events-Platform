@@ -7,6 +7,7 @@ import RegisterStudent from "./components/RegisterStudent";
 import RegisterOrganization from "./components/RegisterOrganization";
 import EventList from "./components/EventList";
 import Navbar from "./components/Navbar";
+import EventDetails from "./components/EventDetails.jsx";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -28,6 +29,7 @@ function App() {
           path="/register/organization"
           element={<RegisterOrganization />}
         />
+          <Route path={"/events/:id"} element={<EventDetails />} />
         <Route path="/events/new" element={<CreateEvent />} />
         <Route path="/events" element={<EventList />} />
         <Route path="/events/edit/:id" element={<CreateEvent />} />

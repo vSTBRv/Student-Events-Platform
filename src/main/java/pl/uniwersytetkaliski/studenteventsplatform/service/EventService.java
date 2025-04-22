@@ -13,6 +13,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.model.*;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -123,8 +124,17 @@ public class EventService {
                         )
                 );
 
+        Category category = categoryRepository
+                .findById(eventCreateDto.getCategoryId())
+                        .orElseThrow(
+                                ()->new EntityNotFoundException(
+                                        "Category with id " + eventCreateDto.getCategoryId() + " not found"
+                                )
+                        );
+
         event.setName(eventCreateDto.getName());
         event.setLocation(location);
+        event.setCategory(category);
         System.out.println("DTO status = " + eventCreateDto.getStatus());
         event.setStatus(EventStatus.valueOf(eventCreateDto.getStatus().toUpperCase()));
         event.setMaxCapacity(eventCreateDto.getMaxCapacity());
