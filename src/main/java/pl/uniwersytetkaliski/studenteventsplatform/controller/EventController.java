@@ -1,13 +1,17 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.EventRequestDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
@@ -44,6 +48,7 @@ public class EventController {
             return ResponseEntity.ok(eventService.getEventByName(name));
         }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponseDto> getEventById(@PathVariable long id) {

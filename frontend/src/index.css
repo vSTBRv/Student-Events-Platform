@@ -35,13 +35,31 @@ h1 {
 }
 
 /* Przycisk ogólny – można nadpisać Tailwindem inline */
-button {
-  @apply rounded-lg border border-transparent px-4 py-2 text-base font-medium cursor-pointer transition-colors bg-amber-500 text-white;
+/* UWAGA: (od michał c.)
+   Unikajmy globalnego stylowania <button>, ponieważ nadpisywało to indywidualne style przycisków.
+   Wszystkie przyciski wyglądały identycznie, co mogło prowadzić do pomyłek (np. przycisk "Usuń" nie wyróżniał się kolorem).
+   Zamiast tego używajmy dedykowanych klas: .primary-btn, .danger-btn, .cancel-btn itp., aby jasno rozróżniać ich przeznaczenie.
+   Jak to zrobić?
+   W plikach JSX po prostu dodajemy do przycisków odpowiednie klasy, np.:
+   className="primary-btn"  // dla zapisu
+   className="danger-btn"   // dla usuwania
+   className="cancel-btn"   // dla anulowania
+*/
+/*button {*/
+.primary-btn {
+  @apply rounded-lg border border-transparent px-4 py-2 text-base font-medium hover:bg-amber-600 cursor-pointer transition-colors bg-amber-500 text-white;
 }
 
-button:hover {
-  @apply bg-amber-600;
+.danger-btn {
+  @apply w-full bg-red-100 text-red-700 border border-red-300 py-2 rounded-lg hover:bg-red-200 transition font-semibold;
 }
+
+.cancel-btn {
+  @apply w-full bg-white text-gray-700 border border-gray-400 py-2 rounded-lg hover:bg-gray-100 transition font-medium;
+}
+/*button:hover {*/
+/*  @apply bg-amber-600;*/
+/*}*/
 
 button:focus,
 button:focus-visible

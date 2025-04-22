@@ -10,31 +10,36 @@ export default function EventList() {
 
     useEffect(() => {
         // Retrieve credentials from localStorage
-        const credentials = localStorage.getItem("authCredentials");
+        // const credentials = localStorage.getItem("authCredentials");
+        //
+        // if (!credentials) {
+        //     setError("Brak danych logowania");
+        //     setLoading(false);
+        //     return;
+        // }
 
-        if (!credentials) {
-            setError("Brak danych logowania");
-            setLoading(false);
-            return;
-        }
-
+        console.log("Cookies przy wysyłaniu zapytania:", document.cookie);
         axios
             .get("http://localhost:8080/api/events", {
-                headers: {
-                    "Authorization": `Basic ${credentials}`, // Pass credentials in the header
-                },
+                // headers: {
+                //     "Authorization": `Basic ${credentials}`, // Pass credentials in the header
+                // },
+                withCredentials: true
             })
             .then((response) => {
-                const mapped = response.data.map((event) => ({
+                console.log("Odebrane dane z backendu:", response.data);
+                console.log("Surowa odpowiedź:", response);
+                const mapped = Array.isArray(response.data) ? response.data.map((event) => ({
                     id: event.id,
                     title: event.name,
                     description: event.comments,
                     date: event.startDateTime.split("T")[0],
                     time: event.startDateTime.split("T")[1].substring(0, 5),
                     location: `${event.locationCity}, ${event.locationStreet} ${event.locationHouseNumber}`,
-                    category: event.statusLabel,
+                    // category: event.statusLabel,
+                    category: event.category.name,
                     seats: event.capacity,
-                }));
+                })):[];
 
                 setEvents(mapped);
                 setLoading(false);

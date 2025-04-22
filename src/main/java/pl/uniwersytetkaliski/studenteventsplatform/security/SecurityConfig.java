@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,12 +33,28 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
+                .headers(headers->headers
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/api/register", "/api/logout").permitAll()
+                        .requestMatchers(
+                                "/api/login",
+                                "/api/register",
+                                "/api/logout",
+                                "/h2-console/**"
+                        ).permitAll()
+//                        .requestMatchers("/api/events").authenticated()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults())
+                // jak trzeba wywalić i zostawić to co było poniżej. To jest próba ustawienia logowania (.formlogin było poprzednio i błędy wysakkiwały)
+//                .formLogin(form -> form
+//                        .loginProcessingUrl("/login")
+//                        .permitAll()
+//                )
+//                .formLogin(Customizer.withDefaults())
+//                .httpBasic(Customizer.withDefaults())
 //                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authenticationProvider(authenticationProvider())
                 .build();
     }

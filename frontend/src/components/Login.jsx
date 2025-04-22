@@ -12,25 +12,35 @@ function Login({ setIsLoggedIn }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = new URLSearchParams();
+    formData.append("username", login);
+    formData.append("password", password);
 
-    const credentials = btoa(`${login}:${password}`); // Base64 encoding
+    // const credentials = btoa(`${login}:${password}`); // Base64 encoding // Nie używamy Base64
 
     try {
-      const response = await axios.post(
-          "http://localhost:8080/api/login",
-          null, // No body required for Basic Auth
-          {
-            headers: {
-              "Authorization": `Basic ${credentials}`, // Basic Auth Header
-            },
-            withCredentials: true // potrzeba aby działały ciasteczka - jak nie pasuje - wywalić!!!
-          }
-      );
+      // const response = await axios.post(
+      //     "http://localhost:8080/api/login",
+      //     null, // No body required for Basic Auth
+      //     {
+      //       headers: {
+      //         // "Authorization": `Basic ${credentials}`, // Basic Auth Header
+      //       },
+      //       withCredentials: true // potrzeba aby działały ciasteczka - jak nie pasuje - wywalić!!!
+      //     }
+      // );
+
+      const response = await axios.post("http://localhost:8080/api/login", formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
 
       if (response.status === 200) {
         console.log("Zalogowano!", response);
         // Store credentials in localStorage for use in EventList
-        localStorage.setItem("authCredentials", credentials);
+        // localStorage.setItem("authCredentials", credentials);
 
         localStorage.setItem("isLoggedIn", "true");
         setIsLoggedIn(true);
