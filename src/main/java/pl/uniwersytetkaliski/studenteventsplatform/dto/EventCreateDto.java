@@ -11,6 +11,17 @@ public class EventCreateDto {
     private LocalDateTime endDate;
     private String comments;
     private Long categoryId;
+    private String createdBy;
+
+    public void setCategory(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+    public String getCreatedBy() {
+        return createdBy;
+    }
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public String getName() {
         return name;
