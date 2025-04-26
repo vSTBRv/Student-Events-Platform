@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
@@ -50,17 +51,17 @@ public class EventController {
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody EventResponseDto eventResponseDto) {
-        Event created = eventService.createEvent(eventResponseDto);
+    public ResponseEntity<Event> createEvent(@RequestBody EventDTO eventDTO) {
+        Event created = eventService.createEvent(eventDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Event> updateEvent(
             @PathVariable Long id,
-            @RequestBody EventResponseDto eventResponseDto) {
+            @RequestBody EventDTO eventDTO) {
         try {
-            Event updated = eventService.updateEvent(id, eventResponseDto);
+            Event updated = eventService.updateEvent(id, eventDTO);
             return ResponseEntity.ok(updated);
         } catch (AccessDeniedException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
