@@ -174,18 +174,17 @@ public class EventService {
             newLocation.setStreet(locationDTO.getStreet());
             newLocation.setHouseNumber(locationDTO.getHouseNumber());
             newLocation.setPostalCode(locationDTO.getPostalCode());
-            locationRepository.save(newLocation);
-            editedlocation = newLocation;
+            editedlocation =  locationRepository.save(newLocation);
+            System.out.println(editedlocation.getId());
         } else {
             editedlocation = location.get();
         }
-
+        System.out.println(eventDTO);
         Optional <Category> category = categoryRepository
-                .findById((eventDTO.getId()));
+                .findById((eventDTO.getCategoryDTO().getId()));
         if (category.isEmpty()) {
             throw new EntityNotFoundException("Category with name " + eventDTO.getName() + " not found");
         }
-
         event.setName(eventDTO.getName());
         event.setLocation(editedlocation);
         event.setCategory(category.get());
