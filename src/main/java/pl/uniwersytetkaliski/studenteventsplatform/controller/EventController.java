@@ -69,8 +69,17 @@ public class EventController {
 
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteEvent(@PathVariable long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable long id) {
+        eventService.deleteEvent(id);
+        return ResponseEntity.ok().build();
+    }
 
+    @PreAuthorize("hasAnyRole('ADMIN','ORGANIZATION')")
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> softDeleteEvent(@PathVariable Long id) {
+        eventService.softDeleteEvent(id);
+        return ResponseEntity.ok().build();
     }
 }
