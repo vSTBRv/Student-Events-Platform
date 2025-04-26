@@ -68,4 +68,9 @@ public class EventController {
         }
 
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteEvent(@PathVariable long id) {
+
+    }
 }

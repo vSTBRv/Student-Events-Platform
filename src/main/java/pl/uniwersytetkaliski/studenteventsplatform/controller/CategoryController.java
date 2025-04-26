@@ -1,6 +1,7 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.CategoryDTO;
@@ -17,6 +18,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
