@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface LocationRepository extends JpaRepository<Location, Long> {
 
-    @Query("SELECT l.id FROM Location l WHERE l.city = :city and l.street = :street and l.houseNumber = :houseNumber and l.postalCode = :postalCode")
+    @Query("SELECT 1 FROM Location l WHERE l.city = :city and l.street = :street and l.houseNumber = :houseNumber and l.postalCode = :postalCode")
     Optional<Location> findByAll(String city, String street, String houseNumber, String postalCode);
 }
