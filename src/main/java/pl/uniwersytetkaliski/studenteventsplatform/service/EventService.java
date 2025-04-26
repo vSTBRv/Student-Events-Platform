@@ -1,14 +1,14 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.CategoryDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.LocationDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.*;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
@@ -70,31 +70,33 @@ public class EventService {
         return dto;
     }
 
-    public Event createEvent(EventCreateDto eventCreateDto) {
+    public Event createEvent(EventResponseDto eventResponseDto) {
 
-        Location location = locationRepository
-                .findById(eventCreateDto.getLocationId())
-                .get();
-        Category category = categoryRepository
-                .findById(eventCreateDto.getCategoryId())
-                .get();
-
+//        Location location = locationRepository
+//                .findById(eventResponseDto.getLocationId())
+//                .get();
+//        Category category = categoryRepository
+//                .findById(eventResponseDto.getCategoryId())
+//                .get();
+//
         Event event = new Event();
-        event.setName(eventCreateDto.getName());
-        event.setLocation(location);
-        event.setStatus(EventStatus.valueOf(eventCreateDto.getStatus().toUpperCase()));
-        event.setMaxCapacity(eventCreateDto.getMaxCapacity());
-        event.setStartDate(eventCreateDto.getStartDate());
-        event.setEndDate(eventCreateDto.getEndDate());
-        event.setDescription(eventCreateDto.getComments());
-        event.setCategory(category);
+//        event.setName(eventResponseDto.getName());
+//        event.setLocation(location);
+//        event.setStatus(EventStatus.valueOf(eventResponseDto.getStatus().toUpperCase()));
+//        event.setMaxCapacity(eventResponseDto.getMaxCapacity());
+//        event.setStartDate(eventResponseDto.getStartDate());
+//        event.setEndDate(eventResponseDto.getEndDate());
+//        event.setDescription(eventResponseDto.getComments());
+//        event.setCategory(category);
 
         return eventRepository.save(event);
     }
 
-    public Event updateEvent(Long id, EventCreateDto eventCreateDto) throws AccessDeniedException {
-
+    public Event updateEvent(Long id, EventDTO eventDTO) throws AccessDeniedException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        LocationDTO locationDTO = eventDTO.getLocationDTO();
+
+        Location editedlocation;
 
         Event event = eventRepository
                 .findById(id)
@@ -106,6 +108,7 @@ public class EventService {
 
         Optional<User> user = userService.getUserByEmail(auth.getName());
         if (user.isEmpty()) {
+            System.out.println("User with email " + auth.getName() + " not found");
             throw new EntityNotFoundException();
         }
         boolean isAdmin = (user.get()).getUserRole() == UserRole.ADMIN;
@@ -113,37 +116,43 @@ public class EventService {
         boolean isOwner = user.get().getId() == event.getCreatedBy();
 
         if(!(isAdmin || (isOrganisation && isOwner))) {
-            throw new AccessDeniedException("Acces Denied");
+            throw new AccessDeniedException("Access Denied");
+        }
+        Optional<Location> location = locationRepository
+                .findByAll(
+                        locationDTO.getCity(),
+                        locationDTO.getStreet(),
+                        locationDTO.getHouseNumber(),
+                        locationDTO.getPostalCode()
+                );
+        if (location.isEmpty()) {
+            Location newLocation = new Location();
+            newLocation.setCity(locationDTO.getCity());
+            newLocation.setStreet(locationDTO.getStreet());
+            newLocation.setHouseNumber(locationDTO.getHouseNumber());
+            newLocation.setPostalCode(locationDTO.getPostalCode());
+            locationRepository.save(newLocation);
+            editedlocation = newLocation;
+        } else {
+            editedlocation = location.get();
         }
 
-        Location location = locationRepository
-                .findById(eventCreateDto.getLocationId())
-                .orElseThrow(
-                        ()-> new EntityNotFoundException(
-                                "Location with id " + eventCreateDto.getLocationId() + " not found"
-                        )
-                );
+        Optional <Category> category = categoryRepository
+                .findByName((eventDTO.getName()));
+        if (category.isEmpty()) {
+            throw new EntityNotFoundException("Category with name " + eventDTO.getName() + " not found");
+        }
 
-        Category category = categoryRepository
-                .findById(eventCreateDto.getCategoryId())
-                        .orElseThrow(
-                                ()->new EntityNotFoundException(
-                                        "Category with id " + eventCreateDto.getCategoryId() + " not found"
-                                )
-                        );
+        event.setName(eventDTO.getName());
+        event.setLocation(editedlocation);
+        event.setCategory(category.get());
+        event.setStatus(eventDTO.getStatus());
+        event.setDescription(eventDTO.getDescription());
+        event.setMaxCapacity(eventDTO.getMaxCapacity());
+        event.setStartDate(eventDTO.getStartDate());
+        event.setEndDate(eventDTO.getEndDate());
+        event.setCreatedBy(user.get().getId());
 
-        event.setName(eventCreateDto.getName());
-        event.setLocation(location);
-        event.setCategory(category);
-        System.out.println("DTO status = " + eventCreateDto.getStatus());
-        event.setStatus(EventStatus.valueOf(eventCreateDto.getStatus().toUpperCase()));
-        event.setMaxCapacity(eventCreateDto.getMaxCapacity());
-        event.setStartDate(eventCreateDto.getStartDate());
-        event.setEndDate(eventCreateDto.getEndDate());
-        event.setDescription(eventCreateDto.getComments());
-
-//        System.out.println("Setting status: " + eventCreateDto.getStatus());
-//        System.out.println("Enum: " + EventStatus.valueOf(eventCreateDto.getStatus().toUpperCase()));
         return eventRepository.save(event);
     }
 }
