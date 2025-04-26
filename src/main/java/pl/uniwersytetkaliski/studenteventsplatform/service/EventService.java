@@ -1,14 +1,13 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.EventCreateDto;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.LocationDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.*;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
@@ -70,80 +69,131 @@ public class EventService {
         return dto;
     }
 
-    public Event createEvent(EventCreateDto eventCreateDto) {
-
-        Location location = locationRepository
-                .findById(eventCreateDto.getLocationId())
-                .get();
-        Category category = categoryRepository
-                .findById(eventCreateDto.getCategoryId())
-                .get();
+    /**
+     * Creates a new {@link Event} entity using the provided {@link EventDTO} data.
+     * <p>
+     * This method performs the following operations:
+     * <ul>
+     *     <li>Authenticates the current user from the security context.</li>
+     *     <li>Validates that the authenticated user exists in the system.</li>
+     *     <li>Initializes a new {@link Event} entity and sets its creator (createdBy) to the authenticated user's ID.</li>
+     *     <li>Delegates the entity preparation and saving logic to the {@link #prepareEvent(Event, EventDTO)} method.</li>
+     * </ul>
+     *
+     * @param eventDTO the {@link EventDTO} containing event creation data
+     * @return the newly created and saved {@link Event} entity
+     * @throws EntityNotFoundException if the authenticated user is not found
+     */
+    public Event createEvent(EventDTO eventDTO) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> user = userService.getUserByEmail(auth.getName());
+        if (user.isEmpty()) {
+            System.out.println("User with email " + auth.getName() + " not found");
+            throw new EntityNotFoundException();
+        }
 
         Event event = new Event();
-        event.setName(eventCreateDto.getName());
-        event.setLocation(location);
-        event.setStatus(EventStatus.valueOf(eventCreateDto.getStatus().toUpperCase()));
-        event.setMaxCapacity(eventCreateDto.getMaxCapacity());
-        event.setStartDate(eventCreateDto.getStartDate());
-        event.setEndDate(eventCreateDto.getEndDate());
-        event.setDescription(eventCreateDto.getComments());
-        event.setCategory(category);
-
-        return eventRepository.save(event);
+        event.setCreatedBy(user.get().getId());
+        return prepareEvent(event, eventDTO);
     }
 
-    public Event updateEvent(Long id, EventCreateDto eventCreateDto) throws AccessDeniedException {
-
+    /**
+     * Updates an existing {@link Event} entity with the provided {@link EventDTO} data.
+     * <p>
+     * This method performs the following operations:
+     * <ul>
+     *     <li>Authenticates the current user based on the security context.</li>
+     *     <li>Validates that the user exists and has the necessary permissions to update the event
+     *     (either ADMIN, or ORGANIZATION that owns the event).</li>
+     *     <li>Retrieves the existing {@link Event} by its ID, throwing an exception if not found.</li>
+     *    <li>Delegates the update logic to the {@link #prepareEvent(Event, EventDTO)} method, which applies the changes and saves the entity.</li>
+     * </ul>
+     *
+     * @param id       the ID of the event to update
+     * @param eventDTO the {@link EventDTO} containing updated event data
+     * @return the updated and saved {@link Event} entity
+     * @throws EntityNotFoundException if the user or the event is not found
+     * @throws AccessDeniedException   if the user does not have permission to update the event
+     */
+    public Event updateEvent(Long id,EventDTO eventDTO) throws AccessDeniedException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        Event event = eventRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new EntityNotFoundException(
-                                "Event with id " + id + " not found"
-                        )
-                );
 
         Optional<User> user = userService.getUserByEmail(auth.getName());
         if (user.isEmpty()) {
+            System.out.println("User with email " + auth.getName() + " not found");
             throw new EntityNotFoundException();
         }
-        boolean isAdmin = (user.get()).getUserRole() == UserRole.ADMIN;
-        boolean isOrganisation = user.get().getUserRole() == UserRole.ORGANIZATION;
-        boolean isOwner = user.get().getId() == event.getCreatedBy();
 
-        if(!(isAdmin || (isOrganisation && isOwner))) {
-            throw new AccessDeniedException("Acces Denied");
+        Optional<Event> existingEvent = eventRepository.findById(id);
+        if (existingEvent.isEmpty()) {
+            System.out.println("Event with id " + id + " not found");
+            throw new EntityNotFoundException();
         }
 
-        Location location = locationRepository
-                .findById(eventCreateDto.getLocationId())
-                .orElseThrow(
-                        ()-> new EntityNotFoundException(
-                                "Location with id " + eventCreateDto.getLocationId() + " not found"
-                        )
+        boolean isAdmin = (user.get()).getUserRole() == UserRole.ADMIN;
+        boolean isOrganisation = user.get().getUserRole() == UserRole.ORGANIZATION;
+        boolean isOwner = user.get().getId() == existingEvent.get().getCreatedBy();
+
+        if(!(isAdmin || (isOrganisation && isOwner))) {
+            throw new AccessDeniedException("Access Denied");
+        }
+
+        return prepareEvent(existingEvent.get(),eventDTO);
+    }
+
+    /**
+     * Prepares and updates an {@link Event} entity with the provided {@link EventDTO} data.
+     * <p>
+     * This method fills the event object with the provided DTO fields, ensuring that:
+     * <ul>
+     *     <li>The {@link Location} is either reused if it exists in the database, or a new one is created and saved.</li>
+     *     <li>The {@link Category} is retrieved by its ID; if not found, an {@link EntityNotFoundException} is thrown.</li>
+     *     <li>Other event fields like name, status, description, capacity, and dates are updated accordingly.</li>
+     * </ul>
+     * After filling all fields, the method saves the {@code Event} entity to the repository.
+     *
+     * @param event    the existing {@link Event} entity to update (can be a new instance for creation)
+     * @param eventDTO the {@link EventDTO} containing new event data
+     * @return the saved {@link Event} entity
+     * @throws EntityNotFoundException if the specified category does not exist in the database
+     */
+    private Event prepareEvent(Event event, EventDTO eventDTO) {
+        LocationDTO locationDTO = eventDTO.getLocationDTO();
+        Location editedlocation;
+        Optional<Location> location = locationRepository
+                .findByAll(
+                        locationDTO.getCity(),
+                        locationDTO.getStreet(),
+                        locationDTO.getHouseNumber(),
+                        locationDTO.getPostalCode()
                 );
 
-        Category category = categoryRepository
-                .findById(eventCreateDto.getCategoryId())
-                        .orElseThrow(
-                                ()->new EntityNotFoundException(
-                                        "Category with id " + eventCreateDto.getCategoryId() + " not found"
-                                )
-                        );
+        if (location.isEmpty()) {
+            Location newLocation = new Location();
+            newLocation.setCity(locationDTO.getCity());
+            newLocation.setStreet(locationDTO.getStreet());
+            newLocation.setHouseNumber(locationDTO.getHouseNumber());
+            newLocation.setPostalCode(locationDTO.getPostalCode());
+            locationRepository.save(newLocation);
+            editedlocation = newLocation;
+        } else {
+            editedlocation = location.get();
+        }
 
-        event.setName(eventCreateDto.getName());
-        event.setLocation(location);
-        event.setCategory(category);
-        System.out.println("DTO status = " + eventCreateDto.getStatus());
-        event.setStatus(EventStatus.valueOf(eventCreateDto.getStatus().toUpperCase()));
-        event.setMaxCapacity(eventCreateDto.getMaxCapacity());
-        event.setStartDate(eventCreateDto.getStartDate());
-        event.setEndDate(eventCreateDto.getEndDate());
-        event.setDescription(eventCreateDto.getComments());
+        Optional <Category> category = categoryRepository
+                .findById((eventDTO.getId()));
+        if (category.isEmpty()) {
+            throw new EntityNotFoundException("Category with name " + eventDTO.getName() + " not found");
+        }
 
-//        System.out.println("Setting status: " + eventCreateDto.getStatus());
-//        System.out.println("Enum: " + EventStatus.valueOf(eventCreateDto.getStatus().toUpperCase()));
+        event.setName(eventDTO.getName());
+        event.setLocation(editedlocation);
+        event.setCategory(category.get());
+        event.setStatus(eventDTO.getStatus());
+        event.setDescription(eventDTO.getDescription());
+        event.setMaxCapacity(eventDTO.getMaxCapacity());
+        event.setStartDate(eventDTO.getStartDate());
+        event.setEndDate(eventDTO.getEndDate());
         return eventRepository.save(event);
     }
 }

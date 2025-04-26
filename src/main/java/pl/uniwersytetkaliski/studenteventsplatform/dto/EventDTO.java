@@ -1,15 +1,14 @@
 package pl.uniwersytetkaliski.studenteventsplatform.dto;
 
-import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
-import pl.uniwersytetkaliski.studenteventsplatform.model.Location;
+
 
 import java.time.LocalDateTime;
 
 public class EventDTO {
     private Long id;
     private String name;
-    private Location location;
+    private LocationDTO locationDTO;
     private EventStatus status;
     private int maxCapacity;
     private int currentCapacity;
@@ -17,7 +16,7 @@ public class EventDTO {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String description;
-    private Category category;
+    private CategoryDTO categoryDTO;
     private boolean deleted;
     private LocalDateTime deleted_at;
     private String created_by;
@@ -38,12 +37,12 @@ public class EventDTO {
         this.name = name;
     }
 
-    public Location getLocation() {
-        return location;
+    public LocationDTO getLocationDTO() {
+        return locationDTO;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLocationDTO(LocationDTO locationDTO) {
+        this.locationDTO = locationDTO;
     }
 
     public EventStatus getStatus() {
@@ -102,12 +101,12 @@ public class EventDTO {
         this.description = description;
     }
 
-    public Category getCategory() {
-        return category;
+    public CategoryDTO getCategoryDTO() {
+        return categoryDTO;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategoryDTO(CategoryDTO categoryDTO) {
+        this.categoryDTO = categoryDTO;
     }
 
     public boolean isDeleted() {
