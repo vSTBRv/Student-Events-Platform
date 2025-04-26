@@ -195,4 +195,32 @@ public class EventService {
         event.setEndDate(eventDTO.getEndDate());
         return eventRepository.save(event);
     }
+
+    public void deleteEvent(Long eventId) {
+        eventRepository.deleteById(eventId);
+    }
+
+    public void softDeleteEvent(Long eventId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        Optional<User> user = userService.getUserByEmail(auth.getName());
+        if (user.isEmpty()) {
+            System.out.println("User with email " + auth.getName() + " not found");
+            throw new EntityNotFoundException();
+        }
+
+        Optional<Event> existingEvent = eventRepository.findById(eventId);
+        if (existingEvent.isEmpty()) {
+            System.out.println("Event with id " + eventId + " not found");
+            throw new EntityNotFoundException();
+        }
+        boolean isAdmin = (user.get()).getUserRole() == UserRole.ADMIN;
+        boolean isOrganisation = user.get().getUserRole() == UserRole.ORGANIZATION;
+        boolean isOwner = user.get().getId() == existingEvent.get().getCreatedBy();
+
+        if(!(isAdmin || (isOrganisation && isOwner))) {
+            throw new AccessDeniedException("Access Denied");
+        }
+        eventRepository.softDelete(eventId);
+    }
 }

@@ -37,13 +37,13 @@ public class SecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/events/delete/").hasRole("ADMIN")
                         .requestMatchers(
                                 "/api/login",
                                 "/api/register",
                                 "/api/logout",
                                 "/h2-console/**"
                         ).permitAll()
-//                        .requestMatchers("/api/events").authenticated()
                         .anyRequest().authenticated()
                 )
                 // jak trzeba wywalić i zostawić to co było poniżej. To jest próba ustawienia logowania (.formlogin było poprzednio i błędy wysakkiwały)
