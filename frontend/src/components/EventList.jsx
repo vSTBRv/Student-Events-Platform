@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-
-import axios from "axios"; // Importujemy axios
+import axios from "axios";
+import { FaTrashAlt, FaTimes } from "react-icons/fa";
 
 export default function EventList() {
     const [events, setEvents] = useState([]);
@@ -11,26 +10,8 @@ export default function EventList() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Retrieve credentials from localStorage
-        // const credentials = localStorage.getItem("authCredentials");
-        //
-        // if (!credentials) {
-        //     setError("Brak danych logowania");
-        //     setLoading(false);
-        //     return;
-        // }
-
-        console.log("Cookies przy wysyłaniu zapytania:", document.cookie);
-        axios
-            .get("http://localhost:8080/api/events", {
-                // headers: {
-                //     "Authorization": `Basic ${credentials}`, // Pass credentials in the header
-                // },
-                withCredentials: true
-            })
+        axios.get("http://localhost:8080/api/events", { withCredentials: true })
             .then((response) => {
-                console.log("Odebrane dane z backendu:", response.data);
-                console.log("Surowa odpowiedź:", response);
                 const mapped = Array.isArray(response.data) ? response.data.map((event) => ({
                     id: event.id,
                     title: event.name,
@@ -38,11 +19,8 @@ export default function EventList() {
                     date: event.startDateTime.split("T")[0],
                     time: event.startDateTime.split("T")[1].substring(0, 5),
                     location: `${event.locationCity}, ${event.locationStreet} ${event.locationHouseNumber}`,
-                    // category: event.statusLabel,
-                    category: event.category.name,
                     seats: event.capacity,
-                })):[];
-
+                })) : [];
                 setEvents(mapped);
                 setLoading(false);
             })
@@ -55,6 +33,32 @@ export default function EventList() {
 
     const handleEdit = (id) => {
         navigate(`/events/edit/${id}`);
+    };
+
+    const handleSoftDelete = (id) => {
+        if (window.confirm("Czy na pewno chcesz UKRYĆ wydarzenie (SOFT DELETE)?")) {
+            axios.delete(`http://localhost:8080/api/events/${id}`, { withCredentials: true })
+                .then(() => {
+                    setEvents(prevEvents => prevEvents.filter(event => event.id !== id));
+                    alert("Wydarzenie zostało ukryte.");
+                })
+                .catch(() => {
+                    alert("Błąd podczas ukrywania wydarzenia.");
+                });
+        }
+    };
+
+    const handleHardDelete = (id) => {
+        if (window.confirm("Czy na pewno chcesz TRWALE USUNĄĆ wydarzenie (HARD DELETE)?")) {
+            axios.delete(`http://localhost:8080/api/events/delete/${id}`, { withCredentials: true })
+                .then(() => {
+                    setEvents(prevEvents => prevEvents.filter(event => event.id !== id));
+                    alert("Wydarzenie zostało TRWALE usunięte.");
+                })
+                .catch(() => {
+                    alert("Błąd podczas trwałego usuwania wydarzenia.");
+                });
+        }
     };
 
     return (
@@ -91,20 +95,42 @@ export default function EventList() {
                                 <div className="text-sm text-gray-500 mb-1">
                                     🎫 Miejsca: {event.seats}
                                 </div>
-                                <div className="text-sm text-amber-600 font-medium mt-2">
-                                    Status: {event.category}
-                                </div>
                             </div>
 
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEdit(event.id);
-                                }}
-                                className="mt-4 bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition"
-                            >
-                                Edytuj
-                            </button>
+                            <div className="flex flex-col gap-2 mt-4">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEdit(event.id);
+                                    }}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition"
+                                >
+                                    Edytuj
+                                </button>
+
+                                {/* Akcje Soft i Hard Delete */}
+                                <div className="flex justify-between items-center mt-2 text-sm text-gray-600">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleSoftDelete(event.id);
+                                        }}
+                                        className="flex items-center gap-1 hover:text-red-500 transition"
+                                    >
+                                        <FaTrashAlt /> Usuń
+                                    </button>
+
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleHardDelete(event.id);
+                                        }}
+                                        className="flex items-center gap-1 hover:text-red-700 transition"
+                                    >
+                                        <FaTimes /> Usuń na zawsze
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
