@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS locations;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS user_events;
 
 CREATE TABLE users (
                        id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -43,6 +44,13 @@ CREATE TABLE category (
     name VARCHAR(50)
 );
 
+CREATE TABLE user_event (
+    user_id INT,
+    event_id INT,
+    comment VARCHAR(250),
+    rating INT
+);
+
 ALTER TABLE events
     ADD CONSTRAINT fk_events_locations
         FOREIGN KEY (location_id)
@@ -51,3 +59,5 @@ ALTER TABLE events
 
 ALTER TABLE events ADD CONSTRAINT fk_events_category FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE;
 ALTER TABLE events ADD CONSTRAINT fk_events_users FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE CASCADE;
+ALTER TABLE user_event ADD CONSTRAINT fk_user_event_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
+ALTER TABLE user_event ADD CONSTRAINT fk_user_event_event FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE;
