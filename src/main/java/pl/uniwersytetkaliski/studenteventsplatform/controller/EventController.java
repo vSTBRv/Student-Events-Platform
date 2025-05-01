@@ -1,5 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -8,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
+import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -81,5 +84,15 @@ public class EventController {
     public ResponseEntity<Void> softDeleteEvent(@PathVariable Long id) {
         eventService.softDeleteEvent(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<EventResponseDto>> getFilteredEvents(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) EventStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTo
+    ) {
+        return ResponseEntity.ok(eventService.getFilteredEvents(categoryId, status, startDateFrom, startDateTo));
     }
 }
