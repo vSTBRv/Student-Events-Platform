@@ -14,6 +14,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -226,9 +227,16 @@ public class EventService {
         eventRepository.softDelete(eventId);
     }
 
-    public List<EventResponseDto> getFilteredEvents(Long categoryId, EventStatus status, LocalDateTime startDateFrom, LocalDateTime startDateTo){
-        List<Event> filtered = eventRepository.findFilteredEvents(categoryId, status, startDateFrom, startDateTo);
+    public List<EventResponseDto> getFilteredEvents(String categoryId, EventStatus status, LocalDate startDateFrom, LocalDate startDateTo){
+        List<Event> filtered = eventRepository.findFilteredEvents(
+                categoryId,
+                status
+//                startDateFrom,
+//                startDateTo
+        );
         return filtered.stream()
+                .filter(e -> startDateFrom == null || !e.getStartDate().toLocalDate().isBefore(startDateFrom))
+                .filter(e -> startDateTo == null || !e.getStartDate().toLocalDate().isAfter(startDateTo))
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }

@@ -8,6 +8,7 @@ import RegisterOrganization from "./components/RegisterOrganization";
 import EventList from "./components/EventList";
 import Navbar from "./components/Navbar";
 import EventDetails from "./components/EventDetails.jsx";
+import EventPage from "./components/EventPage.jsx";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,7 +32,8 @@ function App() {
         />
           <Route path={"/events/:id"} element={<EventDetails />} />
         <Route path="/events/new" element={<CreateEvent />} />
-        <Route path="/events" element={<EventList />} />
+          <Route path="/events" element={<EventPage />} />
+        {/*<Route path="/events" element={<EventList />} />*/}
         <Route path="/events/edit/:id" element={<CreateEvent />} />
       </Routes>
     </div>

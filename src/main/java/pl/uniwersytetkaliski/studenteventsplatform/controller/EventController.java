@@ -12,6 +12,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -87,12 +88,22 @@ public class EventController {
     }
 
     @GetMapping("/filter")
+//    @GetMapping("")
     public ResponseEntity<List<EventResponseDto>> getFilteredEvents(
-            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String name,
+//            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String category,
             @RequestParam(required = false) EventStatus status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateFrom,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTo
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDateTo
     ) {
-        return ResponseEntity.ok(eventService.getFilteredEvents(categoryId, status, startDateFrom, startDateTo));
+        // opcja z frontem
+        if (name != null && !name.isEmpty() && category == null && status == null && startDateFrom == null && startDateTo == null) {
+            return ResponseEntity.ok(eventService.getEventByName(name));
+        }
+        if (name == null && category == null && status == null && startDateFrom == null && startDateTo == null) {
+            return ResponseEntity.ok(eventService.getAllEvents());
+        }
+        return ResponseEntity.ok(eventService.getFilteredEvents(category, status, startDateFrom, startDateTo));
     }
 }
