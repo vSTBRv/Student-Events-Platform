@@ -1,5 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -8,8 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
+import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -81,5 +85,25 @@ public class EventController {
     public ResponseEntity<Void> softDeleteEvent(@PathVariable Long id) {
         eventService.softDeleteEvent(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/filter")
+//    @GetMapping("")
+    public ResponseEntity<List<EventResponseDto>> getFilteredEvents(
+            @RequestParam(required = false) String name,
+//            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) EventStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDateTo
+    ) {
+        // opcja z frontem
+        if (name != null && !name.isEmpty() && category == null && status == null && startDateFrom == null && startDateTo == null) {
+            return ResponseEntity.ok(eventService.getEventByName(name));
+        }
+        if (name == null && category == null && status == null && startDateFrom == null && startDateTo == null) {
+            return ResponseEntity.ok(eventService.getAllEvents());
+        }
+        return ResponseEntity.ok(eventService.getFilteredEvents(category, status, startDateFrom, startDateTo));
     }
 }
