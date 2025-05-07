@@ -11,8 +11,6 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByNameContainingIgnoreCase(String name);
 
-    List<Event> id(long id);
-
     @Modifying
     @Query("UPDATE Event e SET e.deleted = true, e.deletedAt = CURRENT TIMESTAMP WHERE e.id = :eventId")
     void softDelete(Long eventId);

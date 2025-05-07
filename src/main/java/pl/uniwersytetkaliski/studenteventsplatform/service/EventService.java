@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.LocationDTO;
@@ -179,7 +180,6 @@ public class EventService {
         } else {
             editedlocation = location.get();
         }
-        System.out.println(eventDTO);
         Optional <Category> category = categoryRepository
                 .findById((eventDTO.getCategoryDTO().getId()));
         if (category.isEmpty()) {
@@ -200,6 +200,7 @@ public class EventService {
         eventRepository.deleteById(eventId);
     }
 
+    @Transactional
     public void softDeleteEvent(Long eventId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
