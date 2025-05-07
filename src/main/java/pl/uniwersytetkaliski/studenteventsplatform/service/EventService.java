@@ -14,6 +14,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -223,5 +224,12 @@ public class EventService {
             throw new AccessDeniedException("Access Denied");
         }
         eventRepository.softDelete(eventId);
+    }
+
+    public List<EventResponseDto> getFilteredEvents(Long categoryId, EventStatus status, LocalDateTime startDateFrom, LocalDateTime startDateTo){
+        List<Event> filtered = eventRepository.findFilteredEvents(categoryId, status, startDateFrom, startDateTo);
+        return filtered.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 }
