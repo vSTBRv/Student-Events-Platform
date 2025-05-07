@@ -3,33 +3,73 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaTrashAlt, FaTimes } from "react-icons/fa";
 
-export default function EventList() {
+export default function EventList({ filters }) {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
+    // useEffect(() => {
+    //     axios.get("http://localhost:8080/api/events", { withCredentials: true })
+    //         .then((response) => {
+    //             const mapped = Array.isArray(response.data) ? response.data.map((event) => ({
+    //                 id: event.id,
+    //                 title: event.name,
+    //                 description: event.comments,
+    //                 date: event.startDateTime.split("T")[0],
+    //                 time: event.startDateTime.split("T")[1].substring(0, 5),
+    //                 location: `${event.locationCity}, ${event.locationStreet} ${event.locationHouseNumber}`,
+    //                 seats: event.capacity,
+    //             })) : [];
+    //             setEvents(mapped);
+    //             setLoading(false);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Błąd podczas pobierania danych:", error.message);
+    //             setError(error.message);
+    //             setLoading(false);
+    //         });
+    // }, []);
+
     useEffect(() => {
-        axios.get("http://localhost:8080/api/events", { withCredentials: true })
-            .then((response) => {
-                const mapped = Array.isArray(response.data) ? response.data.map((event) => ({
-                    id: event.id,
-                    title: event.name,
-                    description: event.comments,
-                    date: event.startDateTime.split("T")[0],
-                    time: event.startDateTime.split("T")[1].substring(0, 5),
-                    location: `${event.locationCity}, ${event.locationStreet} ${event.locationHouseNumber}`,
-                    seats: event.capacity,
-                })) : [];
+        const fetchEvents = async () => {
+            setLoading(true);
+            try {
+                const params = new URLSearchParams();
+                Object.entries(filters || {}).forEach(([key, value]) => {
+                    if (value) params.append(key, value);
+                });
+
+                const response = await axios.get(`http://localhost:8080/api/events/filter?${params.toString()}`, {
+                    withCredentials: true,
+                });
+
+                const mapped = Array.isArray(response.data)
+                    ? response.data.map((event) => ({
+                        id: event.id,
+                        title: event.name,
+                        description: event.comments,
+                        date: event.startDateTime.split("T")[0],
+                        time: event.startDateTime.split("T")[1].substring(0, 5),
+                        location: `${event.locationCity}, ${event.locationStreet} ${event.locationHouseNumber}`,
+                        seats: event.capacity,
+                    }))
+                    : [];
+
                 setEvents(mapped);
-                setLoading(false);
-            })
-            .catch((error) => {
+                setError(null);
+            } catch (error) {
                 console.error("Błąd podczas pobierania danych:", error.message);
                 setError(error.message);
+                setEvents([]);
+            } finally {
                 setLoading(false);
-            });
-    }, []);
+            }
+        };
+
+        fetchEvents();
+    }, [filters]);
+
 
     const handleEdit = (id) => {
         navigate(`/events/edit/${id}`);
@@ -63,9 +103,9 @@ export default function EventList() {
 
     return (
         <div className="min-h-screen bg-gray-100 py-10 px-4 flex flex-col items-center">
-            <h1 className="text-3xl font-bold text-amber-600 mb-8">
-                Nadchodzące wydarzenia
-            </h1>
+            {/*<h1 className="text-3xl font-bold text-amber-600 mb-8">*/}
+            {/*    Nadchodzące wydarzenia*/}
+            {/*</h1>*/}
 
             {loading ? (
                 <p>Ładowanie wydarzeń...</p>
