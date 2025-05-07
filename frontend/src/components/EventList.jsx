@@ -7,6 +7,8 @@ export default function EventList({ filters }) {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+
     const navigate = useNavigate();
 
     // useEffect(() => {
@@ -103,9 +105,20 @@ export default function EventList({ filters }) {
 
     return (
         <div className="min-h-screen bg-gray-100 py-10 px-4 flex flex-col items-center">
-            {/*<h1 className="text-3xl font-bold text-amber-600 mb-8">*/}
-            {/*    Nadchodzące wydarzenia*/}
-            {/*</h1>*/}
+
+            <div className={"w-full max-w-6xl flex justify-end mb-6"}>
+                <input
+                    type={"text"}
+                    placeholder={"Szukaj po nazwie..."}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={"mb-6 px-4 py-2 border border-gray-300 rounded-md w-full max-w-md"}
+                />
+            </div>
+
+            <h1 className="text-3xl font-bold text-amber-600 mb-8">
+                Nadchodzące wydarzenia
+            </h1>
 
             {loading ? (
                 <p>Ładowanie wydarzeń...</p>
@@ -115,7 +128,9 @@ export default function EventList({ filters }) {
                 <p className="text-gray-600">Brak wydarzeń do wyświetlenia.</p>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full">
-                    {events.map((event) => (
+                    {events
+                        .filter(event=>event.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                        .map((event) => (
                         <div
                             key={event.id}
                             onClick={() => navigate(`/events/${event.id}`)}
