@@ -43,10 +43,12 @@ function Login({ setIsLoggedIn }) {
         // localStorage.setItem("authCredentials", credentials);
 
         localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userEmail", login); // ZAPISZ EMAIL!
         setIsLoggedIn(true);
         setSuccess(true);
         setError("");
-        navigate("/events"); // Redirect after successful login
+        navigate("/events");
+
       } else {
         setError("Błąd serwera");
         setSuccess(false);
