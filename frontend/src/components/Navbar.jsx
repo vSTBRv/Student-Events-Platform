@@ -1,102 +1,107 @@
-import {Link, useNavigate} from "react-router-dom";
-import Logout from "./Logout.jsx"
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaSignOutAlt, FaUsersCog, FaPlus, FaList } from "react-icons/fa";
 
-function Navbar({isLoggedIn, setIsLoggedIn}) {
-  // const [isLoggedIn, setLoggedIn] = useState(false);
-
-  // useEffect(() => {
-  //   // setLoggedIn(document.cookie.includes("JSESSIONID")); // To wykrywa czy jest sesja -- nie działa ta opcja,
-  //     const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-  //     setLoggedIn(loggedIn);
-  // }, []);
-
+export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
+    const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const checkRole = async () => {
+            if (!isLoggedIn) return;
+
+            try {
+                const response = await fetch("http://localhost:8080/api/users", {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                if (response.ok) {
+                    const users = await response.json();
+                    const email = localStorage.getItem("userEmail");
+                    const currentUser = users.find((u) => u.email === email);
+                    if (currentUser?.userRole === "ADMIN") {
+                        setIsAdmin(true);
+                    }
+                }
+            } catch (error) {
+                console.error("Błąd przy sprawdzaniu roli:", error);
+            }
+        };
+
+        checkRole();
+    }, [isLoggedIn]);
+
     const handleLogout = async () => {
-        await fetch("http://localhost:8080/api/logout", {
-            method: "POST",
-            credentials: "include",
-        });
-    }
+        try {
+            await fetch("http://localhost:8080/api/logout", {
+                method: "POST",
+                credentials: "include",
+            });
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userEmail");
+            setIsLoggedIn(false);
+            setIsAdmin(false);
+            navigate("/");
+        } catch (error) {
+            console.error("Błąd przy wylogowywaniu:", error);
+        }
+    };
 
+    const handleLogoClick = () => {
+        navigate(isLoggedIn ? "/events" : "/");
+    };
 
-  // return (
-  //   <nav className="text-white px-4 py-3 shadow-md">
-  //     <div className="container mx-auto flex justify-between items-center">
-  //       <div className="text-lg font-bold">
-  //         <Link to="/">Eventify</Link>
-  //       </div>
-  //       <ul className="flex space-x-6">
-  //         <li>
-  //           <Link to="/" className="hover:text-gray-200">
-  //             Login
-  //           </Link>
-  //         </li>
-  //         <li>
-  //           <Link to="/register" className="hover:text-gray-200">
-  //             Register
-  //           </Link>
-  //         </li>
-  //         <li>
-  //           <Link to="/events" className="hover:text-gray-200">
-  //             Event List
-  //           </Link>
-  //         </li>
-  //         <li>
-  //           <Link to="/events/new" className="hover:text-gray-200">
-  //             Create Event
-  //           </Link>
-  //         </li>
-  //         <li>
-  //           <Logout onLogout={() => setLoggedIn(false)} />
-  //         </li>
-  //       </ul>
-  //     </div>
-  //   </nav>
-  // );
+    return (
+        <nav className="text-amber-600 px-4 py-3 shadow-md">
+            <div className="container mx-auto flex justify-between items-center">
+                <div
+                    onClick={handleLogoClick}
+                    className="text-lg font-bold cursor-pointer hover:text-gray-200"
+                >
+                    Eventify
+                </div>
 
-  return (
-      <nav className={"text-white px-4 py-3 shadow-md"}>
-        <div className={"container mx-auto flex justify-between items-center"}>
-          <div className={"text-lg font-bold"}>
-            <Link to={"/"}>Eventify</Link>
-          </div>
-          <ul className={"flex space-x-6"}>
-            {!isLoggedIn ? (
-                <>
-                  <li>
-                    <Link to={"/"} className={"hover:text-gray-200"}>
-                      Login
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to={"/register"} className={"hover:text-gray-200"}>
-                      Register
-                    </Link>
-                  </li>
-                </>
-            ) : (
-                <>
-                  <li>
-                    <Link to={"/events"} className={"hover:text-gray-200"}>
-                      Event List
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to={"/events/new"} className={"hover:text-gray-200"}>
-                      Create Event
-                    </Link>
-                  </li>
-                  <li>
-                    <Logout onLogout={() => setIsLoggedIn(false)} />
-                  </li>
-                </>
-            )}
-          </ul>
-        </div>
-      </nav>
-  );
+                <ul className="flex space-x-6">
+                    {!isLoggedIn ? (
+                        <>
+                            <li>
+                                <Link to="/" className="hover:text-gray-200">
+                                    Login
+                                </Link>
+                            </li>
+                        </>
+                    ) : (
+                        <>
+                            <li>
+                                <Link to="/events" className="hover:text-gray-200 flex items-center gap-1">
+                                    <FaList /> Wydarzenia
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/events/new" className="hover:text-gray-200 flex items-center gap-1">
+                                    <FaPlus /> Utwórz wydarzenie
+                                </Link>
+                            </li>
+                            {isAdmin && (
+                                <li>
+                                    <Link to="/admin/users" className="hover:text-gray-200 flex items-center gap-1">
+                                        <FaUsersCog /> Użytkownicy
+                                    </Link>
+                                </li>
+                            )}
+                            <li>
+                                <button
+                                    onClick={handleLogout}
+                                    className="hover:text-gray-200 flex items-center gap-1"
+                                >
+                                    <FaSignOutAlt /> Wyloguj się
+                                </button>
+                            </li>
+                        </>
+                    )}
+                </ul>
+            </div>
+        </nav>
+    );
 }
-
-export default Navbar;
