@@ -29,6 +29,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByDeletedFalse();
 
+    List<Event> findByNameContainingIgnoreCaseAndDeletedTrue(String name);
+
     List<Event> findByDeletedTrue();
 }
 

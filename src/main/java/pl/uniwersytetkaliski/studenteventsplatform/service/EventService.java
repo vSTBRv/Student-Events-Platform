@@ -240,10 +240,16 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public List<EventResponseDto> getDeletedEvents() {
-      List<Event> eventList = eventRepository.findByDeletedTrue();
+    public List<EventResponseDto> getDeletedEvents(String name) {
+        List<Event> eventList;
+        if (name.isEmpty()) {
+            eventList = eventRepository.findByDeletedTrue();
+        } else {
+            eventList = eventRepository.findByNameContainingIgnoreCaseAndDeletedTrue(name);
+        }
         return eventList.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+
     }
 }

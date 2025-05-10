@@ -108,7 +108,7 @@ public class EventController {
     }
 
     @GetMapping("deleted")
-    public ResponseEntity<List<EventResponseDto>> getDeletedEvents() {
-        return ResponseEntity.ok(eventService.getDeletedEvents());
+    public ResponseEntity<List<EventResponseDto>> getDeletedEvents(@RequestParam(required = false) String name) {
+        return ResponseEntity.ok(eventService.getDeletedEvents(name));
     }
 }
