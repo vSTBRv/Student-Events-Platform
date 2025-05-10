@@ -48,8 +48,7 @@ CREATE TABLE user_event (
     user_id INT,
     event_id INT,
     comment VARCHAR(250),
-    rating INT,
-    PRIMARY KEY (user_id, event_id),
+    rating INT
 );
 
 ALTER TABLE events
