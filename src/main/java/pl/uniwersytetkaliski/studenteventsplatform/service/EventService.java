@@ -252,4 +252,8 @@ public class EventService {
                 .collect(Collectors.toList());
 
     }
+
+    public void restoreEvent(long id) {
+        eventRepository.restoreEvent(id);
+    }
 }

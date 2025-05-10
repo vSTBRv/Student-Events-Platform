@@ -111,4 +111,10 @@ public class EventController {
     public ResponseEntity<List<EventResponseDto>> getDeletedEvents(@RequestParam(required = false) String name) {
         return ResponseEntity.ok(eventService.getDeletedEvents(name));
     }
+
+    @PutMapping("deleted/{id}")
+    public ResponseEntity<Void> restoreDeletedEvent(@PathVariable long id) {
+        eventService.restoreEvent(id);
+        return ResponseEntity.ok().build();
+    }
 }
