@@ -13,7 +13,7 @@ function EventPage() {
             </aside>
 
             <main className={"flex-1 p-4"}>
-                <h1 className={"text-3xl font-bold mb-8 text-amber-600"}>Nadchodzące wydarzenia</h1>
+                <h1 className={"text-3xl font-bold mb-8 text-amber-600"}>Wydarzenia</h1>
                 <EventList filters={filters} />
             </main>
         </div>
