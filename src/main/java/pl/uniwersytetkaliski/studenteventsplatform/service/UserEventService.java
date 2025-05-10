@@ -49,14 +49,13 @@ public class UserEventService {
         if (userEventRepository.existsByUserAndEvent(user.get(), event.get())) {
             throw new IllegalArgumentException("User already registered with email " + auth.getName() + " and event " + event.get());
         }
-        UserEvent userEvent = new UserEvent();
-        userEvent.setUser(user.get());
-        userEvent.setEvent(event.get());
+        UserEvent userEvent = new UserEvent(user.get(),event.get());
         userEventRepository.save(userEvent);
         currentCapacity--;
         eventRepository.updateCurrentCapacity(id,currentCapacity);
     }
 
+    @Transactional
     public void unregisterFromEvent(long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> user = userService.getUserByEmail(auth.getName());
