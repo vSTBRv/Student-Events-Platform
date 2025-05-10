@@ -4,13 +4,17 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 import pl.uniwersytetkaliski.studenteventsplatform.model.UserEvent;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.UserEventRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserEventService {
@@ -53,5 +57,16 @@ public class UserEventService {
             throw new EntityNotFoundException();
         }
         userEventRepository.deleteByUserAndEvent(user.get(), event.get());
+    }
+
+    public List<UserDTO> getParticipants(long id) {
+        List<UserEvent> userEvent = userEventRepository.findByEvent_Id(id);
+       return userEvent.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+
+    private UserDTO mapToDTO(UserEvent userEvent) {
+        return new UserDTO(
+                userEvent.getUser().getFullName()
+        );
     }
 }

@@ -6,6 +6,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 import pl.uniwersytetkaliski.studenteventsplatform.model.UserEvent;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserEventRepository extends JpaRepository<UserEvent,Long> {
 
@@ -14,4 +15,6 @@ public interface UserEventRepository extends JpaRepository<UserEvent,Long> {
     List<UserEvent> findByUserAndEvent(User user, Event event);
 
     void deleteByUserAndEvent(User user, Event event);
+
+    List<UserEvent> findByEvent_Id(long id);
 }
