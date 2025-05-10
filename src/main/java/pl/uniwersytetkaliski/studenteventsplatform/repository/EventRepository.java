@@ -32,6 +32,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByNameContainingIgnoreCaseAndDeletedTrue(String name);
 
     List<Event> findByDeletedTrue();
+
+    @Modifying
+    @Query("UPDATE Event e SET e.deleted = false, e.deletedAt = CURRENT TIMESTAMP WHERE e.id = :eventId")
+    void restoreEvent(long id);
 }
 
 
