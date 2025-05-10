@@ -36,6 +36,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Modifying
     @Query("UPDATE Event e SET e.deleted = false WHERE e.id = :id")
     void restoreEvent(long id);
+
+    @Modifying
+    @Query ("UPDATE Event e SET e.currentCapacity = :capacity WHERE e.id = :id")
+    void updateCurrentCapacity(long id, int capacity);
 }
 
 

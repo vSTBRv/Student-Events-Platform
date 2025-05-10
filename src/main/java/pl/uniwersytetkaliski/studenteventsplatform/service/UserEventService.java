@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
@@ -28,6 +29,7 @@ public class UserEventService {
         this.eventRepository = eventRepository;
     }
 
+    @Transactional
     public void registerToEvent(long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> user = userService.getUserByEmail(auth.getName());
@@ -39,6 +41,11 @@ public class UserEventService {
         if (event.isEmpty()) {
             throw new EntityNotFoundException();
         }
+        int currentCapacity = event.get().getCurrentCapacity();
+        if (currentCapacity == 0) {
+            throw new IllegalArgumentException("Maximum capacity exceeded");
+        }
+
         if (userEventRepository.existsByUserAndEvent(user.get(), event.get())) {
             throw new IllegalArgumentException("User already registered with email " + auth.getName() + " and event " + event.get());
         }
@@ -46,7 +53,8 @@ public class UserEventService {
         userEvent.setUser(user.get());
         userEvent.setEvent(event.get());
         userEventRepository.save(userEvent);
-
+        currentCapacity--;
+        eventRepository.updateCurrentCapacity(id,currentCapacity);
     }
 
     public void unregisterFromEvent(long id) {
