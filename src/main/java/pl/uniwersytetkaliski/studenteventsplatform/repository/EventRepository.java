@@ -3,13 +3,12 @@ package pl.uniwersytetkaliski.studenteventsplatform.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-    List<Event> findByNameContainingIgnoreCase(String name);
+    List<Event> findByNameContainingIgnoreCaseAndDeletedFalse(String name);
 
     @Modifying
     @Query("UPDATE Event e SET e.deleted = true, e.deletedAt = CURRENT TIMESTAMP WHERE e.id = :eventId")
@@ -17,7 +16,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e " +
             "WHERE (:category IS NULL OR e.category.name = :category)" +
-            "AND (:status IS NULL OR e.status = :status) "
+            "AND (:status IS NULL OR e.status = :status) AND e.deleted = false "
 //            "AND (:startDateFrom IS NULL OR e.startDate >= :startDateFrom ) " +
 //            "AND (:startDateTo IS NULL OR e.startDate <= :startDateTo)"
     )
@@ -27,6 +26,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 //            @org.springframework.lang.Nullable java.time.LocalDate startDateFrom,
 //            @org.springframework.lang.Nullable java.time.LocalDate startDateTo
     );
+
+    List<Event> findByDeletedFalse();
+
+    List<Event> findByNameContainingIgnoreCaseAndDeletedTrue(String name);
+
+    List<Event> findByDeletedTrue();
 }
 
 

@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/events/delete/").hasRole("ADMIN")
+                        .requestMatchers("/api/events/delete/","/api/events/deleted").hasRole("ADMIN")
                         .requestMatchers(
                                 "/api/login",
                                 "/api/register",
