@@ -117,7 +117,7 @@ export default function EventList({ filters }) {
             </div>
 
             <h1 className="text-3xl font-bold text-amber-600 mb-8">
-                Nadchodzące wydarzenia
+                Wydarzenia
             </h1>
 
             {loading ? (

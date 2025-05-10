@@ -9,6 +9,7 @@ import EventList from "./components/EventList";
 import Navbar from "./components/Navbar";
 import EventDetails from "./components/EventDetails.jsx";
 import EventPage from "./components/EventPage.jsx";
+import ManageUsers from "./components/ManageUsers";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,6 +36,8 @@ function App() {
           <Route path="/events" element={<EventPage />} />
         {/*<Route path="/events" element={<EventList />} />*/}
         <Route path="/events/edit/:id" element={<CreateEvent />} />
+          <Route path="/admin/users" element={<ManageUsers />} />
+
       </Routes>
     </div>
   );

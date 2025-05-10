@@ -4,6 +4,7 @@ import { FaSignOutAlt, FaUsersCog, FaPlus, FaList } from "react-icons/fa";
 
 export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
     const [isAdmin, setIsAdmin] = useState(false);
+    const [userRole, setUserRole] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,8 +21,11 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                     const users = await response.json();
                     const email = localStorage.getItem("userEmail");
                     const currentUser = users.find((u) => u.email === email);
-                    if (currentUser?.userRole === "ADMIN") {
-                        setIsAdmin(true);
+                    if (currentUser) {
+                        setUserRole(currentUser.userRole);
+                        if (currentUser.userRole === "ADMIN") {
+                            setIsAdmin(true);
+                        }
                     }
                 }
             } catch (error) {
@@ -42,6 +46,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
             localStorage.removeItem("userEmail");
             setIsLoggedIn(false);
             setIsAdmin(false);
+            setUserRole(null);
             navigate("/");
         } catch (error) {
             console.error("Błąd przy wylogowywaniu:", error);
@@ -78,11 +83,15 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                                     <FaList /> Wydarzenia
                                 </Link>
                             </li>
-                            <li>
-                                <Link to="/events/new" className="hover:text-gray-200 flex items-center gap-1">
-                                    <FaPlus /> Utwórz wydarzenie
-                                </Link>
-                            </li>
+
+                            {userRole !== "STUDENT" && (
+                                <li>
+                                    <Link to="/events/new" className="hover:text-gray-200 flex items-center gap-1">
+                                        <FaPlus /> Utwórz wydarzenie
+                                    </Link>
+                                </li>
+                            )}
+
                             {isAdmin && (
                                 <li>
                                     <Link to="/admin/users" className="hover:text-gray-200 flex items-center gap-1">
@@ -90,6 +99,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                                     </Link>
                                 </li>
                             )}
+
                             <li>
                                 <button
                                     onClick={handleLogout}
