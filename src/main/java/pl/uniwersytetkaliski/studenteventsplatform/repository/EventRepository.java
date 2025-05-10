@@ -34,7 +34,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByDeletedTrue();
 
     @Modifying
-    @Query("UPDATE Event e SET e.deleted = false, e.deletedAt = CURRENT TIMESTAMP WHERE e.id = :eventId")
+    @Query("UPDATE Event e SET e.deleted = false WHERE e.id = :id")
     void restoreEvent(long id);
 }
 

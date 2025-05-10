@@ -242,7 +242,7 @@ public class EventService {
 
     public List<EventResponseDto> getDeletedEvents(String name) {
         List<Event> eventList;
-        if (name.isEmpty()) {
+        if (name==null || name.isEmpty()) {
             eventList = eventRepository.findByDeletedTrue();
         } else {
             eventList = eventRepository.findByNameContainingIgnoreCaseAndDeletedTrue(name);
@@ -253,6 +253,7 @@ public class EventService {
 
     }
 
+    @Transactional
     public void restoreEvent(long id) {
         eventRepository.restoreEvent(id);
     }
