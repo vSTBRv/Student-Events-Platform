@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
@@ -204,5 +205,10 @@ public class EventController {
             userEventService.unregisterFromEvent(id);
             return ResponseEntity.ok().build();
 
+    }
+
+    @GetMapping("{id}/participants")
+    public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable long id) {
+        return ResponseEntity.ok(userEventService.getParticipants(id));
     }
 }
