@@ -211,4 +211,9 @@ public class EventController {
     public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable long id) {
         return ResponseEntity.ok(userEventService.getParticipants(id));
     }
+
+    @GetMapping("participated")
+    public ResponseEntity<List<EventResponseDto>> getParticipatedEvents() {
+        return ResponseEntity.ok(userEventService.getParticipatedEvents());
+    }
 }

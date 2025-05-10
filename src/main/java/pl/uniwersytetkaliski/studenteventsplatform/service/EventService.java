@@ -13,6 +13,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.model.*;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;
+import pl.uniwersytetkaliski.studenteventsplatform.repository.UserEventRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,12 +27,14 @@ public class EventService {
     private final LocationRepository locationRepository;
     private final CategoryRepository categoryRepository;
     private final UserService userService;
+    private final UserEventRepository userEventRepository;
 
-    public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository, UserService userService) {
+    public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository, UserService userService, UserEventRepository userEventRepository) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
+        this.userEventRepository = userEventRepository;
     }
 
     public List<EventResponseDto> getAllEvents() {
@@ -53,8 +56,10 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    private EventResponseDto mapToDto(Event event) {
+    EventResponseDto mapToDto(Event event) {
         EventResponseDto dto = new EventResponseDto();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.getUserByEmail(auth.getName()).get();
         dto.setId(event.getId());
         dto.setName(event.getName());
         dto.setLocationCity(event.getLocation().getCity());
@@ -68,6 +73,8 @@ public class EventService {
         dto.setStatusLabel(event.getStatus().getStatus());
         dto.setCapacity(event.getMaxCapacity());
         dto.setCategory(event.getCategory().getName());
+        dto.setParticipating(userEventRepository.existsByUserAndEvent(user, event));
+
         return dto;
     }
 
