@@ -242,7 +242,9 @@ public class EventService {
 
     public List<EventResponseDto> getDeletedEvents(String name) {
         List<Event> eventList;
-        if (name==null || name.isEmpty()) {
+
+        if (name == null || name.isEmpty()) {
+
             eventList = eventRepository.findByDeletedTrue();
         } else {
             eventList = eventRepository.findByNameContainingIgnoreCaseAndDeletedTrue(name);
