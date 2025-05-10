@@ -15,7 +15,6 @@ import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,7 +35,7 @@ public class EventService {
     }
 
     public List<EventResponseDto> getAllEvents() {
-        List<Event> events = eventRepository.findAll();
+        List<Event> events = eventRepository.findByDeletedFalse();
         return events.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
@@ -48,7 +47,7 @@ public class EventService {
     }
 
     public List<EventResponseDto> getEventByName(String name) {
-        List<Event> events = eventRepository.findByNameContainingIgnoreCase(name);
+        List<Event> events = eventRepository.findByNameContainingIgnoreCaseAndDeletedFalse(name);
         return events.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
@@ -237,6 +236,13 @@ public class EventService {
         return filtered.stream()
                 .filter(e -> startDateFrom == null || !e.getStartDate().toLocalDate().isBefore(startDateFrom))
                 .filter(e -> startDateTo == null || !e.getStartDate().toLocalDate().isAfter(startDateTo))
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventResponseDto> getDeletedEvents() {
+      List<Event> eventList = eventRepository.findByDeletedTrue();
+        return eventList.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }

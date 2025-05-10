@@ -106,4 +106,9 @@ public class EventController {
         }
         return ResponseEntity.ok(eventService.getFilteredEvents(category, status, startDateFrom, startDateTo));
     }
+
+    @GetMapping("deleted")
+    public ResponseEntity<List<EventResponseDto>> getDeletedEvents() {
+        return ResponseEntity.ok(eventService.getDeletedEvents());
+    }
 }
