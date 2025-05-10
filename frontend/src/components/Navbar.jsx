@@ -93,12 +93,20 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                             )}
 
                             {isAdmin && (
-                                <li>
-                                    <Link to="/admin/users" className="hover:text-gray-200 flex items-center gap-1">
-                                        <FaUsersCog /> Użytkownicy
-                                    </Link>
-                                </li>
+                                <>
+                                    <li>
+                                        <Link to="/admin/users" className="hover:text-gray-200 flex items-center gap-1">
+                                            <FaUsersCog /> Użytkownicy
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/admin/deleted-events" className="hover:text-gray-200 flex items-center gap-1">
+                                            🗑️ Usunięte
+                                        </Link>
+                                    </li>
+                                </>
                             )}
+
 
                             <li>
                                 <button
