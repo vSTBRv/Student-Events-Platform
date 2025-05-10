@@ -20,6 +20,7 @@ public class EventResponseDto {
     private String statusLabel;
     private String category;
     private String createdBy;
+    private boolean participating;
 
     public Long getId() {
         return id;
@@ -136,6 +137,14 @@ public class EventResponseDto {
     }
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public boolean isParticipating() {
+        return participating;
+    }
+
+    public void setParticipating(boolean participating) {
+        this.participating = participating;
     }
 
 }

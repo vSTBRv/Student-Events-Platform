@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
@@ -22,11 +23,13 @@ public class UserEventService {
     private final UserService userService;
     private final UserEventRepository userEventRepository;
     private final EventRepository eventRepository;
+    private final EventService eventService;
 
-    public UserEventService(UserService userService, UserEventRepository userEventRepository, EventRepository eventRepository) {
+    public UserEventService(UserService userService, UserEventRepository userEventRepository, EventRepository eventRepository, EventService eventService) {
         this.userService = userService;
         this.userEventRepository = userEventRepository;
         this.eventRepository = eventRepository;
+        this.eventService = eventService;
     }
 
     @Transactional
@@ -75,5 +78,17 @@ public class UserEventService {
         return new UserDTO(
                 userEvent.getUser().getFullName()
         );
+    }
+
+    public List<EventResponseDto> getParticipatedEvents() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> user = userService.getUserByEmail(auth.getName());
+        List<UserEvent> userEvent = userEventRepository.findByUser_Id(user.get().getId());
+        return userEvent.stream().map(this::mapToEventDTO).collect(Collectors.toList());
+    }
+
+    private EventResponseDto mapToEventDTO(UserEvent userEvent) {
+        Event event = userEvent.getEvent();
+        return eventService.mapToDto(event);
     }
 }
