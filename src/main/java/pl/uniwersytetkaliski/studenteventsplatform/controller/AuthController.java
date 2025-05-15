@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.RegisterDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 import pl.uniwersytetkaliski.studenteventsplatform.model.UserRole;
+import pl.uniwersytetkaliski.studenteventsplatform.service.NotificationService;
 import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,9 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private NotificationService notificationService;
+
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
@@ -43,6 +47,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
+
         if (userService.existsByEmail(registerDTO.email)) {
             return ResponseEntity.badRequest().body("Email już istnieje.");
         }
@@ -60,6 +65,9 @@ public class AuthController {
         user.setEnabled(true);
         user.setCreatedAt(LocalDateTime.now());
         userService.createUser(user);
+
+        notificationService.sendRegistrationEmail(user.getEmail(), user.getFullName());
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

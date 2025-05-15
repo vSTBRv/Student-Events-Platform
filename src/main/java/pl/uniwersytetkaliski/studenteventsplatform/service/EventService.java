@@ -1,6 +1,7 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class EventService {
     private final CategoryRepository categoryRepository;
     private final UserService userService;
     private final UserEventRepository userEventRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository, UserService userService, UserEventRepository userEventRepository) {
         this.eventRepository = eventRepository;
@@ -103,6 +107,8 @@ public class EventService {
 
         Event event = new Event();
         event.setCreatedBy(user.get().getId());
+
+        notificationService.sendEventCreatedConfirmationEmail(user.get(), event);
         return prepareEvent(event, eventDTO);
     }
 
@@ -231,6 +237,7 @@ public class EventService {
             throw new AccessDeniedException("Access Denied");
         }
         eventRepository.softDelete(eventId);
+        notificationService.sendEventDeletedConfirmationEmail(user.get(), existingEvent.get());
     }
 
     public List<EventResponseDto> getFilteredEvents(String categoryId, EventStatus status, LocalDate startDateFrom, LocalDate startDateTo){

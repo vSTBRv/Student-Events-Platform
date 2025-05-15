@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 "/api/test/**"
                         ).permitAll()
                         .anyRequest().authenticated()
+//                                .anyRequest().permitAll()
                 )
                 // jak trzeba wywalić i zostawić to co było poniżej. To jest próba ustawienia logowania (.formlogin było poprzednio i błędy wysakkiwały)
 //                .formLogin(form -> form
