@@ -3,9 +3,9 @@ package pl.uniwersytetkaliski.studenteventsplatform.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.CategoryResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.CreateCategoryDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.UpdateCategoryDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CreateCategoryDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.UpdateCategoryDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.CategoryMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
@@ -26,12 +26,12 @@ public class CategoryService {
     public List<CategoryResponseDTO> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         return categories.stream()
-                .map(categoryMapper::toDTO)
+                .map(categoryMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public CategoryResponseDTO getCategory(Long id) {
-        return categoryMapper.toDTO(
+        return categoryMapper.toResponseDTO(
                 categoryRepository.findById(id).orElseThrow(
                         ()-> new EntityNotFoundException("Category not found")
                 )
@@ -40,14 +40,13 @@ public class CategoryService {
 
     public CategoryResponseDTO createCategory(CreateCategoryDTO createCategoryDTO) {
         Category saved = categoryRepository.save(categoryMapper.toEntity(createCategoryDTO));
-        return categoryMapper.toDTO(saved);
+        return categoryMapper.toResponseDTO(saved);
     }
 
     public CategoryResponseDTO updateCategory(Long id,UpdateCategoryDTO updateCategoryDTO) {
         Category category = categoryRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Category not found"));
-        category.setName(updateCategoryDTO.getName());
-        Category updated = categoryRepository.save(category);
-        return categoryMapper.toDTO(updated);
+        Category updated = categoryMapper.updateEntity(category, updateCategoryDTO);
+        return categoryMapper.toResponseDTO(updated);
     }
 
     @Transactional

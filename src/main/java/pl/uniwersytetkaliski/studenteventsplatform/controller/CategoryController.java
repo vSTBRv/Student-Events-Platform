@@ -4,9 +4,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.CategoryResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.CreateCategoryDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.UpdateCategoryDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CreateCategoryDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.UpdateCategoryDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.service.CategoryService;
 
 import java.util.List;
