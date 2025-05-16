@@ -1,9 +1,9 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
-public class UpdateCategoryDTO {
+public class CreateCategoryDTO {
     @NotBlank
     @Pattern(regexp = "^\\D*$")
     private String name;
