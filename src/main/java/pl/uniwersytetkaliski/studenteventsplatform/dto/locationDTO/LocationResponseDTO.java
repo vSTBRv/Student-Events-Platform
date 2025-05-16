@@ -1,32 +1,18 @@
-package pl.uniwersytetkaliski.studenteventsplatform.model;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name="locations")
-public class Location {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class LocationResponseDTO {
     private Long id;
-
-    @Column(nullable = false)
     private String city;
-
     private String street;
-
-    @Column(nullable = false)
     private String houseNumber;
-
-    @Column(nullable = false)
     private String postalCode;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCity() {
