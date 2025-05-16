@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CreateCategoryDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.UpdateCategoryDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryCreateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.service.CategoryService;
 
 import java.util.List;
@@ -31,8 +31,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CreateCategoryDTO createCategoryDTO) {
-        CategoryResponseDTO created = categoryService.createCategory(createCategoryDTO);
+    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CategoryCreateDTO categoryCreateDTO) {
+        CategoryResponseDTO created = categoryService.createCategory(categoryCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
@@ -43,8 +43,8 @@ public class CategoryController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> updateCategory(@PathVariable Long id, @Valid @RequestBody UpdateCategoryDTO updateCategoryDTO) {
-        categoryService.updateCategory(id, updateCategoryDTO);
+    public ResponseEntity<Void> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryUpdateDTO categoryUpdateDTO) {
+        categoryService.updateCategory(id, categoryUpdateDTO);
         return ResponseEntity.noContent().build();
     }
 }

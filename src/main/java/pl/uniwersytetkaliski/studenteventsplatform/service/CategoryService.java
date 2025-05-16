@@ -4,8 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CreateCategoryDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.UpdateCategoryDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryCreateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.CategoryMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
@@ -38,14 +38,14 @@ public class CategoryService {
         );
     }
 
-    public CategoryResponseDTO createCategory(CreateCategoryDTO createCategoryDTO) {
-        Category saved = categoryRepository.save(categoryMapper.toEntity(createCategoryDTO));
+    public CategoryResponseDTO createCategory(CategoryCreateDTO categoryCreateDTO) {
+        Category saved = categoryRepository.save(categoryMapper.toEntity(categoryCreateDTO));
         return categoryMapper.toResponseDTO(saved);
     }
 
-    public CategoryResponseDTO updateCategory(Long id,UpdateCategoryDTO updateCategoryDTO) {
+    public CategoryResponseDTO updateCategory(Long id, CategoryUpdateDTO categoryUpdateDTO) {
         Category category = categoryRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Category not found"));
-        Category updated = categoryMapper.updateEntity(category, updateCategoryDTO);
+        Category updated = categoryMapper.updateEntity(category, categoryUpdateDTO);
         return categoryMapper.toResponseDTO(updated);
     }
 
