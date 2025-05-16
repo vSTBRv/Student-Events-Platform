@@ -1,65 +1,34 @@
-package pl.uniwersytetkaliski.studenteventsplatform.model;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO.LocationResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name="events")
-public class Event {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column(nullable = false)
+public class EventResponseDTO {
+    private Long id;
     private String name;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "location_id", nullable = false)
-    private Location location;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    private LocationResponseDTO locationDTO;
     private EventStatus status;
-
-    @Column(nullable = false)
     private int maxCapacity;
-
     private int currentCapacity;
-
-    @CreationTimestamp
-    @Column(nullable = false)
     private LocalDateTime creationDate;
-
-    @Column(nullable = false)
     private LocalDateTime startDate;
-
-    @Column(nullable = false)
     private LocalDateTime endDate;
-
-    @Column(length = 1000)
     private String description;
-
+    private CategoryResponseDTO categoryDTO;
     private boolean deleted;
-
     private LocalDateTime deletedAt;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
-
+    private UserDTO createdBy;
     private boolean accepted;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -71,20 +40,12 @@ public class Event {
         this.name = name;
     }
 
-    public Location getLocation() {
-        return location;
+    public LocationResponseDTO getLocationDTO() {
+        return locationDTO;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setLocationDTO(LocationResponseDTO locationDTO) {
+        this.locationDTO = locationDTO;
     }
 
     public EventStatus getStatus() {
@@ -143,6 +104,14 @@ public class Event {
         this.description = description;
     }
 
+    public CategoryResponseDTO getCategoryDTO() {
+        return categoryDTO;
+    }
+
+    public void setCategoryDTO(CategoryResponseDTO categoryDTO) {
+        this.categoryDTO = categoryDTO;
+    }
+
     public boolean isDeleted() {
         return deleted;
     }
@@ -159,17 +128,18 @@ public class Event {
         this.deletedAt = deletedAt;
     }
 
-    public User getCreatedBy() {
+    public UserDTO getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    public void setCreatedBy(UserDTO createdBy) {
         this.createdBy = createdBy;
     }
 
     public boolean isAccepted() {
         return accepted;
     }
+
     public void setAccepted(boolean accepted) {
         this.accepted = accepted;
     }

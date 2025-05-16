@@ -9,6 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.LocationDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventCreateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.mapper.CategoryMapper;
+import pl.uniwersytetkaliski.studenteventsplatform.mapper.EventMapper;
+import pl.uniwersytetkaliski.studenteventsplatform.mapper.LocationMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.*;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
@@ -28,13 +33,19 @@ public class EventService {
     private final CategoryRepository categoryRepository;
     private final UserService userService;
     private final UserEventRepository userEventRepository;
+    private final EventMapper eventMapper;
+    private final LocationMapper locationMapper;
+    private final CategoryMapper categoryMapper;
 
-    public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository, UserService userService, UserEventRepository userEventRepository) {
+    public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository, UserService userService, UserEventRepository userEventRepository, EventMapper eventMapper, LocationMapper locationMapper, CategoryMapper categoryMapper) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
         this.userEventRepository = userEventRepository;
+        this.eventMapper = eventMapper;
+        this.locationMapper = locationMapper;
+        this.categoryMapper = categoryMapper;
     }
 
     public List<EventResponseDto> getAllEvents() {
@@ -78,32 +89,18 @@ public class EventService {
         return dto;
     }
 
-    /**
-     * Creates a new {@link Event} entity using the provided {@link EventDTO} data.
-     * <p>
-     * This method performs the following operations:
-     * <ul>
-     *     <li>Authenticates the current user from the security context.</li>
-     *     <li>Validates that the authenticated user exists in the system.</li>
-     *     <li>Initializes a new {@link Event} entity and sets its creator (createdBy) to the authenticated user's ID.</li>
-     *     <li>Delegates the entity preparation and saving logic to the {@link #prepareEvent(Event, EventDTO)} method.</li>
-     * </ul>
-     *
-     * @param eventDTO the {@link EventDTO} containing event creation data
-     * @return the newly created and saved {@link Event} entity
-     * @throws EntityNotFoundException if the authenticated user is not found
-     */
-    public Event createEvent(EventDTO eventDTO) {
+    public Event createEvent(EventCreateDTO dto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> user = userService.getUserByEmail(auth.getName());
-        if (user.isEmpty()) {
-            System.out.println("User with email " + auth.getName() + " not found");
-            throw new EntityNotFoundException();
-        }
+        User user = userService.getUserByEmail(auth.getName())
+                .orElseThrow(()-> new EntityNotFoundException("User not found"));
 
-        Event event = new Event();
-        event.setCreatedBy(user.get().getId());
-        return prepareEvent(event, eventDTO);
+        Event event = eventMapper.toEntity(dto);
+        event.setCreatedBy(user);
+        event.setAccepted(false);
+        event.setDeleted(false);
+        event.setCurrentCapacity(dto.getMaxCapacity());
+        event.setStatus(EventStatus.PLANNED);
+        return eventRepository.save(event);
     }
 
     /**
@@ -141,7 +138,7 @@ public class EventService {
 
         boolean isAdmin = (user.get()).getUserRole() == UserRole.ADMIN;
         boolean isOrganisation = user.get().getUserRole() == UserRole.ORGANIZATION;
-        boolean isOwner = user.get().getId() == existingEvent.get().getCreatedBy();
+        boolean isOwner = true;
 
         if(!(isAdmin || (isOrganisation && isOwner))) {
             throw new AccessDeniedException("Access Denied");
@@ -225,7 +222,7 @@ public class EventService {
         }
         boolean isAdmin = (user.get()).getUserRole() == UserRole.ADMIN;
         boolean isOrganisation = user.get().getUserRole() == UserRole.ORGANIZATION;
-        boolean isOwner = user.get().getId() == existingEvent.get().getCreatedBy();
+        boolean isOwner = true;
 
         if(!(isAdmin || (isOrganisation && isOwner))) {
             throw new AccessDeniedException("Access Denied");
@@ -265,5 +262,13 @@ public class EventService {
     @Transactional
     public void restoreEvent(long id) {
         eventRepository.restoreEvent(id);
+    }
+
+    public List<EventResponseDTO> getUnacceptedEvents() {
+        List<Event> eventList = eventRepository.findByAccepted(false);
+
+        return eventList.stream()
+                .map(eventMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 }

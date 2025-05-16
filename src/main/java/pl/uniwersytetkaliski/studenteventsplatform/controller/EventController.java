@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventCreateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventResponseDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
@@ -60,21 +62,10 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
 
-    /**
-     * Handles an HTTP POST request to create a new event.
-     * <p>
-     * This endpoint is restricted to users with the <code>ORGANIZATION</code> role.
-     * It accepts an {@link EventDTO} in the request body, which contains the details of the event to be created.
-     * Upon successful creation, it returns the created {@link Event} with HTTP status 201 (Created).
-     * </p>
-     *
-     * @param eventDTO the data transfer object containing details of the event to be created
-     * @return a {@link ResponseEntity} containing the created {@link Event} and HTTP status 201
-     */
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody EventDTO eventDTO) {
-        Event created = eventService.createEvent(eventDTO);
+    public ResponseEntity<Event> createEvent(@RequestBody EventCreateDTO dto) {
+        Event created = eventService.createEvent(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
@@ -215,5 +206,10 @@ public class EventController {
     @GetMapping("participated")
     public ResponseEntity<List<EventResponseDto>> getParticipatedEvents() {
         return ResponseEntity.ok(userEventService.getParticipatedEvents());
+    }
+
+    @GetMapping("unaccepted")
+    public ResponseEntity<List<EventResponseDTO>> getUnacceptedEvents() {
+        return ResponseEntity.ok(eventService.getUnacceptedEvents());
     }
 }

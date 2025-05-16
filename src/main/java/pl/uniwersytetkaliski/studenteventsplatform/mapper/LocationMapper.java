@@ -1,10 +1,12 @@
 package pl.uniwersytetkaliski.studenteventsplatform.mapper;
 
+import org.springframework.stereotype.Component;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO.LocationCreateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO.LocationResponseDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO.LocationUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Location;
 
+@Component
 public class LocationMapper implements Mapper<Location, LocationResponseDTO, LocationCreateDTO, LocationUpdateDTO>{
 
     @Override
