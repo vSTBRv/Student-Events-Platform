@@ -93,17 +93,52 @@ public class EventService {
      * @return the newly created and saved {@link Event} entity
      * @throws EntityNotFoundException if the authenticated user is not found
      */
-    public Event createEvent(EventDTO eventDTO) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> user = userService.getUserByEmail(auth.getName());
-        if (user.isEmpty()) {
-            System.out.println("User with email " + auth.getName() + " not found");
-            throw new EntityNotFoundException();
-        }
+//    public Event createEvent(EventDTO eventDTO) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        Optional<User> user = userService.getUserByEmail(auth.getName());
+//        if (user.isEmpty()) {
+//            System.out.println("User with email " + auth.getName() + " not found");
+//            throw new EntityNotFoundException();
+//        }
+//
+//        Event event = new Event();
+//        event.setCreatedBy(user.get().getId());
+//        return prepareEvent(event, eventDTO);
+//    }
 
+    public Event createEvent(EventDTO eventDTO) {
         Event event = new Event();
-        event.setCreatedBy(user.get().getId());
-        return prepareEvent(event, eventDTO);
+        event.setName(eventDTO.getName());
+        event.setDescription(eventDTO.getDescription());
+        event.setStartDate(eventDTO.getStartDate());
+        event.setEndDate(eventDTO.getEndDate());
+        event.setMaxCapacity(eventDTO.getMaxCapacity());
+        event.setCurrentCapacity(eventDTO.getCurrentCapacity());
+        event.setCreationDate(eventDTO.getCreationDate());
+        event.setStatus(EventStatus.PLANNED);
+        event.setDeleted(false);
+
+        Location location = new Location();
+        location.setCity(eventDTO.getLocationDTO().getCity());
+        location.setPostalCode(eventDTO.getLocationDTO().getPostalCode());
+        location.setStreet(eventDTO.getLocationDTO().getStreet());
+        location.setHouseNumber(eventDTO.getLocationDTO().getHouseNumber());
+        locationRepository.save(location);
+        event.setLocation(location);
+
+        Category category = categoryRepository.findById(eventDTO.getCategoryDTO().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Category with id " + eventDTO.getCategoryDTO().getId() + " not found"));
+        event.setCategory(category);
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userService.getUserByEmail(email)
+                .orElseThrow(()->new RuntimeException("Nie znaleziono zalogowanego użytkownika"));
+
+        event.setCreatedBy(currentUser.getId());
+
+        Event saved = eventRepository.save(event);
+
+        return saved;
     }
 
     /**
