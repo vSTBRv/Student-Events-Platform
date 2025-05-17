@@ -35,6 +35,8 @@ public class UserEvent {
     @MapsId("eventId")
     private Event event;
 
+
+
     public UserEvent(User user, Event event) {
         this.id = new UserEventId(user.getId(), event.getId());
         this.user = user;

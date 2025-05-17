@@ -1,8 +1,25 @@
+// import {useParams} from "react-router-dom";
+//
+// function SendMessage() {
+//     const { id } = useParams();
+//     console.log("✔️ SendMessage działa! ID:", id);
+//
+//     return (
+//         <div style={{ padding: "2rem", fontSize: "1.5rem"}}>
+//             <p>✔️ Komponent działa</p>
+//             <p>Wydarzenie ID: {id}</p>
+//         </div>
+//     );
+// }
+//
+// export default SendMessage;
+
 import { useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
 function SendMessage() {
+    console.log("SendMessage działa");
     const { id } = useParams();
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("");

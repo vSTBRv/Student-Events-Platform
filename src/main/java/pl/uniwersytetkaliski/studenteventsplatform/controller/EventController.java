@@ -6,15 +6,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.MessageDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
+import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
 import pl.uniwersytetkaliski.studenteventsplatform.service.NotificationService;
 import pl.uniwersytetkaliski.studenteventsplatform.service.UserEventService;
+import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,10 +30,14 @@ import java.util.List;
 public class EventController {
     private final EventService eventService;
     private final UserEventService userEventService;
+    private final NotificationService notificationService;
+    private final UserService userService;
 
-    public EventController(EventService eventService, UserEventService userEventService) {
+    public EventController(EventService eventService, UserEventService userEventService, NotificationService notificationService, UserService userService) {
         this.eventService = eventService;
         this.userEventService = userEventService;
+        this.notificationService = notificationService;
+        this.userService = userService;
     }
 
     /**
@@ -77,6 +87,12 @@ public class EventController {
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody EventDTO eventDTO) {
         Event created = eventService.createEvent(eventDTO);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        User user = userService.getUserByEmail(email)
+                        .orElseThrow(()->new UsernameNotFoundException("Nie znaleziono użytkownika" + email));
+        notificationService.sendEventCreatedConfirmationEmail(user, created);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
@@ -217,5 +233,23 @@ public class EventController {
     @GetMapping("participated")
     public ResponseEntity<List<EventResponseDto>> getParticipatedEvents() {
         return ResponseEntity.ok(userEventService.getParticipatedEvents());
+    }
+
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PostMapping("/{id}/message")
+    public ResponseEntity<?> sendMessageToParticipants(@PathVariable Long id, @RequestBody MessageDTO messageDTO, Authentication auth) {
+        String organizerEmail = auth.getName();
+        try{
+            eventService.sendMessageToParticipants(id, organizerEmail, messageDTO.getMessage());
+            return ResponseEntity.ok("Wiadomość została wysłana.");
+        } catch (AccessDeniedException e) {
+            System.out.println("Zalogowany: " + organizerEmail);
+            System.out.println("Twórca wydarzenia: " + eventService.getEventById(id).getCreatedBy());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nie jesteś organizatorem tego wydarzenia.");
+        } catch(Exception ex) {
+            ex.printStackTrace(); // dodaj to
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Błąd wysyłania wiadomości: " + ex.getMessage());
+        }
     }
 }

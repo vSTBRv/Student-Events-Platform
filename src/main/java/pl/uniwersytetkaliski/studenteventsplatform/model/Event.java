@@ -3,6 +3,10 @@ package pl.uniwersytetkaliski.studenteventsplatform.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="events")
@@ -45,10 +49,22 @@ public class Event {
     @Column(length = 1000)
     private String description;
 
+    @ManyToMany
+    @JoinTable(
+            name="user_event",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> participants = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserEvent> userEvent = new HashSet<>();
+
     private boolean deleted;
 
     private LocalDateTime deletedAt;
 
+    @Column(name="created_by", nullable = false)
     private long createdBy;
 
     public long getId() {
@@ -161,5 +177,13 @@ public class Event {
 
     public void setCreatedBy(long createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Set<UserEvent> getUserEvent() {
+        return userEvent;
+    }
+
+    public void setUserEvent(Set<UserEvent> userEvent) {
+        this.userEvent = userEvent;
     }
 }
