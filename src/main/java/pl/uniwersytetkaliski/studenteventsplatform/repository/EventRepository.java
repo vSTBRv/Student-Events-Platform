@@ -16,7 +16,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e " +
             "WHERE (:category IS NULL OR e.category.name = :category)" +
-            "AND (:status IS NULL OR e.status = :status) AND e.deleted = false "
+            "AND (:status IS NULL OR e.status = :status) AND e.deleted = false AND e.accepted = true "
 //            "AND (:startDateFrom IS NULL OR e.startDate >= :startDateFrom ) " +
 //            "AND (:startDateTo IS NULL OR e.startDate <= :startDateTo)"
     )
@@ -26,8 +26,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 //            @org.springframework.lang.Nullable java.time.LocalDate startDateFrom,
 //            @org.springframework.lang.Nullable java.time.LocalDate startDateTo
     );
-
-    List<Event> findByDeletedFalse();
 
     List<Event> findByNameContainingIgnoreCaseAndDeletedTrue(String name);
 
@@ -46,6 +44,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Modifying
     @Query ("UPDATE Event e SET e.accepted = true WHERE e.id = :id")
     void acceptEvent(long id);
+
+    List<Event> findByDeletedFalseAndAcceptedTrue();
 }
 
 

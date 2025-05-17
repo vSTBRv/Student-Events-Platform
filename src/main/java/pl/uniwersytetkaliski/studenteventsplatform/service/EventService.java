@@ -39,7 +39,7 @@ public class EventService {
     }
 
     public List<EventResponseDTO> getAllEvents() {
-        List<Event> events = eventRepository.findByDeletedFalse();
+        List<Event> events = eventRepository.findByDeletedFalseAndAcceptedTrue();
         return events.stream()
                 .map(eventMapper::toResponseDTO)
                 .collect(Collectors.toList());
