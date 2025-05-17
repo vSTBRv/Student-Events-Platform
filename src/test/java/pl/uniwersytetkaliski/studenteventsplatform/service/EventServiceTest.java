@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Location;
@@ -99,8 +98,8 @@ public class EventServiceTest {
 //        dto.setLocationId(1L);
 //        dto.setStatus("PLANNED");
 //        dto.setMaxCapacity(100);
-//        dto.setStartDate(LocalDateTime.now().plusDays(1));
-//        dto.setEndDate(LocalDateTime.now().plusDays(2));
+//        dto.setStartDateTime(LocalDateTime.now().plusDays(1));
+//        dto.setEndDateTime(LocalDateTime.now().plusDays(2));
 //        dto.setComments("Wydarzenie testowe");
 //
 //        Location location = new Location();
@@ -134,8 +133,8 @@ public class EventServiceTest {
 //        dto.setLocationId(1L);
 //        dto.setStatus("PLANNED");
 //        dto.setMaxCapacity(150);
-//        dto.setStartDate(LocalDateTime.of(2025, 4, 20, 10, 0));
-//        dto.setEndDate(LocalDateTime.of(2025, 4, 20, 14, 0));
+//        dto.setStartDateTime(LocalDateTime.of(2025, 4, 20, 10, 0));
+//        dto.setEndDateTime(LocalDateTime.of(2025, 4, 20, 14, 0));
 //        dto.setComments("Po aktualizacji");
 //
 //        // istniejący event w bazie
@@ -165,8 +164,8 @@ public class EventServiceTest {
 //        assertEquals(location, updated.getLocation());
 //        assertEquals(EventStatus.PLANNED, updated.getStatus());
 //        assertEquals(dto.getComments(), updated.getDescription());
-//        assertEquals(dto.getStartDate(), updated.getStartDate());
-//        assertEquals(dto.getEndDate(), updated.getEndDate());
+//        assertEquals(dto.getStartDateTime(), updated.getStartDateTime());
+//        assertEquals(dto.getEndDateTime(), updated.getEndDateTime());
 //        assertEquals(dto.getMaxCapacity(), updated.getMaxCapacity());
 //
 //        verify(eventRepository).findById(1L);

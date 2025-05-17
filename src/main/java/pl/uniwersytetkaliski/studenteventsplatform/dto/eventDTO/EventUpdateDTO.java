@@ -3,6 +3,7 @@ package pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO.LocationUpdateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ public class EventUpdateDTO {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private String description;
+    private EventStatus status;
     @Positive
     private int maxCapacity;
 
@@ -73,5 +75,12 @@ public class EventUpdateDTO {
 
     public void setMaxCapacity(int maxCapacity) {
         this.maxCapacity = maxCapacity;
+    }
+
+    public EventStatus getStatus() {
+        return status;
+    }
+    public void setStatus(EventStatus status) {
+        this.status = status;
     }
 }

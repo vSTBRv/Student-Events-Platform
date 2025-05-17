@@ -12,7 +12,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.security.SecurityConfig;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;

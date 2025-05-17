@@ -7,7 +7,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryUpdat
 import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
 
 @Component
-public class CategoryMapper implements Mapper<Category,CategoryResponseDTO, CategoryCreateDTO, CategoryUpdateDTO> {
+public class CategoryMapper implements Mapper<Category, CategoryResponseDTO, CategoryCreateDTO, CategoryUpdateDTO> {
 
     @Override
     public Category toEntity(CategoryCreateDTO dto) {
