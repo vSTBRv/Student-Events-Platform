@@ -1,19 +1,29 @@
 package pl.uniwersytetkaliski.studenteventsplatform.mapper;
 
 import org.springframework.stereotype.Component;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.CategoryResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.CreateCategoryDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryCreateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
 
 @Component
-public class CategoryMapper {
-    public Category toEntity(CreateCategoryDTO dto) {
+public class CategoryMapper implements Mapper<Category, CategoryResponseDTO, CategoryCreateDTO, CategoryUpdateDTO> {
+
+    @Override
+    public Category toEntity(CategoryCreateDTO dto) {
         Category category = new Category();
         category.setName(dto.getName());
         return category;
     }
 
-    public CategoryResponseDTO toDTO(Category entity) {
+    @Override
+    public Category updateEntity(Category entity, CategoryUpdateDTO dto) {
+        entity.setName(dto.getName());
+        return entity;
+    }
+
+    @Override
+    public CategoryResponseDTO toResponseDTO(Category entity) {
         CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO();
         categoryResponseDTO.setName(entity.getName());
         categoryResponseDTO.setId(entity.getId());

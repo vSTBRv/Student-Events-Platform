@@ -42,7 +42,8 @@ CREATE TABLE events (
 
 CREATE TABLE category (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(50)
+    name VARCHAR(50),
+    deleted bit
 );
 
 CREATE TABLE user_event (

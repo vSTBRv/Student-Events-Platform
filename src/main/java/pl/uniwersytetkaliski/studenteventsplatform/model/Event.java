@@ -49,7 +49,9 @@ public class Event {
 
     private LocalDateTime deletedAt;
 
-    private long createdBy;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 
     private boolean accepted;
 
@@ -157,11 +159,11 @@ public class Event {
         this.deletedAt = deletedAt;
     }
 
-    public long getCreatedBy() {
+    public User getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(long createdBy) {
+    public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
