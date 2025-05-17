@@ -51,6 +51,8 @@ public class Event {
 
     private long createdBy;
 
+    private boolean accepted;
+
     public long getId() {
         return id;
     }
@@ -161,5 +163,12 @@ public class Event {
 
     public void setCreatedBy(long createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public boolean isAccepted() {
+        return accepted;
+    }
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
     }
 }

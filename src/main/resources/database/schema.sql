@@ -36,7 +36,8 @@ CREATE TABLE events (
                         category_id INT,
                         deleted bit,
                         deleted_at TIMESTAMP,
-                        created_by INT
+                        created_by INT,
+                        accepted bit
 );
 
 CREATE TABLE category (
