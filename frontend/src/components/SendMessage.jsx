@@ -14,15 +14,17 @@
 //
 // export default SendMessage;
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+
 
 function SendMessage() {
     const navigate = useNavigate();
     console.log("SendMessage działa");
     const { id } = useParams();
     const [message, setMessage] = useState("");
+    const [event, setEvent] = useState(null);
     const [status, setStatus] = useState("");
 
     const handleSubmit = (e) => {
@@ -50,11 +52,19 @@ function SendMessage() {
     }
 
 
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/events/${id}`, { withCredentials: true })
+            .then(res=>setEvent(res.data))
+            .catch(err => console.error("Błąd pobierania danych wydarzenia: ", err));
+    }, [id]);
+
 
     return (
         <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-xl shadow">
             <h2 className="text-2xl font-bold mb-4">
-                Wyślij wiadomość do uczestników wydarzenia #{id}
+                Wyślij wiadomość do uczestników wydarzenia<br/>
+
+                <div className={"text-2xl font-bold mb-4 text-center capitalize"}>{event ? ` ${event.name} ` : `#${id}`}</div>
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <textarea

@@ -67,7 +67,7 @@ public class Event {
     private LocalDateTime deletedAt;
 
     @Column(name="created_by", nullable = false)
-    private long createdBy;
+    private Long createdBy;
 
     public long getId() {
         return id;
@@ -173,11 +173,11 @@ public class Event {
         this.deletedAt = deletedAt;
     }
 
-    public long getCreatedBy() {
+    public Long getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(long createdBy) {
+    public void setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
     }
 

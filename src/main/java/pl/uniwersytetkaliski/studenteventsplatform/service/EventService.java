@@ -81,6 +81,7 @@ public class EventService {
         dto.setCategory(event.getCategory().getName());
         dto.setParticipating(userEventRepository.existsByUserAndEvent(user, event));
 
+        dto.setCreatedBy(event.getCreatedBy() != null ? event.getCreatedBy() : null);
         return dto;
     }
 
