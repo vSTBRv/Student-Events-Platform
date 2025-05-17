@@ -1,5 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
+import pl.uniwersytetkaliski.studenteventsplatform.service.NotificationService;
 import pl.uniwersytetkaliski.studenteventsplatform.service.UserEventService;
 
 import java.time.LocalDate;
