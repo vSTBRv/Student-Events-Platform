@@ -136,4 +136,10 @@ public class EventController {
     public ResponseEntity<List<EventResponseDTO>> getUnacceptedEvents() {
         return ResponseEntity.ok(eventService.getUnacceptedEvents());
     }
+
+    @PatchMapping("unaccepted/{id}")
+    public ResponseEntity<Void> acceptEvent(@PathVariable long id) {
+        eventService.acceptEvent(id);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -42,6 +42,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     void updateCurrentCapacity(long id, int capacity);
 
     List<Event> findByAccepted(boolean accepted);
+
+    @Modifying
+    @Query ("UPDATE Event e SET e.accepted = true WHERE e.id = :id")
+    void acceptEvent(long id);
 }
 
 

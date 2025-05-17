@@ -9,13 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventCreateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventResponseDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventUpdateDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.mapper.CategoryMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.EventMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.LocationMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.*;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
-import pl.uniwersytetkaliski.studenteventsplatform.repository.UserEventRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,13 +29,13 @@ public class EventService {
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
 
-    public EventService(EventRepository eventRepository, LocationService locationService, CategoryRepository categoryRepository, UserService userService, UserEventRepository userEventRepository, EventMapper eventMapper, LocationMapper locationMapper, CategoryMapper categoryMapper, LocationMapper locationMapper1) {
+    public EventService(EventRepository eventRepository, LocationService locationService, CategoryRepository categoryRepository, UserService userService, EventMapper eventMapper, LocationMapper locationMapper) {
         this.eventRepository = eventRepository;
         this.locationService = locationService;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
         this.eventMapper = eventMapper;
-        this.locationMapper = locationMapper1;
+        this.locationMapper = locationMapper;
     }
 
     public List<EventResponseDTO> getAllEvents() {
@@ -86,7 +84,7 @@ public class EventService {
         }
         User user = getLoggedUser();
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
-        if(!isAdminOrCreator(user, event)) {
+        if(isNotAdminOrCreator(user, event)) {
             throw new AccessDeniedException("You do not have permission to update this event");
         }
 
@@ -106,7 +104,7 @@ public class EventService {
     public void softDeleteEvent(Long eventId) {
         User user = getLoggedUser();
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId + " not found"));
-        if(!isAdminOrCreator(user, event)) {
+        if(isNotAdminOrCreator(user, event)) {
             throw new AccessDeniedException("Access Denied");
         }
         eventRepository.softDelete(eventId);
@@ -158,13 +156,18 @@ public class EventService {
         return userService.getUserByEmail(authentication.getName())
                 .orElseThrow(()-> new EntityNotFoundException("User not found"));
     }
-    private boolean isAdminOrCreator(User user, Event event) {
+    private boolean isNotAdminOrCreator(User user, Event event) {
         if (user.getUserRole() == UserRole.ADMIN) {
-            return true;
+            return false;
         }
         if (user.getUserRole() == UserRole.ORGANIZATION) {
-            return event.getCreatedBy().getId() == user.getId();
+            return event.getCreatedBy().getId() != user.getId();
         }
-        return false;
+        return true;
+    }
+
+    @Transactional
+    public void acceptEvent(long id) {
+        eventRepository.acceptEvent(id);
     }
 }
