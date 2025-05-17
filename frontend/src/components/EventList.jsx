@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaTrashAlt, FaTimes } from "react-icons/fa";
+import { format } from "date-fns";
 
 export default function EventList({ filters }) {
     const [events, setEvents] = useState([]);
@@ -29,10 +30,10 @@ export default function EventList({ filters }) {
                         id: event.id,
                         title: event.name,
                         description: event.comments,
-                        date: event.startDateTime.split("T")[0],
-                        time: event.startDateTime.split("T")[1].substring(0, 5),
-                        location: `${event.locationCity}, ${event.locationStreet} ${event.locationHouseNumber}`,
-                        seats: event.capacity,
+                        date: format(new Date(event.startDateTime), "yyyy-MM-dd"),
+                        time: format(new Date(event.startDateTime), "HH:mm"),
+                        location: `${event.locationDTO.city}, ${event.locationDTO.street} ${event.locationDTO.houseNumber}`,
+                        seats: event.maxCapacity - event.currentCapacity,
                         participating: event.participating,
                     }))
                     : [];

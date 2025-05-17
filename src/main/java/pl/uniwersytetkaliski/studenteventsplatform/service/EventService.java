@@ -6,199 +6,96 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.EventDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.EventResponseDto;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.LocationDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventCreateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.CategoryMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.EventMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.LocationMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.*;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.CategoryRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
-import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.UserEventRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final LocationRepository locationRepository;
+    private final LocationService locationService;
     private final CategoryRepository categoryRepository;
     private final UserService userService;
-    private final UserEventRepository userEventRepository;
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
-    private final CategoryMapper categoryMapper;
 
-    public EventService(EventRepository eventRepository, LocationRepository locationRepository, CategoryRepository categoryRepository, UserService userService, UserEventRepository userEventRepository, EventMapper eventMapper, LocationMapper locationMapper, CategoryMapper categoryMapper) {
+    public EventService(EventRepository eventRepository, LocationService locationService, CategoryRepository categoryRepository, UserService userService, UserEventRepository userEventRepository, EventMapper eventMapper, LocationMapper locationMapper, CategoryMapper categoryMapper, LocationMapper locationMapper1) {
         this.eventRepository = eventRepository;
-        this.locationRepository = locationRepository;
+        this.locationService = locationService;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
-        this.userEventRepository = userEventRepository;
         this.eventMapper = eventMapper;
-        this.locationMapper = locationMapper;
-        this.categoryMapper = categoryMapper;
+        this.locationMapper = locationMapper1;
     }
 
-    public List<EventResponseDto> getAllEvents() {
+    public List<EventResponseDTO> getAllEvents() {
         List<Event> events = eventRepository.findByDeletedFalse();
         return events.stream()
-                .map(this::mapToDto)
+                .map(eventMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public EventResponseDto getEventById(long id) {
+    public EventResponseDTO getEventById(long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
-        return mapToDto(event);
+        return eventMapper.toResponseDTO(event);
     }
 
-    public List<EventResponseDto> getEventByName(String name) {
+    public List<EventResponseDTO> getEventByName(String name) {
         List<Event> events = eventRepository.findByNameContainingIgnoreCaseAndDeletedFalse(name);
         return events.stream()
-                .map(this::mapToDto)
+                .map(eventMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    EventResponseDto mapToDto(Event event) {
-        EventResponseDto dto = new EventResponseDto();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.getUserByEmail(auth.getName()).get();
-        dto.setId(event.getId());
-        dto.setName(event.getName());
-        dto.setLocationCity(event.getLocation().getCity());
-        dto.setLocationStreet(event.getLocation().getStreet());
-        dto.setLocationHouseNumber(event.getLocation().getHouseNumber());
-        dto.setLocationPostalCode(event.getLocation().getPostalCode());
-        dto.setStatus(event.getStatus());
-        dto.setStartDateTime(event.getStartDate());
-        dto.setEndDateTime(event.getEndDate());
-        dto.setComments(event.getDescription());
-        dto.setStatusLabel(event.getStatus().getStatus());
-        dto.setCapacity(event.getMaxCapacity());
-        dto.setCategory(event.getCategory().getName());
-        dto.setParticipating(userEventRepository.existsByUserAndEvent(user, event));
-
-        return dto;
-    }
-
-    public Event createEvent(EventCreateDTO dto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.getUserByEmail(auth.getName())
-                .orElseThrow(()-> new EntityNotFoundException("User not found"));
-
+    public EventResponseDTO createEvent(EventCreateDTO dto) {
+        if (dto.getStartDateTime().isAfter(dto.getEndDateTime())) {
+            throw new IllegalArgumentException("Start date must be before end date");
+        }
+        User user = getLoggedUser();
         Event event = eventMapper.toEntity(dto);
         event.setCreatedBy(user);
         event.setAccepted(false);
         event.setDeleted(false);
-        event.setCurrentCapacity(dto.getMaxCapacity());
+        event.setCurrentCapacity(0);
         event.setStatus(EventStatus.PLANNED);
-        return eventRepository.save(event);
+
+        Location location = locationService.getLocation(
+                locationMapper.toEntity(dto.getLocation())
+        ).orElseGet(()-> locationService.createLocation(dto.getLocation()));
+        event.setLocation(location);
+
+        event.setCategory(categoryRepository.findById(dto.getCategoryId()).orElseThrow(()-> new EntityNotFoundException("Category not found")));
+        return eventMapper.toResponseDTO(eventRepository.save(event));
     }
 
-    /**
-     * Updates an existing {@link Event} entity with the provided {@link EventDTO} data.
-     * <p>
-     * This method performs the following operations:
-     * <ul>
-     *     <li>Authenticates the current user based on the security context.</li>
-     *     <li>Validates that the user exists and has the necessary permissions to update the event
-     *     (either ADMIN, or ORGANIZATION that owns the event).</li>
-     *     <li>Retrieves the existing {@link Event} by its ID, throwing an exception if not found.</li>
-     *    <li>Delegates the update logic to the {@link #prepareEvent(Event, EventDTO)} method, which applies the changes and saves the entity.</li>
-     * </ul>
-     *
-     * @param id       the ID of the event to update
-     * @param eventDTO the {@link EventDTO} containing updated event data
-     * @return the updated and saved {@link Event} entity
-     * @throws EntityNotFoundException if the user or the event is not found
-     * @throws AccessDeniedException   if the user does not have permission to update the event
-     */
-    public Event updateEvent(Long id,EventDTO eventDTO) throws AccessDeniedException {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        Optional<User> user = userService.getUserByEmail(auth.getName());
-        if (user.isEmpty()) {
-            System.out.println("User with email " + auth.getName() + " not found");
-            throw new EntityNotFoundException();
+    public EventResponseDTO updateEvent(Long id, EventUpdateDTO dto) throws AccessDeniedException {
+        if (dto.getStartDateTime().isAfter(dto.getEndDateTime())) {
+            throw new IllegalArgumentException("Start date must be before end date");
+        }
+        User user = getLoggedUser();
+        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
+        if(!isAdminOrCreator(user, event)) {
+            throw new AccessDeniedException("You do not have permission to update this event");
         }
 
-        Optional<Event> existingEvent = eventRepository.findById(id);
-        if (existingEvent.isEmpty()) {
-            System.out.println("Event with id " + id + " not found");
-            throw new EntityNotFoundException();
+        if(dto.getLocation() != null) {
+            event.setLocation(locationService.getOrCreateLocation(dto.getLocation()));
         }
 
-        boolean isAdmin = (user.get()).getUserRole() == UserRole.ADMIN;
-        boolean isOrganisation = user.get().getUserRole() == UserRole.ORGANIZATION;
-        boolean isOwner = true;
-
-        if(!(isAdmin || (isOrganisation && isOwner))) {
-            throw new AccessDeniedException("Access Denied");
-        }
-
-        return prepareEvent(existingEvent.get(),eventDTO);
-    }
-
-    /**
-     * Prepares and updates an {@link Event} entity with the provided {@link EventDTO} data.
-     * <p>
-     * This method fills the event object with the provided DTO fields, ensuring that:
-     * <ul>
-     *     <li>The {@link Location} is either reused if it exists in the database, or a new one is created and saved.</li>
-     *     <li>The {@link Category} is retrieved by its ID; if not found, an {@link EntityNotFoundException} is thrown.</li>
-     *     <li>Other event fields like name, status, description, capacity, and dates are updated accordingly.</li>
-     * </ul>
-     * After filling all fields, the method saves the {@code Event} entity to the repository.
-     *
-     * @param event    the existing {@link Event} entity to update (can be a new instance for creation)
-     * @param eventDTO the {@link EventDTO} containing new event data
-     * @return the saved {@link Event} entity
-     * @throws EntityNotFoundException if the specified category does not exist in the database
-     */
-    private Event prepareEvent(Event event, EventDTO eventDTO) {
-        LocationDTO locationDTO = eventDTO.getLocationDTO();
-        Location editedlocation;
-        Optional<Location> location = locationRepository
-                .findByAll(
-                        locationDTO.getCity(),
-                        locationDTO.getStreet(),
-                        locationDTO.getHouseNumber(),
-                        locationDTO.getPostalCode()
-                );
-
-        if (location.isEmpty()) {
-            Location newLocation = new Location();
-            newLocation.setCity(locationDTO.getCity());
-            newLocation.setStreet(locationDTO.getStreet());
-            newLocation.setHouseNumber(locationDTO.getHouseNumber());
-            newLocation.setPostalCode(locationDTO.getPostalCode());
-            editedlocation =  locationRepository.save(newLocation);
-            System.out.println(editedlocation.getId());
-        } else {
-            editedlocation = location.get();
-        }
-        Optional <Category> category = categoryRepository
-                .findById((eventDTO.getCategoryDTO().getId()));
-        if (category.isEmpty()) {
-            throw new EntityNotFoundException("Category with name " + eventDTO.getName() + " not found");
-        }
-        event.setName(eventDTO.getName());
-        event.setLocation(editedlocation);
-        event.setCategory(category.get());
-        event.setStatus(eventDTO.getStatus());
-        event.setDescription(eventDTO.getDescription());
-        event.setMaxCapacity(eventDTO.getMaxCapacity());
-        event.setStartDate(eventDTO.getStartDate());
-        event.setEndDate(eventDTO.getEndDate());
-        return eventRepository.save(event);
+        event.setCategory(categoryRepository.findById(dto.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found")));
+        return eventMapper.toResponseDTO(eventRepository.save(event));
     }
 
     public void deleteEvent(Long eventId) {
@@ -207,30 +104,15 @@ public class EventService {
 
     @Transactional
     public void softDeleteEvent(Long eventId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        Optional<User> user = userService.getUserByEmail(auth.getName());
-        if (user.isEmpty()) {
-            System.out.println("User with email " + auth.getName() + " not found");
-            throw new EntityNotFoundException();
-        }
-
-        Optional<Event> existingEvent = eventRepository.findById(eventId);
-        if (existingEvent.isEmpty()) {
-            System.out.println("Event with id " + eventId + " not found");
-            throw new EntityNotFoundException();
-        }
-        boolean isAdmin = (user.get()).getUserRole() == UserRole.ADMIN;
-        boolean isOrganisation = user.get().getUserRole() == UserRole.ORGANIZATION;
-        boolean isOwner = true;
-
-        if(!(isAdmin || (isOrganisation && isOwner))) {
+        User user = getLoggedUser();
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId + " not found"));
+        if(!isAdminOrCreator(user, event)) {
             throw new AccessDeniedException("Access Denied");
         }
         eventRepository.softDelete(eventId);
     }
 
-    public List<EventResponseDto> getFilteredEvents(String categoryId, EventStatus status, LocalDate startDateFrom, LocalDate startDateTo){
+    public List<EventResponseDTO> getFilteredEvents(String categoryId, EventStatus status, LocalDate startDateFrom, LocalDate startDateTo){
         List<Event> filtered = eventRepository.findFilteredEvents(
                 categoryId,
                 status
@@ -240,11 +122,11 @@ public class EventService {
         return filtered.stream()
                 .filter(e -> startDateFrom == null || !e.getStartDate().toLocalDate().isBefore(startDateFrom))
                 .filter(e -> startDateTo == null || !e.getStartDate().toLocalDate().isAfter(startDateTo))
-                .map(this::mapToDto)
+                .map(eventMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<EventResponseDto> getDeletedEvents(String name) {
+    public List<EventResponseDTO> getDeletedEvents(String name) {
         List<Event> eventList;
 
         if (name == null || name.isEmpty()) {
@@ -254,7 +136,7 @@ public class EventService {
             eventList = eventRepository.findByNameContainingIgnoreCaseAndDeletedTrue(name);
         }
         return eventList.stream()
-                .map(this::mapToDto)
+                .map(eventMapper::toResponseDTO)
                 .collect(Collectors.toList());
 
     }
@@ -270,5 +152,19 @@ public class EventService {
         return eventList.stream()
                 .map(eventMapper::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+    private User getLoggedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userService.getUserByEmail(authentication.getName())
+                .orElseThrow(()-> new EntityNotFoundException("User not found"));
+    }
+    private boolean isAdminOrCreator(User user, Event event) {
+        if (user.getUserRole() == UserRole.ADMIN) {
+            return true;
+        }
+        if (user.getUserRole() == UserRole.ORGANIZATION) {
+            return event.getCreatedBy().getId() == user.getId();
+        }
+        return false;
     }
 }

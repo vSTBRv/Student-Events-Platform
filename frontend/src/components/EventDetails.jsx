@@ -54,34 +54,35 @@ function EventDetails() {
                 Od {new Date(event.startDateTime).toLocaleString()} do{" "}
                 {new Date(event.endDateTime).toLocaleString()}
             </p>
-            <p className="event-description-text">{event.comments}</p>
+            <p className="event-description-text">{event.description}</p> {/* poprawione */}
+
             <div className="event-description">
                 <div className="event-info">
                     <ul>
                         <li>
-                            <span className="event-paragraph">
-                                <strong>Miasto: </strong>
-                                {event.locationCity}
-                            </span>
+              <span className="event-paragraph">
+                <strong>Miasto: </strong>
+                  {event.locationDTO?.city || "Brak danych"}
+              </span>
                             <br />
                         </li>
                         <li>
-                            <span className="event-paragraph">
-                                <strong>Ulica: </strong>
-                                {event.locationStreet} {event.locationHouseNumber}
-                            </span>
+              <span className="event-paragraph">
+                <strong>Ulica: </strong>
+                  {event.locationDTO?.street} {event.locationDTO?.houseNumber}
+              </span>
                         </li>
                         <li>
-                            <span className="event-paragraph">
-                                <strong>Kod pocztowy: </strong>
-                                {event.locationPostalCode}
-                            </span>
+              <span className="event-paragraph">
+                <strong>Kod pocztowy: </strong>
+                  {event.locationDTO?.postalCode}
+              </span>
                         </li>
                         <li>
-                            <span className="event-paragraph">
-                                <strong>Limit miejsc: </strong>
-                                {event.capacity}
-                            </span>
+              <span className="event-paragraph">
+                <strong>Limit miejsc: </strong>
+                  {event.maxCapacity}
+              </span>
                         </li>
                     </ul>
                 </div>
