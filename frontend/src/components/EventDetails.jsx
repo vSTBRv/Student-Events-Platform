@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function EventDetails() {
@@ -9,6 +9,7 @@ function EventDetails() {
     const [participants, setParticipants] = useState([]);
     const [showParticipants, setShowParticipants] = useState(false);
     const [participantsError, setParticipantsError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchEvent = async () => {
@@ -88,12 +89,21 @@ function EventDetails() {
             </div>
 
             <div className="mt-6">
-                <button
-                    onClick={fetchParticipants}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                >
-                    Wyświetl uczestników
-                </button>
+                <div className="flex flex-wrap gap-4">
+                    <button
+                        onClick={fetchParticipants}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                    >
+                        Wyświetl uczestników
+                    </button>
+
+                    <button
+                        onClick={()=> navigate(`/events/${event.id}/message`)}
+                        className={"bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"}
+                    >
+                        Wyślij wiadomość do uczestników
+                    </button>
+                </div>
 
                 {participantsError && (
                     <p className="text-red-500 mt-2">{participantsError}</p>

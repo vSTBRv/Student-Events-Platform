@@ -1,5 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
@@ -58,6 +59,7 @@ public class Event {
     private List<User> participants = new ArrayList<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<UserEvent> userEvent = new HashSet<>();
 
     private boolean deleted;

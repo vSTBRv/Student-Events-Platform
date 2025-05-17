@@ -40,7 +40,7 @@ function App() {
         <Route path="/events/edit/:id" element={<CreateEvent />} />
           <Route path="/admin/users" element={<ManageUsers />} />
           <Route path="/admin/deleted-events" element={<EventsDeleted />} />
-          <Route path="/events/:id/send-message" element={<SendMessage />} />
+          <Route path="/events/:id/message" element={<SendMessage />} />
 
       </Routes>
     </div>
