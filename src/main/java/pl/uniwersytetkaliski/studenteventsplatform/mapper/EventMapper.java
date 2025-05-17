@@ -8,6 +8,16 @@ import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 
 @Component
 public class EventMapper implements Mapper<Event, EventResponseDTO, EventCreateDTO, EventUpdateDTO> {
+    private final LocationMapper locationMapper;
+    private final UserMapper userMapper;
+    private final CategoryMapper categoryMapper;
+
+    public EventMapper(LocationMapper locationMapper, UserMapper userMapper, CategoryMapper categoryMapper) {
+        this.locationMapper = locationMapper;
+        this.userMapper = userMapper;
+        this.categoryMapper = categoryMapper;
+    }
+
     @Override
     public Event toEntity(EventCreateDTO eventCreateDTO) {
         Event event = new Event();
@@ -21,6 +31,12 @@ public class EventMapper implements Mapper<Event, EventResponseDTO, EventCreateD
 
     @Override
     public Event updateEntity(Event entity, EventUpdateDTO eventUpdateDTO) {
+        entity.setName(eventUpdateDTO.getName());
+        entity.setDescription(eventUpdateDTO.getDescription());
+        entity.setMaxCapacity(eventUpdateDTO.getMaxCapacity());
+        entity.setStartDate(eventUpdateDTO.getStartDateTime());
+        entity.setEndDate(eventUpdateDTO.getEndDateTime());
+        entity.setStatus(eventUpdateDTO.getStatus());
         return entity;
     }
 
@@ -32,7 +48,16 @@ public class EventMapper implements Mapper<Event, EventResponseDTO, EventCreateD
         responseDTO.setDescription(entity.getDescription());
         responseDTO.setMaxCapacity(entity.getMaxCapacity());
         responseDTO.setAccepted(entity.isAccepted());
-
+        responseDTO.setStartDateTime(entity.getStartDate());
+        responseDTO.setEndDateTime(entity.getEndDate());
+        responseDTO.setStatus(entity.getStatus());
+        responseDTO.setCreationDate(entity.getCreationDate());
+        responseDTO.setDeleted(entity.isDeleted());
+        responseDTO.setDeletedAt(entity.getDeletedAt());
+        responseDTO.setCurrentCapacity(entity.getCurrentCapacity());
+        responseDTO.setCreatedBy(userMapper.mapToDTO(entity.getCreatedBy()));
+        responseDTO.setLocationDTO(locationMapper.toResponseDTO(entity.getLocation()));
+        responseDTO.setCategoryDTO(categoryMapper.toResponseDTO(entity.getCategory()));
         return responseDTO;
     }
 }

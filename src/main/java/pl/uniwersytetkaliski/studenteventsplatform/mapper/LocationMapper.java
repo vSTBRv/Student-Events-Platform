@@ -31,6 +31,7 @@ public class LocationMapper implements Mapper<Location, LocationResponseDTO, Loc
     @Override
     public LocationResponseDTO toResponseDTO(Location entity) {
         LocationResponseDTO locationResponseDTO = new LocationResponseDTO();
+        locationResponseDTO.setId(entity.getId());
         locationResponseDTO.setCity(entity.getCity());
         locationResponseDTO.setStreet(entity.getStreet());
         locationResponseDTO.setHouseNumber(entity.getHouseNumber());
