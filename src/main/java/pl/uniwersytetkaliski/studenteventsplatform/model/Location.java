@@ -61,4 +61,12 @@ public class Location {
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
+
+    @Override
+    public String toString() {
+        return "ul. " + getStreet()
+                + " " + getHouseNumber()
+                + ",\n" + getPostalCode()
+                + " " + getCity();
+    }
 }

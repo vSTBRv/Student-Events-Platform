@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function EventDetails() {
     const { id } = useParams();
     const [event, setEvent] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState("");
     const [participants, setParticipants] = useState([]);
     const [showParticipants, setShowParticipants] = useState(false);
     const [participantsError, setParticipantsError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchEvent = async () => {
@@ -17,6 +19,7 @@ function EventDetails() {
                     withCredentials: true,
                 });
                 setEvent(response.data);
+                console.log("Event z backendu: ", response.data);
             } catch (err) {
                 console.error("Błąd pobierania wydarzenia:", err);
                 setError("Nie udało się pobrać szczegółów wydarzenia");
@@ -25,6 +28,18 @@ function EventDetails() {
 
         fetchEvent();
     }, [id]);
+
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/me`, { withCredentials: true })
+            .then(response => {
+                console.log("👤 Zalogowany użytkownik:", response.data);
+                setCurrentUser(response.data)
+            })
+        .catch(error => {
+            console.log("Błąd pobierania danych zalogowanego użytkownika", error);
+            setCurrentUser(null);
+        });
+    }, [])
 
     const fetchParticipants = async () => {
         try {
@@ -88,12 +103,25 @@ function EventDetails() {
             </div>
 
             <div className="mt-6">
-                <button
-                    onClick={fetchParticipants}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                >
-                    Wyświetl uczestników
-                </button>
+                <div className="flex flex-wrap gap-4">
+                    <button
+                        onClick={fetchParticipants}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                    >
+                        Wyświetl uczestników
+                    </button>
+
+                    {currentUser &&
+                        currentUser.userRole === "ORGANIZATION" &&
+                        currentUser.id === event.createdBy && (
+                            <button
+                                onClick={()=> navigate(`/events/${event.id}/message`)}
+                                className={"bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"}>
+                                Wyślij wiadomość do uczestników
+                            </button>
+                        )}
+
+                </div>
 
                 {participantsError && (
                     <p className="text-red-500 mt-2">{participantsError}</p>

@@ -17,8 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.RegisterDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 import pl.uniwersytetkaliski.studenteventsplatform.model.UserRole;
+import pl.uniwersytetkaliski.studenteventsplatform.service.NotificationService;
 import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 
 import java.time.LocalDateTime;
@@ -32,6 +34,9 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private NotificationService notificationService;
+
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
@@ -43,6 +48,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
+
         if (userService.existsByEmail(registerDTO.email)) {
             return ResponseEntity.badRequest().body("Email już istnieje.");
         }
@@ -60,6 +66,9 @@ public class AuthController {
         user.setEnabled(true);
         user.setCreatedAt(LocalDateTime.now());
         userService.createUser(user);
+
+        notificationService.sendRegistrationEmail(user.getEmail(), user.getFullName());
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -145,5 +154,13 @@ public class AuthController {
 
         // Zwraca odpowiedź 200 OK z informacją o wylogowaniu
         return ResponseEntity.ok("Wylogowano");
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        String email = authentication.getName();
+        return userService.getUserByEmail(email)
+                .map(user->ResponseEntity.ok(new UserDTO(user)))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }
