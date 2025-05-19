@@ -49,7 +49,7 @@ public class UserEventService {
             throw new EntityNotFoundException();
         }
         int currentCapacity = event.get().getCurrentCapacity();
-        if (currentCapacity == 0) {
+        if (currentCapacity <= 0) {
             throw new IllegalArgumentException("Maximum capacity exceeded");
         }
 

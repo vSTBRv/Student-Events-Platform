@@ -50,24 +50,14 @@ public class Event {
     @Column(length = 1000)
     private String description;
 
-    @ManyToMany
-    @JoinTable(
-            name="user_event",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> participants = new ArrayList<>();
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Set<UserEvent> userEvent = new HashSet<>();
-
     private boolean deleted;
 
     private LocalDateTime deletedAt;
 
     @Column(name="created_by", nullable = false)
     private Long createdBy;
+
+    private boolean accepted;
 
     public long getId() {
         return id;
@@ -179,6 +169,13 @@ public class Event {
 
     public void setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public boolean isAccepted() {
+        return accepted;
+    }
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
     }
 
     public Set<UserEvent> getUserEvent() {
