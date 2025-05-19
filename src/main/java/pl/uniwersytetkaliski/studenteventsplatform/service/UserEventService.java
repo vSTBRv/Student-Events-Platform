@@ -82,7 +82,9 @@ public class UserEventService {
 
     private UserDTO mapToDTO(UserEvent userEvent) {
         return new UserDTO(
-                userEvent.getUser().getFullName()
+//                userEvent.getUser().getFullName()
+                // mcichy - wrazie czego usunąć poniższe i odkomentować to co wyżej
+                userEvent.getUser()
         );
     }
 

@@ -1,8 +1,13 @@
 package pl.uniwersytetkaliski.studenteventsplatform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="events")
@@ -49,7 +54,8 @@ public class Event {
 
     private LocalDateTime deletedAt;
 
-    private long createdBy;
+    @Column(name="created_by", nullable = false)
+    private Long createdBy;
 
     private boolean accepted;
 
@@ -157,11 +163,11 @@ public class Event {
         this.deletedAt = deletedAt;
     }
 
-    public long getCreatedBy() {
+    public Long getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(long createdBy) {
+    public void setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -170,5 +176,13 @@ public class Event {
     }
     public void setAccepted(boolean accepted) {
         this.accepted = accepted;
+    }
+
+    public Set<UserEvent> getUserEvent() {
+        return userEvent;
+    }
+
+    public void setUserEvent(Set<UserEvent> userEvent) {
+        this.userEvent = userEvent;
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 
+import java.util.Set;
+
 @Service
 public class NotificationService {
 
@@ -152,5 +154,12 @@ public class NotificationService {
 
         message.setText(body);
         mailSender.send(message);
+    }
+
+    public void sendMessageToParticipants(Set<User> participants, Event event, String messageContent) {
+        for(User user: participants) {
+            String subject = "Nowa wiadomość dotycząca wydarzenia: " + event.getName();
+            this.sendConfirmationEmail(user.getEmail(), subject, messageContent);
+        }
     }
 }

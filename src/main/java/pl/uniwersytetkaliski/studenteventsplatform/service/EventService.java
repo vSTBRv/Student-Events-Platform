@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import pl.uniwersytetkaliski.studenteventsplatform.repository.UserEventRepositor
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,6 +81,7 @@ public class EventService {
         dto.setCategory(event.getCategory().getName());
         dto.setParticipating(userEventRepository.existsByUserAndEvent(user, event));
 
+        dto.setCreatedBy(event.getCreatedBy() != null ? event.getCreatedBy() : null);
         return dto;
     }
 
@@ -97,19 +100,52 @@ public class EventService {
      * @return the newly created and saved {@link Event} entity
      * @throws EntityNotFoundException if the authenticated user is not found
      */
+//    public Event createEvent(EventDTO eventDTO) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        Optional<User> user = userService.getUserByEmail(auth.getName());
+//        if (user.isEmpty()) {
+//            System.out.println("User with email " + auth.getName() + " not found");
+//            throw new EntityNotFoundException();
+//        }
+//
+//        Event event = new Event();
+//        event.setCreatedBy(user.get().getId());
+//        return prepareEvent(event, eventDTO);
+//    }
+
     public Event createEvent(EventDTO eventDTO) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> user = userService.getUserByEmail(auth.getName());
-        if (user.isEmpty()) {
-            System.out.println("User with email " + auth.getName() + " not found");
-            throw new EntityNotFoundException();
-        }
-
         Event event = new Event();
-        event.setCreatedBy(user.get().getId());
+        event.setName(eventDTO.getName());
+        event.setDescription(eventDTO.getDescription());
+        event.setStartDate(eventDTO.getStartDate());
+        event.setEndDate(eventDTO.getEndDate());
+        event.setMaxCapacity(eventDTO.getMaxCapacity());
+        event.setCurrentCapacity(eventDTO.getCurrentCapacity());
+        event.setCreationDate(eventDTO.getCreationDate());
+        event.setStatus(EventStatus.PLANNED);
+        event.setDeleted(false);
 
-        notificationService.sendEventCreatedConfirmationEmail(user.get(), event);
-        return prepareEvent(event, eventDTO);
+        Location location = new Location();
+        location.setCity(eventDTO.getLocationDTO().getCity());
+        location.setPostalCode(eventDTO.getLocationDTO().getPostalCode());
+        location.setStreet(eventDTO.getLocationDTO().getStreet());
+        location.setHouseNumber(eventDTO.getLocationDTO().getHouseNumber());
+        locationRepository.save(location);
+        event.setLocation(location);
+
+        Category category = categoryRepository.findById(eventDTO.getCategoryDTO().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Category with id " + eventDTO.getCategoryDTO().getId() + " not found"));
+        event.setCategory(category);
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userService.getUserByEmail(email)
+                .orElseThrow(()->new RuntimeException("Nie znaleziono zalogowanego użytkownika"));
+
+        event.setCreatedBy(currentUser.getId());
+
+        Event saved = eventRepository.save(event);
+
+        return saved;
     }
 
     /**
@@ -272,5 +308,28 @@ public class EventService {
     @Transactional
     public void restoreEvent(long id) {
         eventRepository.restoreEvent(id);
+    }
+
+    public void sendMessageToParticipants(Long eventId, String organizerEmail, String messageContent) {
+        Event event = eventRepository.findByIdWithParticipants(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId + " not found"));
+
+        User user = userService.getUserByEmail(organizerEmail).orElseThrow(()-> new UsernameNotFoundException("User with email " + organizerEmail + " not found"));
+
+
+        if(event.getCreatedBy() != user.getId()) {
+            throw new AccessDeniedException("Nie jesteś organizatorem tego wydarzenia");
+        }
+
+        Set<User> participants = event.getUserEvent().stream()
+                .map(UserEvent::getUser)
+                .collect(Collectors.toSet());
+
+        if (participants.isEmpty()) {
+//            log.info("Brak uczestników wydarzenia {}", eventId);
+            return;
+        }
+
+        notificationService.sendMessageToParticipants(participants, event, messageContent);
     }
 }
