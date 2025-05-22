@@ -1,32 +1,44 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventCreateDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventUpdateDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
-import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
-import pl.uniwersytetkaliski.studenteventsplatform.service.UserEventService;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.format.annotation.DateTimeFormat;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.security.access.AccessDeniedException;
+    import org.springframework.security.access.prepost.PreAuthorize;
+    import org.springframework.security.core.Authentication;
+    import org.springframework.security.core.context.SecurityContextHolder;
+    import org.springframework.security.core.userdetails.UsernameNotFoundException;
+    import org.springframework.web.bind.annotation.*;
+    import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
+    import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventCreateDTO;
+    import pl.uniwersytetkaliski.studenteventsplatform.dto.MessageDTO;
+    import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventResponseDTO;
+    import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventUpdateDTO;
+    import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
+    import pl.uniwersytetkaliski.studenteventsplatform.model.User;
+    import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
+    import pl.uniwersytetkaliski.studenteventsplatform.service.NotificationService;
+    import pl.uniwersytetkaliski.studenteventsplatform.service.UserEventService;
+    import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 
-import java.time.LocalDate;
-import java.util.List;
+    import java.time.LocalDate;
+    import java.util.List;
 
-@RestController
-@RequestMapping("/api/events")
-public class EventController {
-    private final EventService eventService;
-    private final UserEventService userEventService;
+    @RestController
+    @RequestMapping("/api/events")
+    public class EventController {
+        private final EventService eventService;
+        private final UserEventService userEventService;
+        private final NotificationService notificationService;
+        private final UserService userService;
 
-    public EventController(EventService eventService, UserEventService userEventService) {
-        this.eventService = eventService;
-        this.userEventService = userEventService;
-    }
+        public EventController(EventService eventService, UserEventService userEventService, NotificationService notificationService, UserService userService) {
+            this.eventService = eventService;
+            this.userEventService = userEventService;
+            this.notificationService = notificationService;
+            this.userService = userService;
+        }
 
     @GetMapping()
     public ResponseEntity<List<EventResponseDTO>> getAllEvents(@RequestParam(required = false) String name) {
@@ -105,27 +117,45 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("{id}/register")
-    public ResponseEntity<String> registerToEvent(@PathVariable long id) {
-        try {
-            userEventService.registerToEvent(id);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        @PostMapping("{id}/register")
+        public ResponseEntity<String> registerToEvent(@PathVariable long id) {
+            try {
+                userEventService.registerToEvent(id);
+                return ResponseEntity.ok().build();
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
         }
-    }
 
-    @DeleteMapping("{id}/unregister")
-    public ResponseEntity<String> unregisterFromEvent(@PathVariable long id) {
-            userEventService.unregisterFromEvent(id);
-            return ResponseEntity.ok().build();
+        @DeleteMapping("{id}/unregister")
+        public ResponseEntity<String> unregisterFromEvent(@PathVariable long id) {
+                userEventService.unregisterFromEvent(id);
+                return ResponseEntity.ok().build();
 
-    }
+        }
 
-    @GetMapping("{id}/participants")
-    public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable long id) {
-        return ResponseEntity.ok(userEventService.getParticipants(id));
-    }
+        @GetMapping("{id}/participants")
+        public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable long id) {
+            return ResponseEntity.ok(userEventService.getParticipants(id));
+        }
+
+        @PreAuthorize("hasRole('ORGANIZATION')")
+        @PostMapping("/{id}/message")
+        public ResponseEntity<?> sendMessageToParticipants(@PathVariable Long id, @RequestBody MessageDTO messageDTO, Authentication auth) {
+            String organizerEmail = auth.getName();
+            try{
+                eventService.sendMessageToParticipants(id, organizerEmail, messageDTO.getMessage());
+                return ResponseEntity.ok("Wiadomość została wysłana.");
+            } catch (AccessDeniedException e) {
+                System.out.println("Zalogowany: " + organizerEmail);
+                System.out.println("Twórca wydarzenia: " + eventService.getEventById(id).getCreatedBy());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nie jesteś organizatorem tego wydarzenia.");
+            } catch(Exception ex) {
+                ex.printStackTrace(); // dodaj to
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Błąd wysyłania wiadomości: " + ex.getMessage());
+            }
+        }
 
     @GetMapping("participated")
     public ResponseEntity<List<EventResponseDTO>> getParticipatedEvents() {

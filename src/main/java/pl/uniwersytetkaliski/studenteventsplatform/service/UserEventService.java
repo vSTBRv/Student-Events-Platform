@@ -1,6 +1,7 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class UserEventService {
     private final UserEventRepository userEventRepository;
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public UserEventService(UserService userService, UserEventRepository userEventRepository, EventRepository eventRepository, EventMapper eventMapper) {
         this.userService = userService;
@@ -56,6 +60,7 @@ public class UserEventService {
         userEventRepository.save(userEvent);
         currentCapacity++;
         eventRepository.updateCurrentCapacity(id,currentCapacity);
+        notificationService.sendEventRegistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
     }
 
     @Transactional
@@ -67,6 +72,7 @@ public class UserEventService {
             throw new EntityNotFoundException();
         }
         userEventRepository.deleteByUserAndEvent(user.get(), event.get());
+        notificationService.sendEventUnregistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
     }
 
     public List<UserDTO> getParticipants(long id) {
@@ -76,7 +82,9 @@ public class UserEventService {
 
     private UserDTO mapToDTO(UserEvent userEvent) {
         return new UserDTO(
-                userEvent.getUser().getFullName()
+//                userEvent.getUser().getFullName()
+                // mcichy - wrazie czego usunąć poniższe i odkomentować to co wyżej
+                userEvent.getUser()
         );
     }
 

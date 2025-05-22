@@ -44,9 +44,11 @@ public class SecurityConfig {
                                 "/api/login",
                                 "/api/register",
                                 "/api/logout",
-                                "/h2-console/**"
+                                "/h2-console/**",
+                                "/api/test/**"
                         ).permitAll()
                         .anyRequest().authenticated()
+//                                .anyRequest().permitAll()
                 )
                 // jak trzeba wywalić i zostawić to co było poniżej. To jest próba ustawienia logowania (.formlogin było poprzednio i błędy wysakkiwały)
 //                .formLogin(form -> form

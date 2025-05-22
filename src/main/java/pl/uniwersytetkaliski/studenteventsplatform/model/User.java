@@ -3,6 +3,10 @@ package pl.uniwersytetkaliski.studenteventsplatform.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -32,6 +36,12 @@ public class User {
 
     @Column(name = "createdAt")
     private LocalDateTime createdAt;    // data utworzenia wpisu
+
+    @ManyToMany(mappedBy = "participants")
+    private List<Event> events = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserEvent> userEvent = new HashSet<>();
 
     public long getId() {
         return id;
@@ -99,6 +109,14 @@ public class User {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public Set<UserEvent> getUserEvent() {
+        return userEvent;
+    }
+
+    public void setUserEvent(Set<UserEvent> userEvent) {
+        this.userEvent = userEvent;
     }
 
     public static class Builder {

@@ -173,4 +173,12 @@ public class Event {
     public void setAccepted(boolean accepted) {
         this.accepted = accepted;
     }
+
+    public Set<UserEvent> getUserEvent() {
+        return userEvent;
+    }
+
+    public void setUserEvent(Set<UserEvent> userEvent) {
+        this.userEvent = userEvent;
+    }
 }

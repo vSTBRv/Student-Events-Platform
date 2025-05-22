@@ -3,9 +3,11 @@ package pl.uniwersytetkaliski.studenteventsplatform.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByNameContainingIgnoreCaseAndDeletedFalse(String name);
@@ -46,6 +48,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     void acceptEvent(long id);
 
     List<Event> findByDeletedFalseAndAcceptedTrue();
+
+//    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.participants WHERE e.id = :id")
+    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.userEvent ue LEFT JOIN FETCH ue.user WHERE e.id = :id")
+    Optional<Event> findByIdWithParticipants(@Param("id") Long id);
 }
 
 

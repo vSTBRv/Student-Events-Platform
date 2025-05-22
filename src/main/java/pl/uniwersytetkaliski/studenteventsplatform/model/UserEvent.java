@@ -1,5 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 /**
@@ -33,7 +34,10 @@ public class UserEvent {
 
     @ManyToOne
     @MapsId("eventId")
+    @JsonIgnore
     private Event event;
+
+
 
     public UserEvent(User user, Event event) {
         this.id = new UserEventId(user.getId(), event.getId());

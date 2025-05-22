@@ -7,26 +7,52 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
     const [userRole, setUserRole] = useState(null);
     const navigate = useNavigate();
 
+    // useEffect(() => {
+    //     const checkRole = async () => {
+    //         if (!isLoggedIn) return;
+    //
+    //         try {
+    //             const response = await fetch("http://localhost:8080/api/users", {
+    //                 method: "GET",
+    //                 credentials: "include",
+    //             });
+    //
+    //             if (response.ok) {
+    //                 const users = await response.json();
+    //                 const email = localStorage.getItem("userEmail");
+    //                 const currentUser = users.find((u) => u.email === email);
+    //                 if (currentUser) {
+    //                     setUserRole(currentUser.userRole);
+    //                     if (currentUser.userRole === "ADMIN") {
+    //                         setIsAdmin(true);
+    //                     }
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             console.error("Błąd przy sprawdzaniu roli:", error);
+    //         }
+    //     };
+    //     checkRole();
+    // }, [isLoggedIn]);
+
     useEffect(() => {
         const checkRole = async () => {
             if (!isLoggedIn) return;
 
             try {
-                const response = await fetch("http://localhost:8080/api/users", {
+                const response = await fetch("http://localhost:8080/api/me", {
                     method: "GET",
                     credentials: "include",
                 });
 
                 if (response.ok) {
-                    const users = await response.json();
-                    const email = localStorage.getItem("userEmail");
-                    const currentUser = users.find((u) => u.email === email);
-                    if (currentUser) {
-                        setUserRole(currentUser.userRole);
-                        if (currentUser.userRole === "ADMIN") {
-                            setIsAdmin(true);
-                        }
+                    const currentUser = await response.json();
+                    setUserRole(currentUser.userRole);
+                    if (currentUser.userRole === "ADMIN") {
+                        setIsAdmin(true);
                     }
+                } else {
+                    console.warn("Nie udało się pobrać /api/me:", response.status);
                 }
             } catch (error) {
                 console.error("Błąd przy sprawdzaniu roli:", error);
@@ -35,6 +61,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
 
         checkRole();
     }, [isLoggedIn]);
+
 
     const handleLogout = async () => {
         try {

@@ -1,8 +1,10 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +32,9 @@ public class EventService {
     private final UserService userService;
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public EventService(EventRepository eventRepository, LocationService locationService, CategoryRepository categoryRepository, UserService userService, EventMapper eventMapper, LocationMapper locationMapper) {
         this.eventRepository = eventRepository;
@@ -108,6 +115,7 @@ public class EventService {
             throw new AccessDeniedException("Access Denied");
         }
         eventRepository.softDelete(eventId);
+        notificationService.sendEventDeletedConfirmationEmail(user.get(), existingEvent.get());
     }
 
     public List<EventResponseDTO> getFilteredEvents(String categoryId, EventStatus status, LocalDate startDateFrom, LocalDate startDateTo){
@@ -169,5 +177,28 @@ public class EventService {
     @Transactional
     public void acceptEvent(long id) {
         eventRepository.acceptEvent(id);
+    }
+
+    public void sendMessageToParticipants(Long eventId, String organizerEmail, String messageContent) {
+        Event event = eventRepository.findByIdWithParticipants(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId + " not found"));
+
+        User user = userService.getUserByEmail(organizerEmail).orElseThrow(()-> new UsernameNotFoundException("User with email " + organizerEmail + " not found"));
+
+
+        if(event.getCreatedBy() != user.getId()) {
+            throw new AccessDeniedException("Nie jesteś organizatorem tego wydarzenia");
+        }
+
+        Set<User> participants = event.getUserEvent().stream()
+                .map(UserEvent::getUser)
+                .collect(Collectors.toSet());
+
+        if (participants.isEmpty()) {
+//            log.info("Brak uczestników wydarzenia {}", eventId);
+            return;
+        }
+
+        notificationService.sendMessageToParticipants(participants, event, messageContent);
     }
 }
