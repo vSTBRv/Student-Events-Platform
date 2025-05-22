@@ -1,25 +1,28 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO;
 
+import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO.LocationResponseDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
-
 
 import java.time.LocalDateTime;
 
-public class EventDTO {
+public class EventResponseDTO {
     private Long id;
     private String name;
-    private LocationDTO locationDTO;
+    private LocationResponseDTO locationDTO;
     private EventStatus status;
     private int maxCapacity;
     private int currentCapacity;
     private LocalDateTime creationDate;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     private String description;
-    private CategoryDTO categoryDTO;
+    private CategoryResponseDTO categoryDTO;
     private boolean deleted;
-    private LocalDateTime deleted_at;
-    private String created_by;
+    private LocalDateTime deletedAt;
+    private UserDTO createdBy;
+    private boolean accepted;
 
     public Long getId() {
         return id;
@@ -37,11 +40,11 @@ public class EventDTO {
         this.name = name;
     }
 
-    public LocationDTO getLocationDTO() {
+    public LocationResponseDTO getLocationDTO() {
         return locationDTO;
     }
 
-    public void setLocationDTO(LocationDTO locationDTO) {
+    public void setLocationDTO(LocationResponseDTO locationDTO) {
         this.locationDTO = locationDTO;
     }
 
@@ -77,20 +80,20 @@ public class EventDTO {
         this.creationDate = creationDate;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 
-    public LocalDateTime getEndDate() {
-        return endDate;
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
     public String getDescription() {
@@ -101,11 +104,11 @@ public class EventDTO {
         this.description = description;
     }
 
-    public CategoryDTO getCategoryDTO() {
+    public CategoryResponseDTO getCategoryDTO() {
         return categoryDTO;
     }
 
-    public void setCategoryDTO(CategoryDTO categoryDTO) {
+    public void setCategoryDTO(CategoryResponseDTO categoryDTO) {
         this.categoryDTO = categoryDTO;
     }
 
@@ -117,19 +120,27 @@ public class EventDTO {
         this.deleted = deleted;
     }
 
-    public LocalDateTime getDeleted_at() {
-        return deleted_at;
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
     }
 
-    public void setDeleted_at(LocalDateTime deleted_at) {
-        this.deleted_at = deleted_at;
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
-    public String getCreated_by() {
-        return created_by;
+    public UserDTO getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCreated_by(String created_by) {
-        this.created_by = created_by;
+    public void setCreatedBy(UserDTO createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public boolean isAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
     }
 }

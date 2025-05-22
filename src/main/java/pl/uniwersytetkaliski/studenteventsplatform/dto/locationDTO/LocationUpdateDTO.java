@@ -1,19 +1,21 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO;
 
-public class LocationDTO {
-    private Long id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
+public class LocationUpdateDTO {
+    @NotBlank
+    @Pattern(regexp = "^\\D*$")
     private String city;
+
     private String street;
+
+    @NotBlank
     private String houseNumber;
+
+    @NotBlank
+    @Pattern(regexp = "\\d{2}-\\d{3}")
     private String postalCode;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getCity() {
         return city;

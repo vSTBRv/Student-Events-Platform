@@ -37,7 +37,8 @@ public class SecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/events/delete/","/api/events/deleted/").hasRole("ADMIN")
+                        .requestMatchers("/api/events/delete/**","/api/events/deleted/**"
+                        ,"/api/events/unaccepted/**").hasRole("ADMIN")
                         .requestMatchers("/api/events/{id}/register","/api/events/{id}/unregister").hasRole("STUDENT")
                         .requestMatchers(
                                 "/api/login",

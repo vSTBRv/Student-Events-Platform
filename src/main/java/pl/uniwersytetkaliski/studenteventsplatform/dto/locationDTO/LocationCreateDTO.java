@@ -1,33 +1,21 @@
-package pl.uniwersytetkaliski.studenteventsplatform.model;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
-@Entity
-@Table(name="locations")
-public class Location {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
+public class LocationCreateDTO {
+    @NotBlank
+    @Pattern(regexp = "^\\D*$")
     private String city;
 
     private String street;
 
-    @Column(nullable = false)
+    @NotBlank
     private String houseNumber;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Pattern(regexp = "\\d{2}-\\d{3}")
     private String postalCode;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
 
     public String getCity() {
         return city;
@@ -59,13 +47,5 @@ public class Location {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
-    }
-
-    @Override
-    public String toString() {
-        return "ul. " + getStreet()
-                + " " + getHouseNumber()
-                + ",\n" + getPostalCode()
-                + " " + getCity();
     }
 }
