@@ -24,6 +24,15 @@ public class NotificationService {
         mailSender.send(message);
     }
 
+    public void sendNotificationEmail(User to, String subject, String content) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("no-reply@student-events-platform.local");
+        message.setTo(to.getEmail());
+        message.setSubject(subject);
+        message.setText(content);
+        mailSender.send(message);
+    }
+
     public void sendRegistrationEmail(String to, String user) {
         final String subject = "Witamy w Eventify!";
         String content = "Cześć " + user + ",\n\n" +
@@ -71,6 +80,8 @@ public class NotificationService {
         message.setText(body);
         mailSender.send(message);
     }
+
+
 
     public void sendEventUnregistrationConfirmationEmail(String to, User user, Event event) {
         SimpleMailMessage message = new SimpleMailMessage();

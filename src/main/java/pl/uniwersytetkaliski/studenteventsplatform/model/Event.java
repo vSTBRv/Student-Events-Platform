@@ -50,6 +50,9 @@ public class Event {
     @Column(length = 1000)
     private String description;
 
+    @Column(name="notified_about_limit")
+    private boolean notifiedAboutLimit = false;
+
     private boolean deleted;
 
     private LocalDateTime deletedAt;
@@ -63,6 +66,12 @@ public class Event {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserEvent> userEvent = new HashSet<>();
+
+    public boolean isNotifiedAboutLimit() {
+        return notifiedAboutLimit;
+    }
+
+    public void setNotifiedAboutLimit(boolean notifiedAboutLimit) {}
 
     public long getId() {
         return id;

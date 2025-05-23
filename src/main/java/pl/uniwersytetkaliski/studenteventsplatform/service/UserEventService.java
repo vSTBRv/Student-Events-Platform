@@ -29,6 +29,10 @@ public class UserEventService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private EventService eventService;
+
+
     public UserEventService(UserService userService, UserEventRepository userEventRepository, EventRepository eventRepository, EventMapper eventMapper) {
         this.userService = userService;
         this.userEventRepository = userEventRepository;
@@ -61,6 +65,8 @@ public class UserEventService {
         currentCapacity++;
         eventRepository.updateCurrentCapacity(id,currentCapacity);
         notificationService.sendEventRegistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
+
+        eventService.checkLimitAndNotify(event.get());
     }
 
     @Transactional

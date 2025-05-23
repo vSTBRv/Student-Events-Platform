@@ -20,6 +20,7 @@ package pl.uniwersytetkaliski.studenteventsplatform.controller;
     import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventUpdateDTO;
     import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
     import pl.uniwersytetkaliski.studenteventsplatform.model.User;
+    import pl.uniwersytetkaliski.studenteventsplatform.model.UserEvent;
     import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
     import pl.uniwersytetkaliski.studenteventsplatform.service.NotificationService;
     import pl.uniwersytetkaliski.studenteventsplatform.service.UserEventService;

@@ -203,4 +203,22 @@ public class EventService {
 
         notificationService.sendMessageToParticipants(participants, event, messageContent);
     }
+
+    public void checkLimitAndNotify(Event event) {
+        int current = event.getCurrentCapacity();
+        int max = event.getMaxCapacity();
+
+        if(!event.isNotifiedAboutLimit() && max > 0 && current >= 0.8 * max) {
+            event.setNotifiedAboutLimit(true);
+            eventRepository.save(event);
+
+            User organizer = event.getCreatedBy();
+            String title = "⚠️ Limit miejsc osiągnięty";
+            String message = "Na wydarzeniu \"" + event.getName() + "\" osiągnięto 80% miejsc (" + current + "/" + max + ").";
+
+            notificationService.sendNotificationEmail(organizer, title, message);
+        }
+    }
+
+
 }
