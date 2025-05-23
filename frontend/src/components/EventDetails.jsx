@@ -111,10 +111,10 @@ function EventDetails() {
                     >
                         Wyświetl uczestników
                     </button>
-
+                    
                     {currentUser &&
                         currentUser.userRole === "ORGANIZATION" &&
-                        currentUser.id === event.createdBy && (
+                        currentUser.id === event.createdBy.id && (
                             <button
                                 onClick={()=> navigate(`/events/${event.id}/message`)}
                                 className={"bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"}>
