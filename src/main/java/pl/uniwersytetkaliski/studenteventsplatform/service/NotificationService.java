@@ -30,7 +30,7 @@ public class NotificationService {
                 "Dziękujemy za rejestracje w Eventify - platformie do zarządzania wydarzeniami studenckimi.\n\n" +
                 "Od teraz możesz:\n" +
                 "- przeglądać i zapisywać się na wydarzenia,\n" +
-                "- tworzyć własne eventy (jeśli masz odpowiednie uprawnienia,\n" +
+                "- tworzyć własne eventy (jeśli masz odpowiednie uprawnienia),\n" +
                 "- zarządzać swoimi rejestracjami. \n\n" +
                 "Pozdrawiamy, zespół Eventify.";
         SimpleMailMessage message = new SimpleMailMessage();

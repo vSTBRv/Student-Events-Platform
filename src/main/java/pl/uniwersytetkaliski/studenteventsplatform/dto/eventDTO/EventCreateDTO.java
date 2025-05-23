@@ -1,6 +1,7 @@
 package pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO.LocationCreateDTO;
 
@@ -13,7 +14,9 @@ public class EventCreateDTO {
     private LocationCreateDTO location;
     @Positive
     private Long categoryId;
+    @NotNull(message="Start date musi być ustawione")
     private LocalDateTime startDateTime;
+    @NotNull(message="End date musi być ustawione")
     private LocalDateTime endDateTime;
     private String description;
     @Positive
