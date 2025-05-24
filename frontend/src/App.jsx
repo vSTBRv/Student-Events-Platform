@@ -15,7 +15,7 @@ import SendMessage from "./components/SendMessage.jsx";
 import MyEvents from "./components/MyEvents";
 import EventRatings from "./components/EventRatings";
 import RateEventForm from "./components/RateEventForm";
-
+import UnacceptedEvents from "./components/UnacceptedEvents";
 
 
 function App() {
@@ -49,6 +49,7 @@ function App() {
           <Route path="/my-events" element={<MyEvents />} />
           <Route path="/events/:id/ratings" element={<EventRatings />} />
           <Route path="/events/:id/rate" element={<RateEventForm />} />
+          <Route path="/unaccepted-events" element={<UnacceptedEvents />} />
 
       </Routes>
     </div>
