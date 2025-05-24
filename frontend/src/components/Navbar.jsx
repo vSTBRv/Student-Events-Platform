@@ -127,6 +127,12 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                                         </Link>
                                     </li>
                                     <li>
+                                        <Link to="/unaccepted-events" className="hover:text-gray-200 flex items-center gap-1">
+                                            📥 Do akceptacji
+                                        </Link>
+                                    </li>
+
+                                    <li>
                                         <Link to="/admin/deleted-events" className="hover:text-gray-200 flex items-center gap-1">
                                             🗑️ Usunięte
                                         </Link>
