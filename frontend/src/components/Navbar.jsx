@@ -110,6 +110,13 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                                     <FaList /> Wydarzenia
                                 </Link>
                             </li>
+                            {userRole === "STUDENT" && (
+                                <li>
+                                    <Link to="/my-events" className="hover:text-gray-200">
+                                        Moje wydarzenia
+                                    </Link>
+                                </li>
+                            )}
 
                             {userRole !== "STUDENT" && (
                                 <li>
@@ -117,6 +124,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                                         <FaPlus /> Utwórz wydarzenie
                                     </Link>
                                 </li>
+
                             )}
 
                             {isAdmin && (
