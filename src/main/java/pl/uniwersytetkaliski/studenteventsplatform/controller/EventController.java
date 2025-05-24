@@ -1,5 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
+    import jakarta.validation.Valid;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.format.annotation.DateTimeFormat;
     import org.springframework.http.HttpStatus;
@@ -9,6 +10,8 @@ package pl.uniwersytetkaliski.studenteventsplatform.controller;
     import org.springframework.security.core.Authentication;
     import org.springframework.security.core.context.SecurityContextHolder;
     import org.springframework.security.core.userdetails.UsernameNotFoundException;
+    import org.springframework.validation.BindingResult;
+    import org.springframework.validation.FieldError;
     import org.springframework.web.bind.annotation.*;
     import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
     import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventCreateDTO;
@@ -23,9 +26,13 @@ package pl.uniwersytetkaliski.studenteventsplatform.controller;
     import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 
     import java.time.LocalDate;
+    import java.util.HashMap;
     import java.util.List;
+    import java.util.Map;
 
-    @RestController
+    import static java.util.stream.Collectors.toMap;
+
+@RestController
     @RequestMapping("/api/events")
     public class EventController {
         private final EventService eventService;
@@ -56,8 +63,21 @@ package pl.uniwersytetkaliski.studenteventsplatform.controller;
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping
-    public ResponseEntity<EventResponseDTO> createEvent(@RequestBody EventCreateDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(eventService.createEvent(dto));
+    public ResponseEntity<?> createEvent(
+            @Valid @RequestBody EventCreateDTO eventCreateDTO,
+            BindingResult bindingResult) {
+
+        // Walidacja DTO
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        // Wywołanie logiki biznesowej
+        return ResponseEntity.ok(eventService.createEvent(eventCreateDTO));
     }
 
     @PutMapping("/{id}")

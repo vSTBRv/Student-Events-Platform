@@ -6,6 +6,6 @@ import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 @Component
 public class UserMapper {
     public UserDTO mapToDTO(User entity){
-        return new UserDTO(entity.getFullName());
+        return new UserDTO(entity);
     }
 }

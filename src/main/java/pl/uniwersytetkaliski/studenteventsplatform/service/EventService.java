@@ -82,6 +82,8 @@ public class EventService {
         event.setLocation(location);
 
         event.setCategory(categoryRepository.findById(dto.getCategoryId()).orElseThrow(()-> new EntityNotFoundException("Category not found")));
+
+        notificationService.sendEventCreatedConfirmationEmail(user, event);
         return eventMapper.toResponseDTO(eventRepository.save(event));
     }
 
@@ -115,7 +117,7 @@ public class EventService {
             throw new AccessDeniedException("Access Denied");
         }
         eventRepository.softDelete(eventId);
-        notificationService.sendEventDeletedConfirmationEmail(user.get(), existingEvent.get());
+        notificationService.sendEventDeletedConfirmationEmail(user, event);
     }
 
     public List<EventResponseDTO> getFilteredEvents(String categoryId, EventStatus status, LocalDate startDateFrom, LocalDate startDateTo){
@@ -186,7 +188,7 @@ public class EventService {
         User user = userService.getUserByEmail(organizerEmail).orElseThrow(()-> new UsernameNotFoundException("User with email " + organizerEmail + " not found"));
 
 
-        if(event.getCreatedBy() != user.getId()) {
+        if(event.getCreatedBy().getId() != user.getId()) {
             throw new AccessDeniedException("Nie jesteś organizatorem tego wydarzenia");
         }
 

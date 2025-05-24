@@ -1,8 +1,13 @@
 package pl.uniwersytetkaliski.studenteventsplatform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="events")
@@ -54,6 +59,10 @@ public class Event {
     private User createdBy;
 
     private boolean accepted;
+
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserEvent> userEvent = new HashSet<>();
 
     public long getId() {
         return id;
