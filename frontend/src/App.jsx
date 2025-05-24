@@ -13,6 +13,10 @@ import ManageUsers from "./components/ManageUsers";
 import EventsDeleted from "./components/EventsDeleted";
 import SendMessage from "./components/SendMessage.jsx";
 import MyEvents from "./components/MyEvents";
+import EventRatings from "./components/EventRatings";
+import RateEventForm from "./components/RateEventForm";
+
+
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -43,7 +47,8 @@ function App() {
           <Route path="/admin/deleted-events" element={<EventsDeleted />} />
           <Route path="/events/:id/message" element={<SendMessage />} />
           <Route path="/my-events" element={<MyEvents />} />
-
+          <Route path="/events/:id/ratings" element={<EventRatings />} />
+          <Route path="/events/:id/rate" element={<RateEventForm />} />
 
       </Routes>
     </div>

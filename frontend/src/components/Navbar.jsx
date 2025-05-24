@@ -110,7 +110,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                                     <FaList /> Wydarzenia
                                 </Link>
                             </li>
-                            {userRole === "STUDENT" && (
+                            {["STUDENT", "ORGANIZATION"].includes(userRole) && (
                                 <li>
                                     <Link to="/my-events" className="hover:text-gray-200">
                                         Moje wydarzenia
