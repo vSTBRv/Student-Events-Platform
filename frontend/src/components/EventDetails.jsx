@@ -111,6 +111,17 @@ function EventDetails() {
                     >
                         Wyświetl uczestników
                     </button>
+
+                    {currentUser &&
+                        currentUser.userRole === "ADMIN" &&
+                        !event.accepted && (
+                            <button
+                                onClick={handleAcceptEvent}
+                                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                            >
+                                Akceptuj wydarzenie
+                            </button>
+                        )}
                     
                     {currentUser &&
                         currentUser.userRole === "ORGANIZATION" &&
