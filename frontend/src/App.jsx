@@ -12,7 +12,9 @@ import EventPage from "./components/EventPage.jsx";
 import ManageUsers from "./components/ManageUsers";
 import EventsDeleted from "./components/EventsDeleted";
 import SendMessage from "./components/SendMessage.jsx";
+import MyEvents from "./components/MyEvents";
 import UnacceptedEvents from "./components/UnacceptedEvents";
+
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -42,8 +44,8 @@ function App() {
           <Route path="/admin/users" element={<ManageUsers />} />
           <Route path="/admin/deleted-events" element={<EventsDeleted />} />
           <Route path="/events/:id/message" element={<SendMessage />} />
+          <Route path="/my-events" element={<MyEvents />} />
           <Route path="/unaccepted-events" element={<UnacceptedEvents />} />
-
       </Routes>
     </div>
   );
