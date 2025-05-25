@@ -105,6 +105,13 @@ export default function UnacceptedEvents() {
                                         Szczegóły
                                     </button>
                                     <button
+                                        onClick={() => navigate(`/events/edit/${event.id}`)}
+                                        className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md transition w-full"
+                                    >
+                                        Edytuj
+                                    </button>
+
+                                    <button
                                         onClick={() => handleAccept(event.id)}
                                         className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md transition w-full flex items-center justify-center gap-2"
                                     >

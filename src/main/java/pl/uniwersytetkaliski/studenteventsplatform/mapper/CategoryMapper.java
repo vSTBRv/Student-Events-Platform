@@ -27,6 +27,7 @@ public class CategoryMapper implements Mapper<Category, CategoryResponseDTO, Cat
         CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO();
         categoryResponseDTO.setName(entity.getName());
         categoryResponseDTO.setId(entity.getId());
+        categoryResponseDTO.setDeleted(entity.isDeleted());
         return categoryResponseDTO;
     }
 }
