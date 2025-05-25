@@ -2,6 +2,7 @@ package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,23 +33,31 @@ public class EventService {
     private final UserService userService;
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
+    private final UserEventService userEventService;
 
     @Autowired
     private NotificationService notificationService;
 
-    public EventService(EventRepository eventRepository, LocationService locationService, CategoryRepository categoryRepository, UserService userService, EventMapper eventMapper, LocationMapper locationMapper) {
+    public EventService(EventRepository eventRepository, LocationService locationService, CategoryRepository categoryRepository, UserService userService, EventMapper eventMapper, LocationMapper locationMapper, UserEventService userEventService) {
         this.eventRepository = eventRepository;
         this.locationService = locationService;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
         this.eventMapper = eventMapper;
         this.locationMapper = locationMapper;
+        this.userEventService = userEventService;
     }
 
     public List<EventResponseDTO> getAllEvents() {
         List<Event> events = eventRepository.findByDeletedFalseAndAcceptedTrue();
         return events.stream()
-                .map(eventMapper::toResponseDTO)
+                .map(event -> {
+                    EventResponseDTO dto = eventMapper.toResponseDTO(event);
+                    boolean isParticipating = userEventService.getParticipants(event.getId()).stream()
+                            .anyMatch(user -> user.getId().equals(getLoggedUser().getId()));
+                    dto.setParticipating(isParticipating);
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -83,7 +92,9 @@ public class EventService {
 
         event.setCategory(categoryRepository.findById(dto.getCategoryId()).orElseThrow(()-> new EntityNotFoundException("Category not found")));
 
-        notificationService.sendEventCreatedConfirmationEmail(user, event);
+        try {
+            notificationService.sendEventCreatedConfirmationEmail(user, event);
+        } catch (MailSendException ignored) {}
         return eventMapper.toResponseDTO(eventRepository.save(event));
     }
 
@@ -117,7 +128,9 @@ public class EventService {
             throw new AccessDeniedException("Access Denied");
         }
         eventRepository.softDelete(eventId);
-        notificationService.sendEventDeletedConfirmationEmail(user, event);
+        try {
+            notificationService.sendEventDeletedConfirmationEmail(user, event);
+        } catch (MailSendException ignored) {}
     }
 
     public List<EventResponseDTO> getFilteredEvents(String categoryId, EventStatus status, LocalDate startDateFrom, LocalDate startDateTo){
@@ -200,7 +213,8 @@ public class EventService {
 //            log.info("Brak uczestników wydarzenia {}", eventId);
             return;
         }
-
-        notificationService.sendMessageToParticipants(participants, event, messageContent);
+        try {
+            notificationService.sendMessageToParticipants(participants, event, messageContent);
+        } catch (MailSendException ignored) {}
     }
 }

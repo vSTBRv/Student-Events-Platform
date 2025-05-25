@@ -1,7 +1,9 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.eclipse.angus.mail.util.MailConnectException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -60,7 +62,9 @@ public class UserEventService {
         userEventRepository.save(userEvent);
         currentCapacity++;
         eventRepository.updateCurrentCapacity(id,currentCapacity);
-        notificationService.sendEventRegistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
+        try {
+            notificationService.sendEventRegistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
+        } catch (MailSendException ignored){}
     }
 
     @Transactional
@@ -72,7 +76,9 @@ public class UserEventService {
             throw new EntityNotFoundException();
         }
         userEventRepository.deleteByUserAndEvent(user.get(), event.get());
-        notificationService.sendEventUnregistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
+        try {
+            notificationService.sendEventUnregistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
+        } catch (MailSendException ignored){}
     }
 
     public List<UserDTO> getParticipants(long id) {
