@@ -25,7 +25,7 @@ export default function CreateEvent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/categories", { credentials: "include" })
+    fetch("http://localhost:8080/api/categories/undeleted", { credentials: "include" })
         .then((res) => res.json())
         .then((data) => {
           setCategories(data);
