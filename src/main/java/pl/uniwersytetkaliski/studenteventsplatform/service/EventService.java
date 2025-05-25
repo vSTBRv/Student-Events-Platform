@@ -192,6 +192,11 @@ public class EventService {
     @Transactional
     public void acceptEvent(long id) {
         eventRepository.acceptEvent(id);
+        try {
+            Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
+            User owner = event.getCreatedBy();
+            notificationService.sendAcceptedEmail(owner,event);
+        }catch (MailSendException ignored) {}
     }
 
     public void sendMessageToParticipants(Long eventId, String organizerEmail, String messageContent) {

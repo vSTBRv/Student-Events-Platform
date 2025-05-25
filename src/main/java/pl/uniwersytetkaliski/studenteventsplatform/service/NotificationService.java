@@ -180,4 +180,22 @@ public class NotificationService {
         message.setText(body);
         mailSender.send(message);
     }
+
+    public void sendAcceptedEmail(User owner, Event event) {
+        String subject = "Twoje wydarzenie zostało zaakceptowane";
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("no-reply@student-events-platform.local");
+        message.setTo(owner.getEmail());
+        String body = String.format("""
+                Cześć %s,
+                
+                Twoje wydarzenie "%s" zostało zaakceptowane.
+                
+                Pozdrawiamy,
+                Zespół Evenify.""",
+                owner.getFullName(),
+                event.getName());
+        message.setText(body);
+        mailSender.send(message);
+    }
 }
