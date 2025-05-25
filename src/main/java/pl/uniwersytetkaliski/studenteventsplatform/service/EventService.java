@@ -112,7 +112,7 @@ public class EventService {
             event.setLocation(locationService.getOrCreateLocation(dto.getLocation()));
         }
         Event updatedEvent = eventMapper.updateEntity(event, dto);
-        event.setCategory(categoryRepository.findById(dto.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found")));
+        updatedEvent.setCategory(categoryRepository.findById(dto.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found")));
         return eventMapper.toResponseDTO(eventRepository.save(updatedEvent));
     }
 
