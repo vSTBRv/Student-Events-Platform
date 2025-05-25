@@ -46,6 +46,7 @@ public class CategoryService {
     public CategoryResponseDTO updateCategory(Long id, CategoryUpdateDTO categoryUpdateDTO) {
         Category category = categoryRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Category not found"));
         Category updated = categoryMapper.updateEntity(category, categoryUpdateDTO);
+        categoryRepository.save(updated);
         return categoryMapper.toResponseDTO(updated);
     }
 
