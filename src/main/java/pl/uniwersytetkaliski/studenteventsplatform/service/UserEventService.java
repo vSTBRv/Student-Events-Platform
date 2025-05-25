@@ -62,6 +62,12 @@ public class UserEventService {
         userEventRepository.save(userEvent);
         currentCapacity++;
         eventRepository.updateCurrentCapacity(id,currentCapacity);
+        if (currentCapacity >= event.get().getMaxCapacity()) {
+            try {
+                User owner = event.get().getCreatedBy();
+                notificationService.sendEventFullNotification(owner,event.get());
+            } catch (MailSendException ignored){}
+        }
         try {
             notificationService.sendEventRegistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
         } catch (MailSendException ignored){}

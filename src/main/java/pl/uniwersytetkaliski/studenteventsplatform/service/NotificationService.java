@@ -162,4 +162,22 @@ public class NotificationService {
             this.sendConfirmationEmail(user.getEmail(), subject, messageContent);
         }
     }
+    public void sendEventFullNotification(User user, Event event) {
+        String subject = "Nowa wiadomość dotycząca wydarzenia: " + event.getName();
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("no-reply@student-events-platform.local");
+        message.setTo(user.getEmail());
+        String body = String.format("""
+                Cześć %s,
+                
+                Twoje wydarzenie "%s" osiągneło limit uczestników.
+                
+                Pozdrawiamy,
+                Zespół Eventify.
+                """,
+                user.getFullName(),
+                event.getName());
+        message.setText(body);
+        mailSender.send(message);
+    }
 }
