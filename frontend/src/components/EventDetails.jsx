@@ -62,6 +62,24 @@ function EventDetails() {
         return <p className="text-gray-600 mt-4 text-center">Ładowanie...</p>;
     }
 
+    const handleAcceptEvent = async () => {
+        try {
+            await axios.patch(
+                `http://localhost:8080/api/events/unaccepted/${event.id}`,
+                {},
+                { withCredentials: true }
+            );
+            alert("Wydarzenie zostało zaakceptowane.");
+            // np. nawigacja albo przeładowanie danych
+            // navigate("/events");
+        } catch (error) {
+            console.error("Błąd podczas akceptowania wydarzenia:", error);
+            alert("Nie udało się zaakceptować wydarzenia.");
+        }
+    };
+
+
+
     return (
         <div className="event-container">
             <h1 className="event-title event-heading">{event.name}</h1>

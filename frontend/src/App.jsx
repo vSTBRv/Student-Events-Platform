@@ -16,7 +16,7 @@ import MyEvents from "./components/MyEvents";
 import EventRatings from "./components/EventRatings";
 import RateEventForm from "./components/RateEventForm";
 import UnacceptedEvents from "./components/UnacceptedEvents";
-
+import CategoryManager from "./components/CategoryManager";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,34 +26,33 @@ function App() {
         setIsLoggedIn(loggedIn);
     }, []);
 
-  return (
-    <div>
-      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+    return (
+        <div>
+            <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
 
-      <Routes>
-        <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn}/>} />
-        <Route path="/register" element={<RegisterSelect />} />
-        <Route path="/register/student" element={<RegisterStudent />} />
-        <Route
-          path="/register/organization"
-          element={<RegisterOrganization />}
-        />
-          <Route path={"/events/:id"} element={<EventDetails />} />
-        <Route path="/events/new" element={<CreateEvent />} />
-          <Route path="/events" element={<EventPage />} />
-        {/*<Route path="/events" element={<EventList />} />*/}
-        <Route path="/events/edit/:id" element={<CreateEvent />} />
-          <Route path="/admin/users" element={<ManageUsers />} />
-          <Route path="/admin/deleted-events" element={<EventsDeleted />} />
-          <Route path="/events/:id/message" element={<SendMessage />} />
-          <Route path="/my-events" element={<MyEvents />} />
-          <Route path="/events/:id/ratings" element={<EventRatings />} />
-          <Route path="/events/:id/rate" element={<RateEventForm />} />
-          <Route path="/unaccepted-events" element={<UnacceptedEvents />} />
+            <Routes>
+                <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+                <Route path="/register" element={<RegisterSelect />} />
+                <Route path="/register/student" element={<RegisterStudent />} />
+                <Route path="/register/organization" element={<RegisterOrganization />} />
+                <Route path="/events/:id" element={<EventDetails />} />
+                <Route path="/events/new" element={<CreateEvent />} />
+                <Route path="/events" element={<EventPage />} />
+                {/* <Route path="/events" element={<EventList />} /> */}
+                <Route path="/events/edit/:id" element={<CreateEvent />} />
+                <Route path="/admin/users" element={<ManageUsers />} />
+                <Route path="/admin/deleted-events" element={<EventsDeleted />} />
+                <Route path="/events/:id/message" element={<SendMessage />} />
+                <Route path="/my-events" element={<MyEvents />} />
+                <Route path="/events/:id/ratings" element={<EventRatings />} />
+                <Route path="/events/:id/rate" element={<RateEventForm />} />
+                <Route path="/unaccepted-events" element={<UnacceptedEvents />} />
 
-      </Routes>
-    </div>
-  );
+                {/* NOWA ŚCIEŻKA DO ZARZĄDZANIA KATEGORIAMI */}
+                <Route path="/admin/categories" element={<CategoryManager />} />
+            </Routes>
+        </div>
+    );
 }
 
 export default App;

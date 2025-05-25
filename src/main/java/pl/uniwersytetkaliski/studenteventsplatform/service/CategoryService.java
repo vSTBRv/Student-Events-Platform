@@ -54,4 +54,16 @@ public class CategoryService {
         categoryRepository.softDelete(id);
     }
 
+    public List<CategoryResponseDTO> getUndeletedCategories() {
+        List<Category> categories = categoryRepository.findByDeletedFalse();
+        return categories.stream()
+                .map(categoryMapper::toResponseDTO)
+                .collect(Collectors.toList());
+
+    }
+
+    @Transactional
+    public void restoreCategory(Long id) {
+        categoryRepository.restoreCategory(id);
+    }
 }

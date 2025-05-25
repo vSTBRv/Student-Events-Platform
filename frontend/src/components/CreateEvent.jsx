@@ -7,8 +7,10 @@ export default function CreateEvent() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [startDateTime, setStartDateTime] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [seats, setSeats] = useState("");
 
   const [city, setCity] = useState("");
@@ -25,7 +27,7 @@ export default function CreateEvent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/categories", { credentials: "include" })
+    fetch("http://localhost:8080/api/categories/undeleted", { credentials: "include" })
         .then((res) => res.json())
         .then((data) => {
           setCategories(data);
@@ -38,15 +40,16 @@ export default function CreateEvent() {
           .then((res) => res.json())
           .then((data) => {
             setTitle(data.name);
-            setDescription(data.comments);
-            setDate(data.startDateTime.split("T")[0]);
-            setTime(data.startDateTime.split("T")[1].slice(0, 5));
-            setSeats(data.capacity);
-            setCity(data.locationCity);
-            setStreet(data.locationStreet);
-            setHouseNumber(data.locationHouseNumber);
-            setPostalCode(data.locationPostalCode);
-
+            setDescription(data.description);
+            setStartDateTime(data.startDateTime.split("T")[0]);
+            setStartTime(data.startDateTime.split("T")[1].slice(0, 5));
+            setSeats(data.maxCapacity);
+            setCity(data.locationDTO.city);
+            setStreet(data.locationDTO.street);
+            setHouseNumber(data.locationDTO.houseNumber);
+            setPostalCode(data.locationDTO.postalCode);
+            setEndDate(data.endDateTime.split("T")[0]);
+            setEndTime(data.endDateTime.split("T")[1].slice(0, 5));
             const category = categories.find(cat => cat.name === data.category);
             if (category) {
               setSelectedCategoryId(category.id);
@@ -60,7 +63,7 @@ export default function CreateEvent() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!title || !description || !date || !time || !seats || !city || !street || !houseNumber || !postalCode || !selectedCategoryId) {
+    if (!title || !description || !startDateTime || !startTime || !seats || !city || !street || !houseNumber || !postalCode || !selectedCategoryId || !endDate || !endTime) {
       setError("Uzupełnij wszystkie pola.");
       return;
     }
@@ -73,20 +76,19 @@ export default function CreateEvent() {
     const eventData = {
       name: title,
       description: description,
-      startDate: `${date}T${time}`,
-      endDate: `${date}T${time}`,
+      startDateTime: `${startDateTime}T${startTime}`,  // zmień nazwę pola na startDateTime
+      endDateTime: `${endDate}T${endTime}`,            // zmień nazwę pola na endDateTime
       maxCapacity: parseInt(seats),
-      status: "PLANNED",
-      locationDTO: {
+      status: "PLANNED",                                // tego nie ma w DTO, ale może backend to akceptuje
+      location: {
         city,
         street,
         houseNumber,
         postalCode,
       },
-      categoryDTO: {
-        id: parseInt(selectedCategoryId),
-      }
+      categoryId: parseInt(selectedCategoryId),
     };
+
 
     const url = isEdit
         ? `http://localhost:8080/api/events/${id}`
@@ -172,16 +174,33 @@ export default function CreateEvent() {
             </div>
 
             <div className="flex gap-4">
+              początek wydarzenia
               <input
                   type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
+                  value={startDateTime}
+                  onChange={(e) => setStartDateTime(e.target.value)}
                   className="w-1/2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500"
               />
               <input
                   type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  className="w-1/2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+
+            <div className="flex gap-4">
+              Koniece wydarzenia
+              <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-1/2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500"
+              />
+              <input
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
                   className="w-1/2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500"
               />
             </div>

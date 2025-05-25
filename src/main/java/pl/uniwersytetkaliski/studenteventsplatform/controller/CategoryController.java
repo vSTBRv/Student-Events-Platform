@@ -24,6 +24,10 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
+    @GetMapping("/undeleted")
+    public ResponseEntity<List<CategoryResponseDTO>> getUndeletedCategories() {
+        return ResponseEntity.ok(categoryService.getUndeletedCategories());
+    }
 
     @GetMapping("{id}")
     public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
@@ -39,6 +43,12 @@ public class CategoryController {
     @DeleteMapping("/{id}/soft-delete")
     public ResponseEntity<Void> softDeleteCategory(@PathVariable Long id) {
         categoryService.softDelete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/soft-deleted/{id}")
+    public ResponseEntity<Void> restoreCategory(@PathVariable Long id) {
+        categoryService.restoreCategory(id);
         return ResponseEntity.noContent().build();
     }
 

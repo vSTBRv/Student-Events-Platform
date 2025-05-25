@@ -24,6 +24,8 @@ public class EventResponseDTO {
     private UserDTO createdBy;
     private boolean accepted;
 
+    private boolean participating;
+
     public Long getId() {
         return id;
     }
@@ -142,5 +144,12 @@ public class EventResponseDTO {
 
     public void setAccepted(boolean accepted) {
         this.accepted = accepted;
+    }
+
+    public boolean isParticipating() {
+        return participating;
+    }
+    public void setParticipating(boolean participating) {
+        this.participating = participating;
     }
 }

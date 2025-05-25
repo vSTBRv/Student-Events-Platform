@@ -27,7 +27,8 @@ public class LocationService {
 
     public Location getOrCreateLocation(LocationUpdateDTO dto){
         Location location = locationMapper.updateEntity(new Location(),dto);
-        return getLocation(location).orElse(locationRepository.save(location));
+        Optional<Location> existingLocation = getLocation(location);
+        return existingLocation.orElseGet(() -> locationRepository.save(location));
     }
 
     public Optional<Location> getLocation(Location location) {

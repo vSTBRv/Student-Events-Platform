@@ -7,34 +7,6 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
     const [userRole, setUserRole] = useState(null);
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     const checkRole = async () => {
-    //         if (!isLoggedIn) return;
-    //
-    //         try {
-    //             const response = await fetch("http://localhost:8080/api/users", {
-    //                 method: "GET",
-    //                 credentials: "include",
-    //             });
-    //
-    //             if (response.ok) {
-    //                 const users = await response.json();
-    //                 const email = localStorage.getItem("userEmail");
-    //                 const currentUser = users.find((u) => u.email === email);
-    //                 if (currentUser) {
-    //                     setUserRole(currentUser.userRole);
-    //                     if (currentUser.userRole === "ADMIN") {
-    //                         setIsAdmin(true);
-    //                     }
-    //                 }
-    //             }
-    //         } catch (error) {
-    //             console.error("Błąd przy sprawdzaniu roli:", error);
-    //         }
-    //     };
-    //     checkRole();
-    // }, [isLoggedIn]);
-
     useEffect(() => {
         const checkRole = async () => {
             if (!isLoggedIn) return;
@@ -139,14 +111,20 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                                             📥 Do akceptacji
                                         </Link>
                                     </li>
-
                                     <li>
                                         <Link to="/admin/deleted-events" className="hover:text-gray-200 flex items-center gap-1">
                                             🗑️ Usunięte
                                         </Link>
                                     </li>
+
+                                    <li>
+                                        <Link to="/admin/categories" className="hover:text-gray-200 flex items-center gap-1">
+                                            🗂️ Kategorie
+                                        </Link>
+                                    </li>
                                 </>
                             )}
+
 
 
                             <li>
