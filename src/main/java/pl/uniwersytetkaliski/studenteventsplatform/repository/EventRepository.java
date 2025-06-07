@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +54,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 //    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.participants WHERE e.id = :id")
     @Query("SELECT e FROM Event e LEFT JOIN FETCH e.userEvent ue LEFT JOIN FETCH ue.user WHERE e.id = :id")
     Optional<Event> findByIdWithParticipants(@Param("id") Long id);
+
+    long countByStartDateBetweenAndDeletedFalseAndAcceptedTrue(LocalDateTime fromDate, LocalDateTime toDate);
 }
 
 
