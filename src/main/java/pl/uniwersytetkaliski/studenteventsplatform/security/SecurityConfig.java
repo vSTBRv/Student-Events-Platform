@@ -38,14 +38,16 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/events/delete/**","/api/events/deleted/**"
-                        ,"/api/events/unaccepted/**").hasRole("ADMIN")
+                        ,"/api/events/unaccepted/**","/api/reports/**").hasRole("ADMIN")
                         .requestMatchers("/api/events/{id}/register","/api/events/{id}/unregister").hasRole("STUDENT")
                         .requestMatchers(
                                 "/api/login",
                                 "/api/register",
+                                "/api/register/**",
                                 "/api/logout",
                                 "/h2-console/**",
-                                "/api/test/**"
+                                "/api/test/**",
+                                "/actuator/**"
                         ).permitAll()
                         .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
