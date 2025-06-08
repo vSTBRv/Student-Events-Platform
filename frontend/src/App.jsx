@@ -17,6 +17,7 @@ import EventRatings from "./components/EventRatings";
 import RateEventForm from "./components/RateEventForm";
 import UnacceptedEvents from "./components/UnacceptedEvents";
 import CategoryManager from "./components/CategoryManager";
+import ReportsPage from "./components/ReportsPage";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -47,6 +48,7 @@ function App() {
                 <Route path="/events/:id/ratings" element={<EventRatings />} />
                 <Route path="/events/:id/rate" element={<RateEventForm />} />
                 <Route path="/unaccepted-events" element={<UnacceptedEvents />} />
+                <Route path="/raports" element={<ReportsPage />} />
 
                 {/* NOWA ŚCIEŻKA DO ZARZĄDZANIA KATEGORIAMI */}
                 <Route path="/admin/categories" element={<CategoryManager />} />
