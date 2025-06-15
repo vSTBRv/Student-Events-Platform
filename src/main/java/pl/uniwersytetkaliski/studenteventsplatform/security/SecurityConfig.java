@@ -50,16 +50,7 @@ public class SecurityConfig {
                                 "/actuator/**"
                         ).permitAll()
                         .anyRequest().authenticated()
-//                                .anyRequest().permitAll()
                 )
-                // jak trzeba wywalić i zostawić to co było poniżej. To jest próba ustawienia logowania (.formlogin było poprzednio i błędy wysakkiwały)
-//                .formLogin(form -> form
-//                        .loginProcessingUrl("/login")
-//                        .permitAll()
-//                )
-//                .formLogin(Customizer.withDefaults())
-//                .httpBasic(Customizer.withDefaults())
-//                .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authenticationProvider(authenticationProvider())
                 .build();

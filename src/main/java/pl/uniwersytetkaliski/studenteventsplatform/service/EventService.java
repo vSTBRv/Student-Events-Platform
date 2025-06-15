@@ -8,9 +8,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto.EventCreateDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto.EventResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto.EventUpdateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventdto.EventCreateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventdto.EventResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventdto.EventUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.EventMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.LocationMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.*;
@@ -126,7 +126,7 @@ public class EventService {
         }
         eventRepository.softDelete(eventId);
         try {
-            notificationService.sendEventDeletedConfirmationEmail(user, event);
+//            notificationService.sendEventDeletedConfirmationEmail(user, event);
         } catch (MailSendException ignored) {}
     }
 

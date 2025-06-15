@@ -49,7 +49,7 @@ export default function DeletedEvents() {
         if (!confirmRestore) return;
 
         try {
-            await axios.put(`http://localhost:8080/api/events/deleted/${id}`, null, {
+            await axios.patch(`http://localhost:8080/api/events/deleted/${id}`, null, {
                 withCredentials: true,
             });
             setEvents((prev) => prev.filter((e) => e.id !== id));
