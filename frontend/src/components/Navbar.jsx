@@ -122,6 +122,12 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                                             🗂️ Kategorie
                                         </Link>
                                     </li>
+
+                                    <li>
+                                        <Link to={"/raports"} className="hover:text-gray-200 flex items-center gap-1">
+                                            📄 Raporty
+                                        </Link>
+                                    </li>
                                 </>
                             )}
 

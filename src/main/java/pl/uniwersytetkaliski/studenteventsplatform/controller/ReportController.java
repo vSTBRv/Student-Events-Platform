@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO.EventCountReportDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO.ParticipantCountReportDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO.ParticipantPerEventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.service.ReportService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -40,4 +42,13 @@ public class ReportController {
         long count = reportService.countParticipantsBetween(fromDate, toDate);
         return new ParticipantCountReportDTO(count);
     }
+
+    @GetMapping("/participant-count-per-event")
+    public List<ParticipantPerEventDTO> getParticipantCountPerEvent(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate
+    ) {
+        return reportService.getParticipantCountPerEvent(fromDate, toDate);
+    }
+
 }
