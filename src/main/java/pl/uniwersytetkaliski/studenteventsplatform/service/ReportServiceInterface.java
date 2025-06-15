@@ -5,4 +5,6 @@ import java.time.LocalDateTime;
 
 public interface ReportServiceInterface {
     long countEventsBetweenAndDeletedFalseAndAcceptedTrue(LocalDateTime fromDate, LocalDateTime toDate);
+
+    long countParticipantsBetween(LocalDateTime fromDate, LocalDateTime toDate);
 }
