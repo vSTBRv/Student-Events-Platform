@@ -3,14 +3,13 @@ package pl.uniwersytetkaliski.studenteventsplatform.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO.ParticipantPerEventDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDto.ParticipantPerEventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 import pl.uniwersytetkaliski.studenteventsplatform.model.UserEvent;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface UserEventRepository extends JpaRepository<UserEvent,Long> {
 
@@ -37,7 +36,7 @@ public interface UserEventRepository extends JpaRepository<UserEvent,Long> {
             @Param("to") LocalDateTime to);
 
     @Query("""
-    SELECT new pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO.ParticipantPerEventDTO(
+    SELECT new pl.uniwersytetkaliski.studenteventsplatform.dto.reportDto.ParticipantPerEventDTO(
         ue.event.id,
         ue.event.name,
         ue.event.startDate,

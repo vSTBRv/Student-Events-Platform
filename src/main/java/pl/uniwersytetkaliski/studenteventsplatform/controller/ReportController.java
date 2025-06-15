@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO.EventCountReportDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO.ParticipantCountReportDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO.ParticipantPerEventDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDto.EventCountReportDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDto.ParticipantCountReportDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDto.ParticipantPerEventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.service.ReportService;
 
 import java.time.LocalDateTime;

@@ -1,7 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,9 +8,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventCreateDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventUpdateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto.EventCreateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto.EventResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto.EventUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.EventMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.LocationMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.*;
@@ -20,7 +19,6 @@ import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,11 +32,9 @@ public class EventService {
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
     private final UserEventService userEventService;
+    private final NotificationService notificationService;
 
-    @Autowired
-    private NotificationService notificationService;
-
-    public EventService(EventRepository eventRepository, LocationService locationService, CategoryRepository categoryRepository, UserService userService, EventMapper eventMapper, LocationMapper locationMapper, UserEventService userEventService) {
+    public EventService(EventRepository eventRepository, LocationService locationService, CategoryRepository categoryRepository, UserService userService, EventMapper eventMapper, LocationMapper locationMapper, UserEventService userEventService, NotificationService notificationService) {
         this.eventRepository = eventRepository;
         this.locationService = locationService;
         this.categoryRepository = categoryRepository;
@@ -46,6 +42,7 @@ public class EventService {
         this.eventMapper = eventMapper;
         this.locationMapper = locationMapper;
         this.userEventService = userEventService;
+        this.notificationService = notificationService;
     }
 
     public List<EventResponseDTO> getAllEvents() {

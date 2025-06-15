@@ -1,8 +1,8 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto;
 
 import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDTO.CategoryResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO.LocationResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDto.CategoryResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDto.LocationResponseDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 
 import java.time.LocalDateTime;

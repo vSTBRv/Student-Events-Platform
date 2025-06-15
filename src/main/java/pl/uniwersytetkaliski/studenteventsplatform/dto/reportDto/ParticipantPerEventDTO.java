@@ -1,4 +1,4 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.reportDto;
 
 import java.time.LocalDateTime;
 
