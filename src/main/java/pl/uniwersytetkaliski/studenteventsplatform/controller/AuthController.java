@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<String> registerUser(@RequestBody RegisterDTO registerDTO) {
 
         if (userService.existsByEmail(registerDTO.email)) {
             return ResponseEntity.badRequest().body("Email już istnieje.");
@@ -65,7 +66,9 @@ public class AuthController {
         user.setCreatedAt(LocalDateTime.now());
         userService.createUser(user);
 
-        notificationService.sendRegistrationEmail(user.getEmail(), user.getFullName());
+        try {
+            notificationService.sendRegistrationEmail(user.getEmail(), user.getFullName());
+        } catch (MailSendException ignored){}
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

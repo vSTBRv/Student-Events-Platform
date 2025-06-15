@@ -1,6 +1,5 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -11,9 +10,11 @@ import java.util.Set;
 
 @Service
 public class NotificationService {
+    private final JavaMailSender mailSender;
 
-    @Autowired
-    JavaMailSender mailSender;
+    public NotificationService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void sendConfirmationEmail(String to, String subject, String content) {
         SimpleMailMessage message = new SimpleMailMessage();

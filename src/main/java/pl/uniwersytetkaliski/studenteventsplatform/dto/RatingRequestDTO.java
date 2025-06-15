@@ -2,7 +2,6 @@ package pl.uniwersytetkaliski.studenteventsplatform.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 
 public class RatingRequestDTO {
     @Min(1)

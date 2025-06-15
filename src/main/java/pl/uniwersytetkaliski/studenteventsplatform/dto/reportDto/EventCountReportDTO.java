@@ -1,4 +1,4 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto.reportDTO;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.reportDto;
 
 public class EventCountReportDTO {
     private long eventCount;

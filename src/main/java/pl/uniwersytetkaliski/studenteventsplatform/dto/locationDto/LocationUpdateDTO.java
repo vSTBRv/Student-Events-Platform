@@ -1,9 +1,9 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.locationDto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
-public class LocationCreateDTO {
+public class LocationUpdateDTO {
     @NotBlank
     @Pattern(regexp = "^\\D*$")
     private String city;

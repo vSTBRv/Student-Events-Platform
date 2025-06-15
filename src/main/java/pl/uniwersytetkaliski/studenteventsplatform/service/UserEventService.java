@@ -1,15 +1,13 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.eclipse.angus.mail.util.MailConnectException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO.EventResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto.EventResponseDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.EventMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
@@ -27,15 +25,14 @@ public class UserEventService {
     private final UserEventRepository userEventRepository;
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
+    private final NotificationService notificationService;
 
-    @Autowired
-    private NotificationService notificationService;
-
-    public UserEventService(UserService userService, UserEventRepository userEventRepository, EventRepository eventRepository, EventMapper eventMapper) {
+    public UserEventService(UserService userService, UserEventRepository userEventRepository, EventRepository eventRepository, EventMapper eventMapper, NotificationService notificationService) {
         this.userService = userService;
         this.userEventRepository = userEventRepository;
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
+        this.notificationService = notificationService;
     }
 
     @Transactional

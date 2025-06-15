@@ -1,8 +1,8 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto.eventDTO;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDTO.LocationUpdateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDto.LocationUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 
 import java.time.LocalDateTime;
