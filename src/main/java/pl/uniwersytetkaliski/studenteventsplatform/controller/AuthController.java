@@ -4,7 +4,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSendException;
@@ -30,17 +29,15 @@ import java.util.Objects;
 @RequestMapping("/api")
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private NotificationService notificationService;
-
+    private final AuthenticationManager authenticationManager;
+    private final NotificationService notificationService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
 
-    public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthController(AuthenticationManager authenticationManager, NotificationService notificationService, UserService userService, PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
+        this.notificationService = notificationService;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -73,35 +70,8 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    // Login endpoint for HTTP Basic Authentication
-//    @PostMapping("/login")
-//    public ResponseEntity<?> authenticate(@RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request) {
-//        try {
-//            // Extract credentials from the Basic Auth header
-//            String base64Credentials = authorizationHeader.substring("Basic ".length());
-//            String credentials = new String(Base64.getDecoder().decode(base64Credentials));
-//            String[] values = credentials.split(":", 2);
-//            String username = values[0];
-//            String password = values[1];
-//
-//            // Authenticate using the extracted username and password
-//            Authentication auth = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(username, password));
-//
-//            SecurityContextHolder.getContext().setAuthentication(auth);
-//
-//            // poniższa metoda tworzy sesję i uruchamia mechanizm JSESSIONID
-//            // bez tej metody nie działa logowanie i wylogowanie
-//            request.getSession(true);
-//
-//            return ResponseEntity.ok(auth);
-//        } catch (AuthenticationException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
-
     @PostMapping("/login")
-    public ResponseEntity<?> login(
+    public ResponseEntity<Void> login(
             @RequestParam String username,
             @RequestParam String password,
             HttpServletRequest request
@@ -133,7 +103,7 @@ public class AuthController {
      * @return
      */
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
 
         // Unieważnia bieżącą sesję użytkownika po stronie serwera
         request.getSession().invalidate();
@@ -154,11 +124,11 @@ public class AuthController {
         response.addCookie(cookie);
 
         // Zwraca odpowiedź 200 OK z informacją o wylogowaniu
-        return ResponseEntity.ok("Wylogowano");
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         return userService.getUserByEmail(email)
                 .map(user->ResponseEntity.ok(new UserDTO(user)))

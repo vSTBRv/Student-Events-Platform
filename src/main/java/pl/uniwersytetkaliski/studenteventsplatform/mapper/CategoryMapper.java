@@ -1,9 +1,9 @@
 package pl.uniwersytetkaliski.studenteventsplatform.mapper;
 
 import org.springframework.stereotype.Component;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDto.CategoryResponseDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDto.CategoryCreateDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDto.CategoryUpdateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categorydto.CategoryResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categorydto.CategoryCreateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.categorydto.CategoryUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Category;
 
 @Component

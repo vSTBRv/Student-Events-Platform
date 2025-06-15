@@ -1,4 +1,4 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto.categoryDto;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.categorydto;
 
 public class CategoryResponseDTO {
     private Long id;

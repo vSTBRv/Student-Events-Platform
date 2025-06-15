@@ -1,6 +1,5 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.CommentRequestDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.CommentResponseDTO;
@@ -19,22 +18,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class CommentRatingService {
-    @Autowired
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
+    private final RatingRepository ratingRepository;
+    private final EventRepository eventService;
+    private final UserRepository userRepository;
+    private final UserEventRepository userEventRepository;
+    private final EventRepository eventRepository;
 
-    @Autowired
-    private RatingRepository ratingRepository;
-
-    @Autowired
-    private EventRepository eventService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserEventRepository userEventRepository;
-    @Autowired
-    private EventRepository eventRepository;
+    public CommentRatingService(CommentRepository commentRepository, RatingRepository ratingRepository, EventRepository eventService, UserRepository userRepository, UserEventRepository userEventRepository, EventRepository eventRepository) {
+        this.commentRepository = commentRepository;
+        this.ratingRepository = ratingRepository;
+        this.eventService = eventService;
+        this.userRepository = userRepository;
+        this.userEventRepository = userEventRepository;
+        this.eventRepository = eventRepository;
+    }
 
     public List<CommentResponseDTO> getCommentsForEvent(Long eventId) {
         return commentRepository.findByEventId(eventId)

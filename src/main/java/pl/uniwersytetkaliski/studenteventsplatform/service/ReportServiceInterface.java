@@ -1,6 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
-import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDto.ParticipantPerEventDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.reportdto.ParticipantPerEventDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;

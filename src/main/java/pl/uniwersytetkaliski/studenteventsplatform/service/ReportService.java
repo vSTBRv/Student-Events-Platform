@@ -1,7 +1,7 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import org.springframework.stereotype.Service;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.reportDto.ParticipantPerEventDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.reportdto.ParticipantPerEventDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.EventRepository;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.UserEventRepository;
 

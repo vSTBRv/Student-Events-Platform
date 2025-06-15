@@ -1,4 +1,4 @@
-package pl.uniwersytetkaliski.studenteventsplatform.dto.locationDto;
+package pl.uniwersytetkaliski.studenteventsplatform.dto.locationdto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

@@ -1,8 +1,8 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import org.springframework.stereotype.Service;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDto.LocationCreateDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.locationDto.LocationUpdateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.locationdto.LocationCreateDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.locationdto.LocationUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.LocationMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Location;
 import pl.uniwersytetkaliski.studenteventsplatform.repository.LocationRepository;

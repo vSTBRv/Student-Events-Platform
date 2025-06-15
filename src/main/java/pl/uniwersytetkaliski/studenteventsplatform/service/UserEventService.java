@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.uniwersytetkaliski.studenteventsplatform.dto.UserDTO;
-import pl.uniwersytetkaliski.studenteventsplatform.dto.eventDto.EventResponseDTO;
+import pl.uniwersytetkaliski.studenteventsplatform.dto.eventdto.EventResponseDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.mapper.EventMapper;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
@@ -91,8 +91,6 @@ public class UserEventService {
 
     private UserDTO mapToDTO(UserEvent userEvent) {
         return new UserDTO(
-//                userEvent.getUser().getFullName()
-                // mcichy - wrazie czego usunąć poniższe i odkomentować to co wyżej
                 userEvent.getUser()
         );
     }
