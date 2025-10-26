@@ -63,11 +63,15 @@ public class UserEventService {
             try {
                 User owner = event.get().getCreatedBy();
                 notificationService.sendEventFullNotification(owner,event.get());
-            } catch (MailSendException ignored){}
+            } catch (MailSendException ignored){
+                //not important for logic
+            }
         }
         try {
             notificationService.sendEventRegistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
-        } catch (MailSendException ignored){}
+        } catch (MailSendException ignored){
+            //not important for logic
+        }
     }
 
     @Transactional
@@ -81,7 +85,9 @@ public class UserEventService {
         userEventRepository.deleteByUserAndEvent(user.get(), event.get());
         try {
             notificationService.sendEventUnregistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
-        } catch (MailSendException ignored){}
+        } catch (MailSendException ignored){
+            //not important for logic
+        }
     }
 
     public List<UserDTO> getParticipants(long id) {

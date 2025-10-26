@@ -91,7 +91,9 @@ public class EventService {
 
         try {
             notificationService.sendEventCreatedConfirmationEmail(user, event);
-        } catch (MailSendException ignored) {}
+        } catch (MailSendException ignored) {
+            //not important dor logic
+        }
         return eventMapper.toResponseDTO(eventRepository.save(event));
     }
 
@@ -126,8 +128,10 @@ public class EventService {
         }
         eventRepository.softDelete(eventId);
         try {
-//            notificationService.sendEventDeletedConfirmationEmail(user, event);
-        } catch (MailSendException ignored) {}
+            notificationService.sendEventDeletedConfirmationEmail(user, event);
+        } catch (MailSendException ignored) {
+            //notification, not important for logic
+        }
     }
 
     public List<EventResponseDTO> getFilteredEvents(String categoryId, EventStatus status, LocalDate startDateFrom, LocalDate startDateTo){
@@ -193,7 +197,9 @@ public class EventService {
             Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
             User owner = event.getCreatedBy();
             notificationService.sendAcceptedEmail(owner,event);
-        }catch (MailSendException ignored) {}
+        }catch (MailSendException ignored) {
+            //not important for logic
+        }
     }
 
     public void sendMessageToParticipants(Long eventId, String organizerEmail, String messageContent) {
@@ -217,6 +223,8 @@ public class EventService {
         }
         try {
             notificationService.sendMessageToParticipants(participants, event, messageContent);
-        } catch (MailSendException ignored) {}
+        } catch (MailSendException ignored) {
+            //not important for logic
+        }
     }
 }
