@@ -15,8 +15,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/events/{eventId}")
 public class CommentRatingController {
-    @Autowired
-    private CommentRatingService commentRatingService;
+    private final CommentRatingService commentRatingService;
+
+    public CommentRatingController(CommentRatingService commentRatingService) {
+        this.commentRatingService = commentRatingService;
+    }
 
     @GetMapping("/comments")
     public List<CommentResponseDTO> getComments(@PathVariable Long eventId) {
@@ -24,7 +27,7 @@ public class CommentRatingController {
     }
 
     @PostMapping("/comments")
-    public ResponseEntity<?> addComment(
+    public ResponseEntity<Void> addComment(
             @PathVariable Long eventId,
             @RequestBody CommentRequestDTO commentRequestDTO,
             Principal principal
@@ -39,7 +42,7 @@ public class CommentRatingController {
     }
 
     @PostMapping("/rating")
-    public ResponseEntity<?> addRating(
+    public ResponseEntity<Void> addRating(
             @PathVariable Long eventId,
             @RequestBody RatingRequestDTO ratingRequestDTO,
             Principal principal

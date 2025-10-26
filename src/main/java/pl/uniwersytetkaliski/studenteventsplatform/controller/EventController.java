@@ -58,7 +58,7 @@ import java.util.Map;
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping
-    public ResponseEntity<?> createEvent(
+    public ResponseEntity<EventResponseDTO> createEvent(
             @Valid @RequestBody EventCreateDTO eventCreateDTO,
             BindingResult bindingResult) {
 
@@ -68,7 +68,7 @@ import java.util.Map;
             for (FieldError error : bindingResult.getFieldErrors()) {
                 errors.put(error.getField(), error.getDefaultMessage());
             }
-            return ResponseEntity.badRequest().body(errors);
+            return ResponseEntity.badRequest().build();
         }
 
         // Wywołanie logiki biznesowej
@@ -156,7 +156,7 @@ import java.util.Map;
 
         @PreAuthorize("hasRole('ORGANIZATION')")
         @PostMapping("/{id}/message")
-        public ResponseEntity<?> sendMessageToParticipants(@PathVariable Long id, @RequestBody MessageDTO messageDTO, Authentication auth) {
+        public ResponseEntity<String> sendMessageToParticipants(@PathVariable Long id, @RequestBody MessageDTO messageDTO, Authentication auth) {
             String organizerEmail = auth.getName();
             try{
                 eventService.sendMessageToParticipants(id, organizerEmail, messageDTO.getMessage());
