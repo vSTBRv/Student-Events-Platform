@@ -1,3 +1,7 @@
+#Jak uruchomić
+Aby uruchomić projekt należy go pobrać i uruchomić klasę StudentEventsPlatformApplication z backendu
+dla frontendu instrukcja znajduje się w frontend/READ.me
+
 # Student Events Platform
 The purpose of the application is to facilitate the organization and participation in student events on campus and in the surrounding area. The project aims to integrate the academic community and improve access to information about events.
 ## Project Goals
