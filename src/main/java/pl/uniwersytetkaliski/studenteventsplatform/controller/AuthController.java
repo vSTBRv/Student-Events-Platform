@@ -65,7 +65,9 @@ public class AuthController {
 
         try {
             notificationService.sendRegistrationEmail(user.getEmail(), user.getFullName());
-        } catch (MailSendException ignored){}
+        } catch (MailSendException ignored){
+            //just info, it's not necessary to work
+        }
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
