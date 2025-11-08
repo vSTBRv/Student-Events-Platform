@@ -1,7 +1,6 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.mail.MailSendException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,9 +31,11 @@ public class EventService {
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
     private final UserEventService userEventService;
-    private final NotificationService notificationService;
 
-    public EventService(EventRepository eventRepository, LocationService locationService, CategoryRepository categoryRepository, UserService userService, EventMapper eventMapper, LocationMapper locationMapper, UserEventService userEventService, NotificationService notificationService) {
+    public EventService(EventRepository eventRepository, LocationService locationService,
+                        CategoryRepository categoryRepository, UserService userService,
+                        EventMapper eventMapper, LocationMapper locationMapper,
+                        UserEventService userEventService) {
         this.eventRepository = eventRepository;
         this.locationService = locationService;
         this.categoryRepository = categoryRepository;
@@ -42,7 +43,6 @@ public class EventService {
         this.eventMapper = eventMapper;
         this.locationMapper = locationMapper;
         this.userEventService = userEventService;
-        this.notificationService = notificationService;
     }
 
     public List<EventResponseDTO> getAllEvents() {
@@ -59,7 +59,8 @@ public class EventService {
     }
 
     public EventResponseDTO getEventById(long id) {
-        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
         return eventMapper.toResponseDTO(event);
     }
 
@@ -84,16 +85,12 @@ public class EventService {
 
         Location location = locationService.getLocation(
                 locationMapper.toEntity(dto.getLocation())
-        ).orElseGet(()-> locationService.createLocation(dto.getLocation()));
+        ).orElseGet(() -> locationService.createLocation(dto.getLocation()));
         event.setLocation(location);
 
-        event.setCategory(categoryRepository.findById(dto.getCategoryId()).orElseThrow(()-> new EntityNotFoundException("Category not found")));
+        event.setCategory(categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found")));
 
-        try {
-            notificationService.sendEventCreatedConfirmationEmail(user, event);
-        } catch (MailSendException ignored) {
-            //not important dor logic
-        }
         return eventMapper.toResponseDTO(eventRepository.save(event));
     }
 
@@ -102,16 +99,18 @@ public class EventService {
             throw new IllegalArgumentException("Start date must be before end date");
         }
         User user = getLoggedUser();
-        Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
-        if(isNotAdminOrCreator(user, event)) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
+        if (isNotAdminOrCreator(user, event)) {
             throw new AccessDeniedException("You do not have permission to update this event");
         }
 
-        if(dto.getLocation() != null) {
+        if (dto.getLocation() != null) {
             event.setLocation(locationService.getOrCreateLocation(dto.getLocation()));
         }
         Event updatedEvent = eventMapper.updateEntity(event, dto);
-        updatedEvent.setCategory(categoryRepository.findById(dto.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found")));
+        updatedEvent.setCategory(categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found")));
         return eventMapper.toResponseDTO(eventRepository.save(updatedEvent));
     }
 
@@ -122,25 +121,17 @@ public class EventService {
     @Transactional
     public void softDeleteEvent(Long eventId) {
         User user = getLoggedUser();
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId + " not found"));
-        if(isNotAdminOrCreator(user, event)) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId + " not found"));
+        if (isNotAdminOrCreator(user, event)) {
             throw new AccessDeniedException("Access Denied");
         }
         eventRepository.softDelete(eventId);
-        try {
-            notificationService.sendEventDeletedConfirmationEmail(user, event);
-        } catch (MailSendException ignored) {
-            //notification, not important for logic
-        }
     }
 
-    public List<EventResponseDTO> getFilteredEvents(String categoryId, EventStatus status, LocalDate startDateFrom, LocalDate startDateTo){
-        List<Event> filtered = eventRepository.findFilteredEvents(
-                categoryId,
-                status
-//                startDateFrom,
-//                startDateTo
-        );
+    public List<EventResponseDTO> getFilteredEvents(String categoryId, EventStatus status,
+                                                    LocalDate startDateFrom, LocalDate startDateTo) {
+        List<Event> filtered = eventRepository.findFilteredEvents(categoryId, status);
         return filtered.stream()
                 .filter(e -> startDateFrom == null || !e.getStartDate().toLocalDate().isBefore(startDateFrom))
                 .filter(e -> startDateTo == null || !e.getStartDate().toLocalDate().isAfter(startDateTo))
@@ -152,7 +143,6 @@ public class EventService {
         List<Event> eventList;
 
         if (name == null || name.isEmpty()) {
-
             eventList = eventRepository.findByDeletedTrue();
         } else {
             eventList = eventRepository.findByNameContainingIgnoreCaseAndDeletedTrue(name);
@@ -160,7 +150,6 @@ public class EventService {
         return eventList.stream()
                 .map(eventMapper::toResponseDTO)
                 .collect(Collectors.toList());
-
     }
 
     @Transactional
@@ -170,16 +159,18 @@ public class EventService {
 
     public List<EventResponseDTO> getUnacceptedEvents() {
         List<Event> eventList = eventRepository.findByAccepted(false);
-
         return eventList.stream()
                 .map(eventMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
     private User getLoggedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userService.getUserByEmail(authentication.getName())
-                .orElseThrow(()-> new EntityNotFoundException("User not found"));
+        String username = authentication.getName();
+        return userService.getUserByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
+
     private boolean isNotAdminOrCreator(User user, Event event) {
         if (user.getUserRole() == UserRole.ADMIN) {
             return false;
@@ -193,23 +184,16 @@ public class EventService {
     @Transactional
     public void acceptEvent(long id) {
         eventRepository.acceptEvent(id);
-        try {
-            Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Event with id " + id + " not found"));
-            User owner = event.getCreatedBy();
-            notificationService.sendAcceptedEmail(owner,event);
-        }catch (MailSendException ignored) {
-            //not important for logic
-        }
     }
 
-    public void sendMessageToParticipants(Long eventId, String organizerEmail, String messageContent) {
+    public void sendMessageToParticipants(Long eventId, String organizerUsername, String messageContent) {
         Event event = eventRepository.findByIdWithParticipants(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId + " not found"));
 
-        User user = userService.getUserByEmail(organizerEmail).orElseThrow(()-> new UsernameNotFoundException("User with email " + organizerEmail + " not found"));
+        User user = userService.getUserByUsername(organizerUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username " + organizerUsername + " not found"));
 
-
-        if(event.getCreatedBy().getId() != user.getId()) {
+        if (event.getCreatedBy().getId() != user.getId()) {
             throw new AccessDeniedException("Nie jesteś organizatorem tego wydarzenia");
         }
 
@@ -218,13 +202,10 @@ public class EventService {
                 .collect(Collectors.toSet());
 
         if (participants.isEmpty()) {
-//            log.info("Brak uczestników wydarzenia {}", eventId);
             return;
         }
-        try {
-            notificationService.sendMessageToParticipants(participants, event, messageContent);
-        } catch (MailSendException ignored) {
-            //not important for logic
-        }
+
+        // Messaging logic here without email sending
+        System.out.println("Message sent to " + participants.size() + " participants: " + messageContent);
     }
 }

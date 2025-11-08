@@ -1,7 +1,5 @@
 package pl.uniwersytetkaliski.studenteventsplatform.service;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.uniwersytetkaliski.studenteventsplatform.exception.UserNotFoundException;
 import pl.uniwersytetkaliski.studenteventsplatform.model.User;
@@ -13,11 +11,9 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public List<User> getAllUsers() {
@@ -27,23 +23,23 @@ public class UserService {
     public Optional<User> getUserById(long id) {
         return userRepository.findById(id);
     }
-   public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-   }
+
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 
     public User createUser(User user) {
         return userRepository.save(user);
     }
 
     public User updateUser(Long id, User userDetails) {
-        Optional<User> optionalUser = userRepository.findById(id); // Optional lepiej obsługuje błędy typu
+        Optional<User> optionalUser = userRepository.findById(id);
 
         if (optionalUser.isPresent()) {
             User existingUser = optionalUser.get();
 
             existingUser.setUsername(userDetails.getUsername());
             existingUser.setEmail(userDetails.getEmail());
-            existingUser.setPassword(userDetails.getPassword());
             existingUser.setFullName(userDetails.getFullName());
             existingUser.setUserRole(userDetails.getUserRole());
             existingUser.setEnabled(userDetails.isEnabled());
@@ -54,14 +50,6 @@ public class UserService {
         }
     }
 
-    /**
-     * Funkcja najpierw sprawdza, czy w bazie istnieje użytkownik o zadanym id
-     * Jeśli takiego nie ma - rzuca wyjątkiem.
-     * W kolejnym kroku próbuje wykonać operacje usunięcia - jeśli mu się uda to sukces
-     * w przeciwnym wypadku - obsługuje wyjątek.
-     *
-     * @param id szukane id użytkownika
-     */
     public void deleteUser(Long id) {
         if(!userRepository.existsById(id)) {
             throw new UserNotFoundException(id);
@@ -74,7 +62,7 @@ public class UserService {
         }
     }
 
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 }

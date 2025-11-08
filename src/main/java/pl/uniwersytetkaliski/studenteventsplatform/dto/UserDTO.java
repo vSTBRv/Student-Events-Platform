@@ -15,7 +15,7 @@ public class UserDTO {
         this.id = user.getId();
     }
 
-    UserDTO() {}
+    public UserDTO() {}
 
     public String getFullName() {
         return fullName;

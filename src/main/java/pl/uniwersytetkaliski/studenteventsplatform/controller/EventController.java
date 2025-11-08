@@ -17,30 +17,23 @@ import pl.uniwersytetkaliski.studenteventsplatform.dto.eventdto.EventResponseDTO
 import pl.uniwersytetkaliski.studenteventsplatform.dto.eventdto.EventUpdateDTO;
 import pl.uniwersytetkaliski.studenteventsplatform.model.EventStatus;
 import pl.uniwersytetkaliski.studenteventsplatform.service.EventService;
-import pl.uniwersytetkaliski.studenteventsplatform.service.NotificationService;
 import pl.uniwersytetkaliski.studenteventsplatform.service.UserEventService;
-import pl.uniwersytetkaliski.studenteventsplatform.service.UserService;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
-    @RequestMapping("/api/events")
-    public class EventController {
-        private final EventService eventService;
-        private final UserEventService userEventService;
-        private final NotificationService notificationService;
-        private final UserService userService;
+@RequestMapping("/api/events")
+public class EventController {
+    private final EventService eventService;
+    private final UserEventService userEventService;
 
-        public EventController(EventService eventService, UserEventService userEventService, NotificationService notificationService, UserService userService) {
-            this.eventService = eventService;
-            this.userEventService = userEventService;
-            this.notificationService = notificationService;
-            this.userService = userService;
-        }
+    public EventController(EventService eventService, UserEventService userEventService) {
+        this.eventService = eventService;
+        this.userEventService = userEventService;
+    }
 
     @GetMapping()
     public ResponseEntity<List<EventResponseDTO>> getAllEvents(@RequestParam(required = false) String name) {
@@ -62,7 +55,6 @@ import java.util.Map;
             @Valid @RequestBody EventCreateDTO eventCreateDTO,
             BindingResult bindingResult) {
 
-        // Walidacja DTO
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {
@@ -71,7 +63,6 @@ import java.util.Map;
             return ResponseEntity.badRequest().build();
         }
 
-        // Wywołanie logiki biznesowej
         return ResponseEntity.ok(eventService.createEvent(eventCreateDTO));
     }
 
@@ -81,10 +72,9 @@ import java.util.Map;
             @RequestBody EventUpdateDTO dto) {
         try {
             return ResponseEntity.ok(eventService.updateEvent(id, dto));
-        } catch (AccessDeniedException e){
+        } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -102,16 +92,13 @@ import java.util.Map;
     }
 
     @GetMapping("/filter")
-//    @GetMapping("")
     public ResponseEntity<List<EventResponseDTO>> getFilteredEvents(
             @RequestParam(required = false) String name,
-//            @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) EventStatus status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDateTo
     ) {
-        // opcja z frontem
         if (name != null && !name.isEmpty() && category == null && status == null && startDateFrom == null && startDateTo == null) {
             return ResponseEntity.ok(eventService.getEventByName(name));
         }
@@ -132,45 +119,45 @@ import java.util.Map;
         return ResponseEntity.ok().build();
     }
 
-        @PostMapping("{id}/register")
-        public ResponseEntity<String> registerToEvent(@PathVariable long id) {
-            try {
-                userEventService.registerToEvent(id);
-                return ResponseEntity.ok().build();
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-            }
+    @PostMapping("{id}/register")
+    public ResponseEntity<String> registerToEvent(@PathVariable long id) {
+        try {
+            userEventService.registerToEvent(id);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
 
-        @DeleteMapping("{id}/unregister")
-        public ResponseEntity<String> unregisterFromEvent(@PathVariable long id) {
-                userEventService.unregisterFromEvent(id);
-                return ResponseEntity.ok().build();
+    @DeleteMapping("{id}/unregister")
+    public ResponseEntity<String> unregisterFromEvent(@PathVariable long id) {
+        userEventService.unregisterFromEvent(id);
+        return ResponseEntity.ok().build();
+    }
 
+    @GetMapping("{id}/participants")
+    public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable long id) {
+        return ResponseEntity.ok(userEventService.getParticipants(id));
+    }
+
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PostMapping("/{id}/message")
+    public ResponseEntity<String> sendMessageToParticipants(
+            @PathVariable Long id,
+            @RequestBody MessageDTO messageDTO,
+            Authentication auth) {
+        String organizerUsername = auth.getName();
+        try {
+            eventService.sendMessageToParticipants(id, organizerUsername, messageDTO.getMessage());
+            return ResponseEntity.ok("Wiadomość została wysłana.");
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nie jesteś organizatorem tego wydarzenia.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Błąd wysyłania wiadomości: " + ex.getMessage());
         }
-
-        @GetMapping("{id}/participants")
-        public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable long id) {
-            return ResponseEntity.ok(userEventService.getParticipants(id));
-        }
-
-        @PreAuthorize("hasRole('ORGANIZATION')")
-        @PostMapping("/{id}/message")
-        public ResponseEntity<String> sendMessageToParticipants(@PathVariable Long id, @RequestBody MessageDTO messageDTO, Authentication auth) {
-            String organizerEmail = auth.getName();
-            try{
-                eventService.sendMessageToParticipants(id, organizerEmail, messageDTO.getMessage());
-                return ResponseEntity.ok("Wiadomość została wysłana.");
-            } catch (AccessDeniedException e) {
-                System.out.println("Zalogowany: " + organizerEmail);
-                System.out.println("Twórca wydarzenia: " + eventService.getEventById(id).getCreatedBy());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nie jesteś organizatorem tego wydarzenia.");
-            } catch(Exception ex) {
-                ex.printStackTrace(); // dodaj to
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Błąd wysyłania wiadomości: " + ex.getMessage());
-            }
-        }
+    }
 
     @GetMapping("participated")
     public ResponseEntity<List<EventResponseDTO>> getParticipatedEvents() {

@@ -20,15 +20,15 @@ import java.util.stream.Collectors;
 public class CommentRatingService {
     private final CommentRepository commentRepository;
     private final RatingRepository ratingRepository;
-    private final EventRepository eventService;
     private final UserRepository userRepository;
     private final UserEventRepository userEventRepository;
     private final EventRepository eventRepository;
 
-    public CommentRatingService(CommentRepository commentRepository, RatingRepository ratingRepository, EventRepository eventService, UserRepository userRepository, UserEventRepository userEventRepository, EventRepository eventRepository) {
+    public CommentRatingService(CommentRepository commentRepository, RatingRepository ratingRepository,
+                                UserRepository userRepository, UserEventRepository userEventRepository,
+                                EventRepository eventRepository) {
         this.commentRepository = commentRepository;
         this.ratingRepository = ratingRepository;
-        this.eventService = eventService;
         this.userRepository = userRepository;
         this.userEventRepository = userEventRepository;
         this.eventRepository = eventRepository;
@@ -52,7 +52,7 @@ public class CommentRatingService {
         User user = getUserFromPrincipal(principal);
         Event event = getEventFromPrincipal(eventId);
 
-        if(!userEventRepository.existsByUserAndEvent(user, event)) {
+        if (!userEventRepository.existsByUserAndEvent(user, event)) {
             throw new RuntimeException("Tylko uczestnicy wydarzenia mogą komentować");
         }
 
@@ -68,7 +68,8 @@ public class CommentRatingService {
     public void addOrUpdateRating(Long eventId, RatingRequestDTO dto, Principal principal) {
         User user = getUserFromPrincipal(principal);
         Event event = getEventFromPrincipal(eventId);
-        if(!userEventRepository.existsByUserAndEvent(user, event)) {
+
+        if (!userEventRepository.existsByUserAndEvent(user, event)) {
             throw new RuntimeException("Tylko uczestnicy wydarzenia mogą oceniać");
         }
 
@@ -94,22 +95,22 @@ public class CommentRatingService {
         RatingResponseDTO ratingResponseDTO = new RatingResponseDTO();
         ratingResponseDTO.averageRating = averageRating;
 
-        if(principal != null) {
+        if (principal != null) {
             User user = getUserFromPrincipal(principal);
             ratingRepository.findByUserAndEvent(user, event)
-                    .ifPresent(r->ratingResponseDTO.userRating = r.getValue());
+                    .ifPresent(r -> ratingResponseDTO.userRating = r.getValue());
         }
 
         return ratingResponseDTO;
     }
 
     private User getUserFromPrincipal(Principal principal) {
-        return userRepository.findByEmail(principal.getName())
-                .orElseThrow(()-> new RuntimeException("Nie znaleziono użytkownika"));
+        return userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono użytkownika"));
     }
 
     private Event getEventFromPrincipal(Long id) {
         return eventRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Nie znaleziono wydarzenia"));
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono wydarzenia"));
     }
 }
