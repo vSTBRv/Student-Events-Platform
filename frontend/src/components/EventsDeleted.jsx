@@ -15,7 +15,7 @@ export default function DeletedEvents() {
         const fetchDeletedEvents = async () => {
             setLoading(true);
             try {
-                const response = await axios.get("http://localhost:8080/api/events/deleted", {
+                const response = await axios.get("http://localhost:8081/api/events/deleted", {
                     withCredentials: true,
                 });
 
@@ -49,7 +49,7 @@ export default function DeletedEvents() {
         if (!confirmRestore) return;
 
         try {
-            await axios.patch(`http://localhost:8080/api/events/deleted/${id}`, null, {
+            await axios.patch(`http://localhost:8081/api/events/deleted/${id}`, null, {
                 withCredentials: true,
             });
             setEvents((prev) => prev.filter((e) => e.id !== id));

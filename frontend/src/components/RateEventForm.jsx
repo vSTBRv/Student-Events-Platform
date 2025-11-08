@@ -16,7 +16,7 @@ export default function RateEventForm() {
     useEffect(() => {
         const checkExistingRating = async () => {
             try {
-                const res = await axios.get(`http://localhost:8080/api/events/${id}/rating`, {
+                const res = await axios.get(`http://localhost:8081/api/events/${id}/rating`, {
                     withCredentials: true,
                 });
 
@@ -40,11 +40,11 @@ export default function RateEventForm() {
         }
 
         try {
-            await axios.post(`http://localhost:8080/api/events/${id}/rating`, {
+            await axios.post(`http://localhost:8081/api/events/${id}/rating`, {
                 value: rating,
             }, { withCredentials: true });
 
-            await axios.post(`http://localhost:8080/api/events/${id}/comments`, {
+            await axios.post(`http://localhost:8081/api/events/${id}/comments`, {
                 content: comment,
             }, { withCredentials: true });
 

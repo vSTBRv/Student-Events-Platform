@@ -16,7 +16,7 @@ export default function UnacceptedEvents() {
         const fetchUnacceptedEvents = async () => {
             setLoading(true);
             try {
-                const response = await axios.get("http://localhost:8080/api/events/unaccepted", {
+                const response = await axios.get("http://localhost:8081/api/events/unaccepted", {
                     withCredentials: true,
                 });
 
@@ -50,7 +50,7 @@ export default function UnacceptedEvents() {
         if (!confirmAccept) return;
 
         try {
-            await axios.patch(`http://localhost:8080/api/events/unaccepted/${id}`, null, {
+            await axios.patch(`http://localhost:8081/api/events/unaccepted/${id}`, null, {
                 withCredentials: true,
             });
             setEvents((prev) => prev.filter((e) => e.id !== id));

@@ -12,7 +12,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
             if (!isLoggedIn) return;
 
             try {
-                const response = await fetch("http://localhost:8080/api/me", {
+                const response = await fetch("http://localhost:8081/api/me", {
                     method: "GET",
                     credentials: "include",
                 });
@@ -37,7 +37,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
 
     const handleLogout = async () => {
         try {
-            await fetch("http://localhost:8080/api/logout", {
+            await fetch("http://localhost:8081/api/logout", {
                 method: "POST",
                 credentials: "include",
             });

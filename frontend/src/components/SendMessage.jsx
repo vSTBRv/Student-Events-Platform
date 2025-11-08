@@ -31,7 +31,7 @@ function SendMessage() {
         e.preventDefault();
 
         axios.post(
-            `http://localhost:8080/api/events/${id}/message`,
+            `http://localhost:8081/api/events/${id}/message`,
             { message },
             {
                 withCredentials: true,
@@ -53,7 +53,7 @@ function SendMessage() {
 
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/events/${id}`, { withCredentials: true })
+        axios.get(`http://localhost:8081/api/events/${id}`, { withCredentials: true })
             .then(res=>setEvent(res.data))
             .catch(err => console.error("Błąd pobierania danych wydarzenia: ", err));
     }, [id]);

@@ -10,7 +10,7 @@ export default function CategoryManager() {
 
     const fetchCategories = async () => {
         try {
-            const { data } = await axios.get("http://localhost:8080/api/categories", { withCredentials: true });
+            const { data } = await axios.get("http://localhost:8081/api/categories", { withCredentials: true });
             setCategories(data);
             setError(null);
         } catch (e) {
@@ -29,7 +29,7 @@ export default function CategoryManager() {
         }
 
         try {
-            const res = await axios.post("http://localhost:8080/api/categories", { name: newName }, { withCredentials: true });
+            const res = await axios.post("http://localhost:8081/api/categories", { name: newName }, { withCredentials: true });
             if (res.status !== 201) throw new Error("Błąd dodawania kategorii");
             setNewName("");
             fetchCategories();
@@ -42,7 +42,7 @@ export default function CategoryManager() {
         if (!window.confirm("Na pewno chcesz usunąć tę kategorię?")) return;
 
         try {
-            const res = await axios.delete(`http://localhost:8080/api/categories/${id}/soft-delete`, { withCredentials: true });
+            const res = await axios.delete(`http://localhost:8081/api/categories/${id}/soft-delete`, { withCredentials: true });
             if (res.status !== 204) throw new Error("Błąd usuwania kategorii");
             fetchCategories();
         } catch (e) {
@@ -54,7 +54,7 @@ export default function CategoryManager() {
         if (!window.confirm("Na pewno chcesz przywrócić tę kategorię?")) return;
 
         try {
-            const res = await axios.patch(`http://localhost:8080/api/categories/soft-deleted/${id}`, {}, { withCredentials: true });
+            const res = await axios.patch(`http://localhost:8081/api/categories/soft-deleted/${id}`, {}, { withCredentials: true });
             if (res.status !== 204) throw new Error("Błąd przywracania kategorii");
             fetchCategories();
         } catch (e) {
@@ -80,7 +80,7 @@ export default function CategoryManager() {
         }
 
         try {
-            const res = await axios.put(`http://localhost:8080/api/categories/${editId}`, { name: editName }, { withCredentials: true });
+            const res = await axios.put(`http://localhost:8081/api/categories/${editId}`, { name: editName }, { withCredentials: true });
             if (res.status !== 204) throw new Error("Błąd aktualizacji kategorii");
             cancelEdit();
             fetchCategories();

@@ -12,11 +12,11 @@ export default function EventRatings() {
     useEffect(() => {
         const fetchRatings = async () => {
             try {
-                const commentsRes = await axios.get(`http://localhost:8080/api/events/${id}/comments`, {
+                const commentsRes = await axios.get(`http://localhost:8081/api/events/${id}/comments`, {
                     withCredentials: true,
                 });
 
-                const ratingRes = await axios.get(`http://localhost:8080/ap/events/${id}/rating`, {
+                const ratingRes = await axios.get(`http://localhost:8081/ap/events/${id}/rating`, {
                     withCredentials: true,
                 });
 

@@ -14,7 +14,7 @@ export default function MyEvents() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get("http://localhost:8080/api/me", {
+                const res = await axios.get("http://localhost:8081/api/me", {
                     withCredentials: true,
                 });
                 setUserRole(res.data.userRole);
@@ -34,11 +34,11 @@ export default function MyEvents() {
                 let response;
 
                 if (userRole === "STUDENT") {
-                    response = await axios.get("http://localhost:8080/api/events/participated", {
+                    response = await axios.get("http://localhost:8081/api/events/participated", {
                         withCredentials: true,
                     });
                 } else if (userRole === "ORGANIZATION") {
-                    response = await axios.get("http://localhost:8080/api/events", {
+                    response = await axios.get("http://localhost:8081/api/events", {
                         withCredentials: true,
                     });
                 }
@@ -54,7 +54,7 @@ export default function MyEvents() {
                         let alreadyRated = false;
                         if (userRole === "STUDENT") {
                             try {
-                                const res = await axios.get(`http://localhost:8080/api/events/${event.id}/rating`, {
+                                const res = await axios.get(`http://localhost:8081/api/events/${event.id}/rating`, {
                                     withCredentials: true,
                                 });
                                 alreadyRated = res.data.userRating !== null;

@@ -15,7 +15,7 @@ function EventDetails() {
     useEffect(() => {
         const fetchEvent = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/events/${id}`, {
+                const response = await axios.get(`http://localhost:8081/api/events/${id}`, {
                     withCredentials: true,
                 });
                 setEvent(response.data);
@@ -30,7 +30,7 @@ function EventDetails() {
     }, [id]);
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/me`, { withCredentials: true })
+        axios.get(`http://localhost:8081/api/me`, { withCredentials: true })
             .then(response => {
                 console.log("👤 Zalogowany użytkownik:", response.data);
                 setCurrentUser(response.data)
@@ -43,7 +43,7 @@ function EventDetails() {
 
     const fetchParticipants = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/events/${id}/participants`, {
+            const response = await axios.get(`http://localhost:8081/api/events/${id}/participants`, {
                 withCredentials: true,
             });
             setParticipants(response.data);
@@ -65,7 +65,7 @@ function EventDetails() {
     const handleAcceptEvent = async () => {
         try {
             await axios.patch(
-                `http://localhost:8080/api/events/unaccepted/${event.id}`,
+                `http://localhost:8081/api/events/unaccepted/${event.id}`,
                 {},
                 { withCredentials: true }
             );

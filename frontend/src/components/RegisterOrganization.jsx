@@ -41,7 +41,7 @@ export default function RegisterOrganization() {
 
         // TODO: wysyłka danych na backend (np. fetch/axios)
         try {
-            const response = await fetch("http://localhost:8080/api/register", {
+            const response = await fetch("http://localhost:8081/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

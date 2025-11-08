@@ -5,7 +5,7 @@ export default function ManageUsers() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/users", {
+        fetch("http://localhost:8081/api/users", {
             credentials: "include",
         })
             .then((res) => res.json())
@@ -19,7 +19,7 @@ export default function ManageUsers() {
 
         const updatedUser = {...user, userRole: newRole};
 
-        fetch(`http://localhost:8080/api/users/${id}`, {
+        fetch(`http://localhost:8081/api/users/${id}`, {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
             credentials: "include",
@@ -40,7 +40,7 @@ export default function ManageUsers() {
 
         const updatedUser = {...user, enabled: !user.enabled};
 
-        fetch(`http://localhost:8080/api/users/${id}`, {
+        fetch(`http://localhost:8081/api/users/${id}`, {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
             credentials: "include",
@@ -59,7 +59,7 @@ export default function ManageUsers() {
         const confirmDelete = window.confirm("Czy na pewno chcesz usunąć tego użytkownika?");
         if (!confirmDelete) return;
 
-        fetch(`http://localhost:8080/api/users/${id}`, {
+        fetch(`http://localhost:8081/api/users/${id}`, {
             method: "DELETE",
             credentials: "include",
         })

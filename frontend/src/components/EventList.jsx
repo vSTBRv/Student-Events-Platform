@@ -21,7 +21,7 @@ export default function EventList({ filters }) {
                     if (value) params.append(key, value);
                 });
 
-                const response = await axios.get(`http://localhost:8080/api/events/filter?${params.toString()}`, {
+                const response = await axios.get(`http://localhost:8081/api/events/filter?${params.toString()}`, {
                     withCredentials: true,
                 });
 
@@ -58,7 +58,7 @@ export default function EventList({ filters }) {
 
     const handleSoftDelete = (id) => {
         if (window.confirm("Czy na pewno chcesz UKRYĆ wydarzenie (SOFT DELETE)?")) {
-            axios.delete(`http://localhost:8080/api/events/${id}`, { withCredentials: true })
+            axios.delete(`http://localhost:8081/api/events/${id}`, { withCredentials: true })
                 .then(() => {
                     setEvents(prevEvents => prevEvents.filter(event => event.id !== id));
                     alert("Wydarzenie zostało ukryte.");
@@ -71,7 +71,7 @@ export default function EventList({ filters }) {
 
     const handleHardDelete = (id) => {
         if (window.confirm("Czy na pewno chcesz TRWALE USUNĄĆ wydarzenie (HARD DELETE)?")) {
-            axios.delete(`http://localhost:8080/api/events/delete/${id}`, { withCredentials: true })
+            axios.delete(`http://localhost:8081/api/events/delete/${id}`, { withCredentials: true })
                 .then(() => {
                     setEvents(prevEvents => prevEvents.filter(event => event.id !== id));
                     alert("Wydarzenie zostało TRWALE usunięte.");
@@ -83,7 +83,7 @@ export default function EventList({ filters }) {
     };
 
     const handleJoin = (id) => {
-        axios.post(`http://localhost:8080/api/events/${id}/register`, {}, { withCredentials: true })
+        axios.post(`http://localhost:8081/api/events/${id}/register`, {}, { withCredentials: true })
             .then(() => {
                 alert("Pomyślnie dołączono do wydarzenia.");
                 setEvents(prevEvents => prevEvents.map(e => e.id === id ? { ...e, participating: true } : e));
@@ -94,7 +94,7 @@ export default function EventList({ filters }) {
     };
 
     const handleUnregister = (id) => {
-        axios.delete(`http://localhost:8080/api/events/${id}/unregister`, { withCredentials: true })
+        axios.delete(`http://localhost:8081/api/events/${id}/unregister`, { withCredentials: true })
             .then(() => {
                 alert("Pomyślnie zrezygnowano z wydarzenia.");
                 setEvents(prevEvents => prevEvents.map(e => e.id === id ? { ...e, participating: false } : e));
