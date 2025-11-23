@@ -9,9 +9,26 @@ export default function EventList({ filters }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [currentUser, setCurrentUser] = useState(null);
 
     const navigate = useNavigate();
 
+    // pobierz bieżącego użytkownika (rola + id)
+    useEffect(() => {
+        const fetchMe = async () => {
+            try {
+                const res = await axios.get("http://localhost:8080/api/me", {
+                    withCredentials: true,
+                });
+                setCurrentUser(res.data); // { id, userRole, ... }
+            } catch {
+                setCurrentUser(null);
+            }
+        };
+        fetchMe();
+    }, []);
+
+    // pobierz wydarzenia z filtrami
     useEffect(() => {
         const fetchEvents = async () => {
             setLoading(true);
@@ -21,9 +38,10 @@ export default function EventList({ filters }) {
                     if (value) params.append(key, value);
                 });
 
-                const response = await axios.get(`http://localhost:8080/api/events/filter?${params.toString()}`, {
-                    withCredentials: true,
-                });
+                const response = await axios.get(
+                    `http://localhost:8080/api/events/filter?${params.toString()}`,
+                    { withCredentials: true }
+                );
 
                 const mapped = Array.isArray(response.data)
                     ? response.data.map((event) => ({
@@ -35,14 +53,20 @@ export default function EventList({ filters }) {
                         location: `${event.locationDTO.city}, ${event.locationDTO.street} ${event.locationDTO.houseNumber}`,
                         seats: event.maxCapacity - event.currentCapacity,
                         participating: event.participating,
+                        // właściciel wydarzenia (kilka możliwych nazw pól – bierzemy pierwsze dostępne)
+                        ownerId:
+                            event?.createdBy?.id ??
+                            event?.ownerId ??
+                            event?.creatorId ??
+                            null,
                     }))
                     : [];
 
                 setEvents(mapped);
                 setError(null);
-            } catch (error) {
-                console.error("Błąd podczas pobierania danych:", error.message);
-                setError(error.message);
+            } catch (err) {
+                console.error("Błąd podczas pobierania danych:", err?.message);
+                setError(err?.message || "Błąd");
                 setEvents([]);
             } finally {
                 setLoading(false);
@@ -52,57 +76,81 @@ export default function EventList({ filters }) {
         fetchEvents();
     }, [filters]);
 
+    // akcje
     const handleEdit = (id) => {
         navigate(`/events/edit/${id}`);
     };
 
-    const handleSoftDelete = (id) => {
-        if (window.confirm("Czy na pewno chcesz UKRYĆ wydarzenie (SOFT DELETE)?")) {
-            axios.delete(`http://localhost:8080/api/events/${id}`, { withCredentials: true })
-                .then(() => {
-                    setEvents(prevEvents => prevEvents.filter(event => event.id !== id));
-                    alert("Wydarzenie zostało ukryte.");
-                })
-                .catch(() => {
-                    alert("Błąd podczas ukrywania wydarzenia.");
-                });
+    const handleSoftDelete = async (id) => {
+        if (!window.confirm("Czy na pewno chcesz UKRYĆ wydarzenie (SOFT DELETE)?")) return;
+        try {
+            await axios.delete(`http://localhost:8080/api/events/${id}`, {
+                withCredentials: true,
+            });
+            setEvents((prev) => prev.filter((e) => e.id !== id));
+            alert("Wydarzenie zostało ukryte.");
+        } catch {
+            alert("Błąd podczas ukrywania wydarzenia.");
         }
     };
 
-    const handleHardDelete = (id) => {
-        if (window.confirm("Czy na pewno chcesz TRWALE USUNĄĆ wydarzenie (HARD DELETE)?")) {
-            axios.delete(`http://localhost:8080/api/events/delete/${id}`, { withCredentials: true })
-                .then(() => {
-                    setEvents(prevEvents => prevEvents.filter(event => event.id !== id));
-                    alert("Wydarzenie zostało TRWALE usunięte.");
-                })
-                .catch(() => {
-                    alert("Błąd podczas trwałego usuwania wydarzenia.");
-                });
+    const handleHardDelete = async (id) => {
+        if (!window.confirm("Czy na pewno chcesz TRWALE USUNĄĆ wydarzenie (HARD DELETE)?")) return;
+        try {
+            await axios.delete(`http://localhost:8080/api/events/delete/${id}`, {
+                withCredentials: true,
+            });
+            setEvents((prev) => prev.filter((e) => e.id !== id));
+            alert("Wydarzenie zostało TRWALE usunięte.");
+        } catch {
+            alert("Błąd podczas trwałego usuwania wydarzenia.");
         }
     };
 
-    const handleJoin = (id) => {
-        axios.post(`http://localhost:8080/api/events/${id}/register`, {}, { withCredentials: true })
-            .then(() => {
-                alert("Pomyślnie dołączono do wydarzenia.");
-                setEvents(prevEvents => prevEvents.map(e => e.id === id ? { ...e, participating: true } : e));
-            })
-            .catch((error) => {
-                alert("Nie można dołączyć: ");
-            });
+    const handleJoin = async (id) => {
+        try {
+            await axios.post(
+                `http://localhost:8080/api/events/${id}/register`,
+                {},
+                { withCredentials: true }
+            );
+            setEvents((prev) =>
+                prev.map((e) => (e.id === id ? { ...e, participating: true } : e))
+            );
+            alert("Pomyślnie dołączono do wydarzenia.");
+        } catch {
+            alert("Nie można dołączyć.");
+        }
     };
 
-    const handleUnregister = (id) => {
-        axios.delete(`http://localhost:8080/api/events/${id}/unregister`, { withCredentials: true })
-            .then(() => {
-                alert("Pomyślnie zrezygnowano z wydarzenia.");
-                setEvents(prevEvents => prevEvents.map(e => e.id === id ? { ...e, participating: false } : e));
-            })
-            .catch((error) => {
-                alert("Nie można zrezygnować: ");
-            });
+    const handleUnregister = async (id) => {
+        try {
+            await axios.delete(
+                `http://localhost:8080/api/events/${id}/unregister`,
+                { withCredentials: true }
+            );
+            setEvents((prev) =>
+                prev.map((e) => (e.id === id ? { ...e, participating: false } : e))
+            );
+            alert("Pomyślnie zrezygnowano z wydarzenia.");
+        } catch {
+            alert("Nie można zrezygnować.");
+        }
     };
+
+    // uprawnienia UI (front) – spójne z backendem
+    const role = currentUser?.userRole?.toUpperCase(); // "STUDENT" | "ORGANIZER"/"ORGANIZATION" | "ADMIN"
+    const userId = currentUser?.id;
+
+    const isOrganizer =
+        role === "ORGANIZER" || role === "ORGANIZATION";
+    const isStudent = role === "STUDENT";
+    const isAdmin = role === "ADMIN";
+
+    const canJoin = (ev) => (isStudent || isAdmin);
+    const canEdit = (ev) => isAdmin || (isOrganizer && userId && userId === ev.ownerId);
+    const canSoftDelete = (ev) => canEdit(ev);
+    const canHardDelete = (ev) => isAdmin;
 
     return (
         <div className="min-h-screen bg-gray-100 py-10 px-4 flex flex-col items-center">
@@ -116,9 +164,7 @@ export default function EventList({ filters }) {
                 />
             </div>
 
-            <h1 className="text-3xl font-bold text-amber-600 mb-8">
-                Wydarzenia
-            </h1>
+            <h1 className="text-3xl font-bold text-amber-600 mb-8">Wydarzenia</h1>
 
             {loading ? (
                 <p>Ładowanie wydarzeń...</p>
@@ -129,7 +175,9 @@ export default function EventList({ filters }) {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full">
                     {events
-                        .filter(event => event.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                        .filter((event) =>
+                            event.title.toLowerCase().includes(searchTerm.toLowerCase())
+                        )
                         .map((event) => (
                             <div
                                 key={event.id}
@@ -144,54 +192,71 @@ export default function EventList({ filters }) {
                                     <div className="text-sm text-gray-500 mb-1">
                                         📅 {event.date} ⏰ {event.time}
                                     </div>
-                                    <div className="text-sm text-gray-500 mb-1">
-                                        📍 {event.location}
-                                    </div>
+                                    <div className="text-sm text-gray-500 mb-1">📍 {event.location}</div>
                                     <div className="text-sm text-gray-500 mb-1">
                                         🎫 Miejsca: {event.seats}
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col gap-2 mt-4">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            event.participating ? handleUnregister(event.id) : handleJoin(event.id);
-                                        }}
-                                        className={`py-2 px-4 rounded-md transition mt-2 text-white ${event.participating ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
-                                    >
-                                        {event.participating ? "Zrezygnuj" : "Dołącz"}
-                                    </button>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleEdit(event.id);
-                                        }}
-                                        className="bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition"
-                                    >
-                                        Edytuj
-                                    </button>
+                                    {/* dołącz/rez. tylko student + admin */}
+                                    {currentUser && canJoin(event) && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                event.participating
+                                                    ? handleUnregister(event.id)
+                                                    : handleJoin(event.id);
+                                            }}
+                                            className={`py-2 px-4 rounded-md transition mt-2 text-white ${
+                                                event.participating
+                                                    ? "bg-red-500 hover:bg-red-600"
+                                                    : "bg-green-500 hover:bg-green-600"
+                                            }`}
+                                        >
+                                            {event.participating ? "Zrezygnuj" : "Dołącz"}
+                                        </button>
+                                    )}
+
+                                    {/* edytuj: admin lub organizator tylko swoich */}
+                                    {currentUser && canEdit(event) && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEdit(event.id);
+                                            }}
+                                            className="bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition"
+                                        >
+                                            Edytuj
+                                        </button>
+                                    )}
 
                                     <div className="flex justify-between items-center mt-2 text-sm text-gray-600">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleSoftDelete(event.id);
-                                            }}
-                                            className="flex items-center gap-1 hover:text-red-500 transition"
-                                        >
-                                            <FaTrashAlt /> Usuń
-                                        </button>
+                                        {/* usuń (soft): jak edycja */}
+                                        {currentUser && canSoftDelete(event) && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleSoftDelete(event.id);
+                                                }}
+                                                className="flex items-center gap-1 hover:text-red-500 transition"
+                                            >
+                                                <FaTrashAlt /> Usuń
+                                            </button>
+                                        )}
 
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleHardDelete(event.id);
-                                            }}
-                                            className="flex items-center gap-1 hover:text-red-700 transition"
-                                        >
-                                            <FaTimes /> Usuń na zawsze
-                                        </button>
+                                        {/* usuń na zawsze: tylko admin */}
+                                        {currentUser && canHardDelete(event) && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleHardDelete(event.id);
+                                                }}
+                                                className="flex items-center gap-1 hover:text-red-700 transition"
+                                            >
+                                                <FaTimes /> Usuń na zawsze
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
