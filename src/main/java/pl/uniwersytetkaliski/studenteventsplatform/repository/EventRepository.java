@@ -57,8 +57,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     long countByStartDateBetweenAndDeletedFalseAndAcceptedTrue(LocalDateTime fromDate, LocalDateTime toDate);
 
-    List<Event> findByCreatedByAndAcceptedTrue(User createdBy, boolean accepted);
-
     List<Event> findByCreatedByAndAccepted(User user, boolean b);
 }
 
