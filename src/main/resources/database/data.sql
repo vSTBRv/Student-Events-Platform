@@ -1,4 +1,4 @@
-insert into users (username, email, password, full_name, user_role, enabled, created_at) values ('student','student@mail.to', '$2a$10$LuZc1rx/MaiUz3jyg8Swr.WXq7ii.GKrW2opHXyiyV1AHaHRDyey2', 'testStudent','STUDENT',1,CURRENT_TIMESTAMP );
+nsert into users (username, email, password, full_name, user_role, enabled, created_at) values ('student','student@mail.to', '$2a$10$LuZc1rx/MaiUz3jyg8Swr.WXq7ii.GKrW2opHXyiyV1AHaHRDyey2', 'testStudent','STUDENT',1,CURRENT_TIMESTAMP );
 -- UWAGA! dla poniższego użytkownika:
 -- login: admin@mail.to
 -- hasło: admin123

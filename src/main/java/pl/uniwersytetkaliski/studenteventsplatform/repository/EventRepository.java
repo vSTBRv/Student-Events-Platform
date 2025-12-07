@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pl.uniwersytetkaliski.studenteventsplatform.model.Event;
+import pl.uniwersytetkaliski.studenteventsplatform.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,6 +56,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findByIdWithParticipants(@Param("id") Long id);
 
     long countByStartDateBetweenAndDeletedFalseAndAcceptedTrue(LocalDateTime fromDate, LocalDateTime toDate);
+
+    List<Event> findByCreatedByAndAcceptedTrue(User createdBy, boolean accepted);
+
+    List<Event> findByCreatedByAndAccepted(User user, boolean b);
 }
 
 

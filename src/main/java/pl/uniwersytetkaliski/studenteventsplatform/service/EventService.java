@@ -175,6 +175,17 @@ public class EventService {
                 .map(eventMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
+
+    public List<EventResponseDTO> getUnacceptedEventsForUser() {
+        User user = getLoggedUser();
+        List<Event> eventList = eventRepository.findByCreatedByAndAccepted(user,false);
+
+        return eventList.stream()
+                .map(eventMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     private User getLoggedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userService.getUserByEmail(authentication.getName())

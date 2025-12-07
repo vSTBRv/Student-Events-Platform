@@ -182,6 +182,11 @@ import java.util.Map;
         return ResponseEntity.ok(eventService.getUnacceptedEvents());
     }
 
+    @GetMapping("/my/unaccepted")
+    public ResponseEntity<List<EventResponseDTO>> getMyUnacceptedEvents() {
+            return ResponseEntity.ok(eventService.getUnacceptedEventsForUser());
+    }
+
     @PatchMapping("unaccepted/{id}")
     public ResponseEntity<Void> acceptEvent(@PathVariable long id) {
         eventService.acceptEvent(id);

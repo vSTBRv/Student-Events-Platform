@@ -37,6 +37,7 @@ public class EventMapper implements Mapper<Event, EventResponseDTO, EventCreateD
         entity.setStartDate(eventUpdateDTO.getStartDateTime());
         entity.setEndDate(eventUpdateDTO.getEndDateTime());
         entity.setStatus(eventUpdateDTO.getStatus());
+        entity.setAccepted(false);
         return entity;
     }
 

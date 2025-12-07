@@ -83,6 +83,7 @@ public class UserEventService {
             throw new EntityNotFoundException();
         }
         userEventRepository.deleteByUserAndEvent(user.get(), event.get());
+        eventRepository.updateCurrentCapacity(id,event.get().getCurrentCapacity()-1);
         try {
             notificationService.sendEventUnregistrationConfirmationEmail(user.get().getEmail(), user.get(), event.get());
         } catch (MailSendException ignored){
